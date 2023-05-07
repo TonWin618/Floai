@@ -11,6 +11,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Styles/Themes/Light.xaml"/>
+                <ResourceDictionary Source="../Styles/Controls.MainButton.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -18,7 +19,7 @@
     <Grid x:Name="canvas" >
         <Border x:Name="border" CornerRadius="5" Background="{DynamicResource btn_main_bg_brush}"
                 HorizontalAlignment="Center" VerticalAlignment="Center"
-                MouseLeftButtonDown="Border_MouseLeftButtonDown" MouseLeftButtonUp="Border_MouseLeftButtonUp" 
+                MouseLeftButtonDown="Border_MouseLeftButtonDown"
                 MouseLeave="border_MouseLeave" MouseEnter="border_MouseEnter">
             <Label Content="@Floai" FontSize="16" Foreground="{DynamicResource btn_main_fg_brush}" Width="80" 
                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>

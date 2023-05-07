@@ -11,7 +11,7 @@ namespace Floai.Pages
     public partial class FloatView : Window
     {
         static ChatView? chatView;
-        AppConfiger configer = new("config.xml");
+        AppConfiger configer = new("App.Config");
         public FloatView()
         {
             InitializeComponent();
@@ -42,18 +42,15 @@ namespace Floai.Pages
             this.Visibility = Visibility.Collapsed;
             chatView.Visibility = Visibility.Visible;
         }
-        private Point _previousWindowPosition;
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            _previousWindowPosition = new Point(Left, Top);
-            DragMove();
-        }
-
-
-        private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (_previousWindowPosition == new Point(Left, Top))
+            e.Handled= true;
+            if(e.LeftButton== MouseButtonState.Pressed) 
+            {
+                this.DragMove();
+            }
+            if(e.LeftButton== MouseButtonState.Released)
             {
                 ShowWindow();
             }

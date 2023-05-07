@@ -17,7 +17,7 @@ namespace Floai.Pages;
 
 public partial class ChatView : Window
 {
-    private readonly AppConfiger configer = new("config.xml");
+    private readonly AppConfiger configer = new("App.config");
     private readonly ChatMessageManager messageManager = new("MessageLogging/message.txt");
     private static FloatView? floatView;
     private readonly OpenAIClient api;
