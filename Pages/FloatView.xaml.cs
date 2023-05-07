@@ -11,12 +11,11 @@ namespace Floai.Pages
     public partial class FloatView : Window
     {
         static ChatView? chatView;
-        AppConfiger configer = new("App.Config");
         public FloatView()
         {
             InitializeComponent();
-            double window_x = configer.GetValue<double>("initialPositionX");
-            double window_y = configer.GetValue<double>("initialPositionY");
+            double window_x = AppConfiger.GetValue<double>("initialPositionX");
+            double window_y = AppConfiger.GetValue<double>("initialPositionY");
             //this.Left = SystemParameters.PrimaryScreenWidth - this.Width - 100;
             //this.Top = SystemParameters.PrimaryScreenHeight - this.Height - 100;
             this.Left = window_x;
@@ -29,15 +28,15 @@ namespace Floai.Pages
             {
                 chatView = new ChatView();
             }
-            double window_height = configer.GetValue<double>("initialWindowHeight");
-            double window_width = configer.GetValue<double>("initialWindowWidth");
+            double window_height = AppConfiger.GetValue<double>("initialWindowHeight");
+            double window_width = AppConfiger.GetValue<double>("initialWindowWidth");
             chatView.Left = this.Left - window_width + 80;
             chatView.Top = this.Top - window_height + 30;
             chatView.Width = window_width;
             chatView.Height = window_height;
             chatView.Closed += (s, evenArgs) => chatView = null;
-            configer.SetValue("initialPositionX", this.Left.ToString());
-            configer.SetValue("initialPositionY", this.Top.ToString());
+            AppConfiger.SetValue("initialPositionX", this.Left.ToString());
+            AppConfiger.SetValue("initialPositionY", this.Top.ToString());
 
             this.Visibility = Visibility.Collapsed;
             chatView.Visibility = Visibility.Visible;

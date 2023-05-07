@@ -17,7 +17,6 @@ namespace Floai.Pages;
 
 public partial class ChatView : Window
 {
-    private readonly AppConfiger configer = new("App.config");
     private readonly ChatMessageManager messageManager = new("MessageLogging/message.txt");
     private static FloatView? floatView;
     private readonly OpenAIClient api;
@@ -29,7 +28,7 @@ public partial class ChatView : Window
     {
         InitializeComponent();
         TransparentClick.Enable(this);
-        api = new(configer.GetValue("apiKey"));
+        api = new(AppConfiger.GetValue("apiKey"));
         
         Messages = new ObservableCollection<ChatMessage>();
         
@@ -116,7 +115,7 @@ public partial class ChatView : Window
 
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        configer.SetValue("initialWindowHeight", this.Height.ToString());
-        configer.SetValue("initialWindowWidth", this.Width.ToString());
+        AppConfiger.SetValue("initialWindowHeight", this.Height.ToString());
+        AppConfiger.SetValue("initialWindowWidth", this.Width.ToString());
     }
 }

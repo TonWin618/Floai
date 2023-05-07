@@ -1,145 +1,80 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Xml;
+using System.IO;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace Floai.Utils;
-public class AppConfiger
+public static class AppConfiger
 {
-    private readonly Dictionary<string, string> _configValues;
-    private readonly string _configFilePath;
-    public AppConfiger(string configFilePath)
-    {
-        _configFilePath = configFilePath;
-        _configValues = new Dictionary<string, string>();
-        // Load the XML file
-        XmlDocument xmlDoc = new XmlDocument();
-        xmlDoc.Load(configFilePath);
+    private static readonly string _configFilePath;
+    private static readonly XDocument _configFile;
 
-        // Get all the add elements and store their key/value pairs in the dictionary
-        XmlNodeList addNodes = xmlDoc.SelectNodes("/configuration/add");
-        foreach (XmlNode node in addNodes)
-        {
-            string key = node.Attributes["key"].Value;
-            string value = node.Attributes["value"].Value;
-            _configValues.Add(key, value);
-        }
+    static AppConfiger()
+    {
+        _configFilePath = "App.config";
+        _configFile = LoadConfigFile(_configFilePath);
     }
 
-    // Retrieve a configuration value by its key
-    public string GetValue(string key)
+    public static string GetValue(string key, string defaultValue = null)
     {
-        if (_configValues.ContainsKey(key))
-        {
-            return _configValues[key];
-        }
-        else
-        {
-            throw new KeyNotFoundException($"The key '{key}' was not found in the configuration file.");
-        }
+        var element = GetConfigElement(key);
+        return element?.Attribute("value")?.Value ?? defaultValue;
     }
 
-    // Retrieve a configuration value by its key, with a default value if the key is not found
-    public string GetValue(string key, string defaultValue)
+    public static T GetValue<T>(string key, T defaultValue = default)
     {
-        if (_configValues.ContainsKey(key))
-        {
-            return _configValues[key];
-        }
-        else
+        var strValue = GetValue(key);
+        if (string.IsNullOrEmpty(strValue))
         {
             return defaultValue;
         }
+        else
+        {
+            return (T)Convert.ChangeType(strValue, typeof(T));
+        }
     }
 
-    // Retrieve a configuration value by its key, parsed to the specified type T
-    public T GetValue<T>(string key)
+    public static void SetValue(string key, string value)
     {
-        string valueString = GetValue(key);
-        Type type = typeof(T);
+        var element = GetConfigElement(key);
+        if (element != null)
+        {
+            element.Attribute("value")?.SetValue(value);
+        }
+        else
+        {
+            var newElement = new XElement("add", new XAttribute("key", key), new XAttribute("value", value));
+            _configFile.Root.Add(newElement);
+        }
+        SaveConfigFile();
+    }
+
+    private static XElement GetConfigElement(string key)
+    {
+        var elements = _configFile.Descendants("add");
+        return elements.FirstOrDefault(e => e.Attribute("key")?.Value == key);
+    }
+
+    private static void SaveConfigFile()
+    {
+        _configFile.Save(_configFilePath);
+    }
+
+    private static XDocument LoadConfigFile(string filePath)
+    {
+        if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException($"Configuration file '{filePath}' does not exist.");
+        }
 
         try
         {
-            // Convert the string value to the desired type
-            if (type == typeof(int))
-            {
-                return (T)(object)int.Parse(valueString);
-            }
-            else if (type == typeof(bool))
-            {
-                return (T)(object)bool.Parse(valueString);
-            }
-            else if (type == typeof(double))
-            {
-                return (T)(object)double.Parse(valueString);
-            }
-            else if (type == typeof(float))
-            {
-                return (T)(object)float.Parse(valueString);
-            }
-            else if (type == typeof(string))
-            {
-                return (T)(object)valueString;
-            }
-            else
-            {
-                throw new NotSupportedException($"The type '{type.Name}' is not supported.");
-            }
+            using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
+            return XDocument.Load(fileStream, LoadOptions.PreserveWhitespace);
         }
         catch (Exception ex)
         {
-            throw new InvalidOperationException($"Error parsing value for key '{key}': {ex.Message}", ex);
+            throw new Exception($"Failed to load configuration file '{filePath}', error message: {ex.Message}", ex);
         }
-    }
-
-    // Retrieve a configuration value by its key, parsed to the specified type T, with a default value if the key is not found
-    public T GetValue<T>(string key, T defaultValue)
-    {
-        if (_configValues.ContainsKey(key))
-        {
-            return GetValue<T>(key);
-        }
-        else
-        {
-            return defaultValue;
-        }
-    }
-
-    public void SetValue(string key, string value)
-    {
-        if (_configValues.ContainsKey(key))
-        {
-            _configValues[key] = value;
-        }
-        else
-        {
-            _configValues.Add(key, value);
-        }
-
-        // Save the updated config back to the original XML file
-        XmlDocument xmlDoc = new XmlDocument();
-        xmlDoc.Load(_configFilePath);
-        XmlNodeList addNodes = xmlDoc.SelectNodes("/configuration/add[@key='" + key + "']");
-        foreach (XmlNode addNode in addNodes)
-        {
-            addNode.Attributes["value"].Value = value;
-        }
-        xmlDoc.Save(_configFilePath);
-    }
-
-    // Save the current configuration back to the original XML file
-    public void Save()
-    {
-        XmlDocument xmlDoc = new XmlDocument();
-        xmlDoc.Load(_configFilePath);
-        XmlNodeList addNodes = xmlDoc.SelectNodes("/configuration/add");
-        foreach (XmlNode addNode in addNodes)
-        {
-            string key = addNode.Attributes["key"].Value;
-            if (_configValues.ContainsKey(key))
-            {
-                addNode.Attributes["value"].Value = _configValues[key];
-            }
-        }
-        xmlDoc.Save(_configFilePath);
     }
 }
