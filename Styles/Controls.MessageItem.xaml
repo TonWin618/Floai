@@ -1,0 +1,85 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Themes/Light.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="{x:Type ListBoxItem}" x:Key="MessageItemStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <Border Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="true">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    </Style>
+
+    <DataTemplate x:Key="ai">
+        <Grid Margin="0,5,0,5">
+            <Border x:Name="border"
+                    Background="#FFFFFF" CornerRadius="1" 
+                    BorderBrush="{DynamicResource message_recv_border_brush}" BorderThickness="1"  
+                    VerticalAlignment="Top" HorizontalAlignment="Right"
+                    MinHeight="35" MinWidth="50" Padding="5" Margin="0,2,10,2" >
+                <Label VerticalContentAlignment="Center">
+                    <TextBox x:Name="contentBox" Text="{Binding Content}" IsReadOnly="True" TextWrapping="Wrap" BorderThickness="0" Background="Transparent"/>
+                </Label>
+            </Border>
+            <Canvas Width="10" Height="16" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,14,0,0" Background="Transparent">
+                <Path x:Name="path" Stroke="{DynamicResource message_recv_border_brush}" StrokeThickness="1" Fill="{DynamicResource message_recv_border_brush}">
+                    <Path.Data>
+                        <PathGeometry Figures="M 0,12 L 0,0,8,6"/>
+                    </Path.Data>
+                </Path>
+            </Canvas>
+        </Grid>
+        
+        <DataTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="border" Property="Background" Value="{DynamicResource message_recv_hover_brush}"/>
+            </Trigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <DataTemplate x:Key="user">
+        <Grid Margin="0,5,0,5">
+            <Border x:Name="border" 
+                    BorderBrush="{DynamicResource message_send_bg_brush}" CornerRadius="1"
+                    Background="{DynamicResource message_send_bg_brush}" BorderThickness="1" 
+                    VerticalAlignment="Top" HorizontalAlignment="Right" 
+                    MinHeight="35" MinWidth="50" Margin="0,2,10,2"  Padding="5" >
+                <Label VerticalContentAlignment="Center">
+                    <TextBox x:Name="contentBox" Text="{Binding Content}" IsReadOnly="True" TextWrapping="Wrap"  BorderThickness="0" Background="Transparent"/>
+                </Label>
+            </Border>
+            <Canvas Width="10" Height="16" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,14,0,0" Background="Transparent">
+                <Path x:Name="path" Stroke="{DynamicResource message_send_bg_brush}" StrokeThickness="0.5" Fill="{DynamicResource message_send_bg_brush}">
+                    <Path.Data>
+                        <PathGeometry Figures="M 0,12 L 0,0,8,6"/>
+                    </Path.Data>
+                </Path>
+            </Canvas>
+        </Grid>
+        
+        <DataTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="border" Property="Background" Value="{DynamicResource message_send_hover_bg_brush}"/>
+                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource message_send_hover_bg_brush}"/>
+                <Setter TargetName="path" Property="Fill" Value="{DynamicResource message_send_hover_bg_brush}" />
+                <Setter TargetName="path" Property="Stroke" Value="{DynamicResource message_send_hover_bg_brush}" />
+            </Trigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+</ResourceDictionary>

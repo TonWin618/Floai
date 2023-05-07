@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+		<add key="apiKey" value="" />
+		<!-- true/false -->
+		<add key="startWithWindows" value="false" />
+	
+		<add key="initialPositionX" value="1200"/>
+		<add key="initialPositionY" value="900"/>
+	
+		<add key="initialWindowHeight" value="500"/>
+		<add key="initialWindowWidth" value="300"/>
+		<!--
+		C:\Documents\Newsletters\Summer2018.pdf
+		\Program Files\Custom Utilities\StringFinder.exe
+		2018\January.xlsx
+		..\Publications\TravelBrochure.pdf  
+		-->
+		<add key="messageSaveDictionary" value="./" />
+		<!-- light/dark/follow_system_theme -->
+		<add key="themeMode" value="light" />
+		<!-- default_light/default_dark -->
+		<add key="theme" value="deafult_light" />
+		<!-- normal/left/right -->
+		<add key="chatView" value="normal" />
+</configuration>

@@ -1,0 +1,27 @@
+﻿<Window x:Class="Floai.Pages.FloatView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Floai" Height="30" Width="80"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" Topmost="True" >
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Styles/Themes/Light.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid x:Name="canvas" >
+        <Border x:Name="border" CornerRadius="5" Background="{DynamicResource btn_main_bg_brush}"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                MouseLeftButtonDown="Border_MouseLeftButtonDown" MouseLeftButtonUp="Border_MouseLeftButtonUp" 
+                MouseLeave="border_MouseLeave" MouseEnter="border_MouseEnter">
+            <Label Content="@Floai" FontSize="16" Foreground="{DynamicResource btn_main_fg_brush}" Width="80" 
+                   HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        </Border>
+    </Grid>
+</Window>
