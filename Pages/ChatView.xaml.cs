@@ -2,24 +2,21 @@
 using Floai.Utils;
 using OpenAI;
 using OpenAI.Chat;
-using Stylet;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace Floai.Pages;
 
 public partial class ChatView : Window
 {
-    private readonly ChatMessageManager messageManager = new("MessageLogging/message.txt");
+    private ChatMessageManager messageManager;
     private static FloatView? floatView;
-    private readonly OpenAIClient api;
+    private OpenAIClient api;
 
     //Binding ListBox ListSource
     public ObservableCollection<ChatMessage> Messages { get; set; }
@@ -28,15 +25,51 @@ public partial class ChatView : Window
     {
         InitializeComponent();
         TransparentClick.Enable(this);
-        api = new(AppConfiger.GetValue("apiKey"));
-        
+        LoadMessages();
+    }
+
+    private void LoadMessages()
+    {
+        string messageSaveDictionary = AppConfiger.GetValue("messageSaveDirectory");
+        messageManager = new ChatMessageManager(messageSaveDictionary + "/msg.txt");
         Messages = new ObservableCollection<ChatMessage>();
-        
         foreach (var msg in messageManager.LoadMessages())
         {
             Messages.Add(msg);
         }
         this.MessageList.ItemsSource = Messages;
+    }
+    private bool IsWindowOpen<T>() where T : Window
+    {
+        return Application.Current.Windows.OfType<T>().Any();
+    }
+
+    private bool InitializeApiClient()
+    {
+        string? apiKey = AppConfiger.GetValue("apiKey");
+        if (string.IsNullOrEmpty(apiKey))
+        {
+            InputBox.Text = "ApiKey is not configured.";
+            if (!IsWindowOpen<SettingsView>())
+            {
+                var settingsView = new SettingsView();
+                settingsView.Show();
+            }
+            return false;
+        }
+
+        api = new(apiKey);
+        if(api == null)
+        {
+            InputBox.Text = "Invalid API key.";
+            if (!IsWindowOpen<SettingsView>())
+            {
+                var settingsView = new SettingsView();
+                settingsView.Show();
+            }
+            return false;
+        }
+        return true;
     }
 
     private void ScrollToBottom()
@@ -51,6 +84,10 @@ public partial class ChatView : Window
 
     private async void BtnSend_Click(object sender, RoutedEventArgs e)
     {
+        if (!InitializeApiClient())
+        {
+            return;
+        }
         //Generate message sent by the user
         var userMsg = new ChatMessage( DateTime.Now, "user", InputBox.Text);
         Messages.Add(userMsg);
@@ -117,5 +154,11 @@ public partial class ChatView : Window
     {
         AppConfiger.SetValue("initialWindowHeight", this.Height.ToString());
         AppConfiger.SetValue("initialWindowWidth", this.Width.ToString());
+    }
+
+    private void BtnSetting_Click(object sender, RoutedEventArgs e)
+    {
+        var settingsView = new SettingsView();
+        settingsView.Show();
     }
 }

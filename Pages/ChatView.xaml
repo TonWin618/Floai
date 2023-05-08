@@ -12,7 +12,7 @@
     <WindowChrome.WindowChrome>
         <WindowChrome/>
     </WindowChrome.WindowChrome>
-    
+
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -26,12 +26,13 @@
                 <ResourceDictionary Source="../Resources/Icons/AimDrawing.xaml"/>
                 <ResourceDictionary Source="../Resources/Icons/CloseDrawing.xaml"/>
                 <ResourceDictionary Source="../Resources/Icons/SendDrawing.xaml"/>
+                <ResourceDictionary Source="../Resources/Icons/SettingDrawing.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <local1:ChatBubbleSelector x:Key="chatBubbleSelector"/>
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid FocusManager.FocusedElement="{Binding ElementName=textBox}">
+    <Grid FocusManager.FocusedElement="{Binding ElementName=InputBox}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -46,13 +47,13 @@
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MessageItemStyle}"></Style>
             </ListBox.ItemContainerStyle>
-            
+
         </ListBox>
 
         <Grid Grid.Row="1" >
             <TextBox x:Name="InputBox" Style="{DynamicResource InputBoxStyle}"
                      Margin="0,20,0,0" MinHeight="30" MaxHeight="250" 
-                     Text="{Binding Contene}" TextWrapping="Wrap" AcceptsReturn="True"
+                     TextWrapping="Wrap" AcceptsReturn="True"
                      VerticalContentAlignment="Center"
                      ScrollViewer.VerticalScrollBarVisibility="Auto" 
                      >
@@ -62,6 +63,7 @@
         <Grid Grid.Row="2" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="90" />
                 <ColumnDefinition Width="30" />
@@ -76,9 +78,17 @@
                 </Button.Content>
             </Button>
 
+            <Button x:Name="BtnSetting" Style="{DynamicResource MainButtonStyle}"
+                    Width="30" Height="30"  HorizontalContentAlignment="Center" Grid.Column="1"
+                    Click="BtnSetting_Click" Margin="0,5,0,0">
+                <Button.Content>
+                    <Image Source="{StaticResource settingDrawingImage}" Width="24"/>
+                </Button.Content>
+            </Button>
+
             <Button x:Name="BtnSend" Style="{DynamicResource MainButtonStyle}"
-                    Width="80" Height="30" Margin="5,5,0,0" 
-                    HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Column="2"
+                    Width="80" Height="30" Margin="0,5,0,0" 
+                    HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Column="3"
                     Click="BtnSend_Click" >
                 <WrapPanel>
                     <Image Source="{StaticResource sendDrawingImage}" Width="22"/>
