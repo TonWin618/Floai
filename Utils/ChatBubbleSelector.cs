@@ -14,7 +14,7 @@ namespace Floai.Utils
 
             if (message.Sender == "user")
                 return u.FindResource("user") as DataTemplate;
-            if (message.Sender == "ai")
+            else if (message.Sender == "ai")
                 return u.FindResource("ai") as DataTemplate;
             else
                 return u.FindResource("ai") as DataTemplate;

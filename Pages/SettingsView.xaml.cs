@@ -21,15 +21,8 @@ public partial class SettingsView : Window
     {
         var dlg = new CommonOpenFileDialog();
         dlg.IsFolderPicker = true;
-        dlg.InitialDirectory = "C:/";
-
         if (dlg.ShowDialog() == CommonFileDialogResult.Ok)
         {
-            var binding = DirTextBox.GetBindingExpression(TextBox.TextProperty);
-            if (binding != null)
-            {
-                binding.UpdateTarget();
-            }
             DirTextBox.Text = dlg.FileName;
         }
     }

@@ -16,7 +16,7 @@ public partial class ChatView : Window
 {
     private ChatMessageManager messageManager;
     private static FloatView? floatView;
-    private OpenAIClient api;
+    private OpenAIClient apiClient;
 
     //Binding ListBox ListSource
     public ObservableCollection<ChatMessage> Messages { get; set; }
@@ -25,23 +25,16 @@ public partial class ChatView : Window
     {
         InitializeComponent();
         TransparentClick.Enable(this);
-        LoadMessages();
+        LoadMessages("/msg.txt");
     }
 
-    private void LoadMessages()
+    private void LoadMessages(string msgFileName)
     {
         string messageSaveDictionary = AppConfiger.GetValue("messageSaveDirectory");
-        messageManager = new ChatMessageManager(messageSaveDictionary + "/msg.txt");
-        Messages = new ObservableCollection<ChatMessage>();
-        foreach (var msg in messageManager.LoadMessages())
-        {
-            Messages.Add(msg);
-        }
+        messageManager = new ChatMessageManager(messageSaveDictionary + msgFileName);
+        List<ChatMessage> messagesList = messageManager.LoadMessages();
+        Messages = new ObservableCollection<ChatMessage>(messagesList);
         this.MessageList.ItemsSource = Messages;
-    }
-    private bool IsWindowOpen<T>() where T : Window
-    {
-        return Application.Current.Windows.OfType<T>().Any();
     }
 
     private bool InitializeApiClient()
@@ -50,63 +43,50 @@ public partial class ChatView : Window
         if (string.IsNullOrEmpty(apiKey))
         {
             InputBox.Text = "ApiKey is not configured.";
-            if (!IsWindowOpen<SettingsView>())
-            {
-                var settingsView = new SettingsView();
-                settingsView.Show();
-            }
+            ShowSettingsView();
             return false;
         }
 
-        api = new(apiKey);
-        if(api == null)
+        try
+        {
+            apiClient = new(apiKey);
+            return true;
+        }
+        catch(Exception e)
         {
             InputBox.Text = "Invalid API key.";
-            if (!IsWindowOpen<SettingsView>())
-            {
-                var settingsView = new SettingsView();
-                settingsView.Show();
-            }
+            ShowSettingsView();
             return false;
         }
-        return true;
     }
-
-    private void ScrollToBottom()
-    {
-        if (MessageList.Items.Count > 0)
-        {
-            var lastItem = MessageList.Items[MessageList.Items.Count - 1];
-            MessageList.ScrollIntoView(lastItem);
-        }
-    }
-
 
     private async void BtnSend_Click(object sender, RoutedEventArgs e)
     {
+        //Ensure proper initialization of apiClient.
         if (!InitializeApiClient())
-        {
             return;
-        }
+
         //Generate message sent by the user
         var userMsg = new ChatMessage( DateTime.Now, "user", InputBox.Text);
         Messages.Add(userMsg);
         messageManager.SaveMessage(userMsg);
-        ScrollToBottom();
         InputBox.Text = "";
 
         //Generate messages sent by the AI
         var newMsg = new ChatMessage( DateTime.Now, "ai", "");
         Messages.Add(newMsg);
+        ScrollToBottom();
 
-        var messages = new List<Message>
+        //Context of conversations between user and AI.
+        var messageContext = new List<Message>
         {
             new Message(Role.User, userMsg.Content),
         };
-        var chatRequest = new ChatRequest(messages, OpenAI.Models.Model.GPT3_5_Turbo);
+
+        var chatRequest = new ChatRequest(messageContext, OpenAI.Models.Model.GPT3_5_Turbo);
         try
         {
-            await foreach (var result in api.ChatEndpoint.StreamCompletionEnumerableAsync(chatRequest))
+            await foreach (var result in apiClient.ChatEndpoint.StreamCompletionEnumerableAsync(chatRequest))
             {
                 foreach (var choice in result.Choices.Where(choice => choice.Delta?.Content != null))
                 {
@@ -150,15 +130,36 @@ public partial class ChatView : Window
         DragMove();
     }
 
+    private void BtnSetting_Click(object sender, RoutedEventArgs e)
+    {
+        ShowSettingsView();
+    }
+
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         AppConfiger.SetValue("initialWindowHeight", this.Height.ToString());
         AppConfiger.SetValue("initialWindowWidth", this.Width.ToString());
     }
 
-    private void BtnSetting_Click(object sender, RoutedEventArgs e)
+    private void ShowSettingsView()
     {
+        if (IsWindowOpen<SettingsView>())
+            return;
         var settingsView = new SettingsView();
         settingsView.Show();
+    }
+
+    private bool IsWindowOpen<T>() where T : Window
+    {
+        return Application.Current.Windows.OfType<T>().Any();
+    }
+
+    private void ScrollToBottom()
+    {
+        if (MessageList.Items.Count > 0)
+        {
+            var lastItem = MessageList.Items[MessageList.Items.Count - 1];
+            MessageList.ScrollIntoView(lastItem);
+        }
     }
 }

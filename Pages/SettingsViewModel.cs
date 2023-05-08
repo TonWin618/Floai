@@ -18,7 +18,13 @@ public class SettingsViewModel : INotifyPropertyChanged
 
     public SettingsViewModel()
     {
-        Load();
+        ApiKey = AppConfiger.GetValue("apiKey");
+        StartWithWindows = AppConfiger.GetValue<bool>("startWithWindows");
+        MessageSaveDirectory = AppConfiger.GetValue("messageSaveDirectory");
+        if (Enum.TryParse(AppConfiger.GetValue("chatBubbleLayout"), out ChatBubbleLayout bubbleLayout))
+        {
+            BubbleLayout = bubbleLayout;
+        }
     }
 
     private string _apiKey;
@@ -78,16 +84,6 @@ public class SettingsViewModel : INotifyPropertyChanged
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(BubbleLayout)));
                 AppConfiger.SetValue("chatBubbleLayout", value.ToString());
             }
-        }
-    }
-    private void Load()
-    {
-        ApiKey = AppConfiger.GetValue("apiKey");
-        StartWithWindows = AppConfiger.GetValue<bool>("startWithWindows");
-        MessageSaveDirectory = AppConfiger.GetValue("messageSaveDirectory");
-        if (Enum.TryParse(AppConfiger.GetValue("chatBubbleLayout"), out ChatBubbleLayout bubbleLayout))
-        {
-            BubbleLayout = bubbleLayout;
         }
     }
 }
