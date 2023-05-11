@@ -14,16 +14,17 @@ namespace Floai.Pages
 {
     public class ChatViewModel
     {
-        public OpenAIClient apiClient;
-        public ChatMessageManager messageManager;
-        public string InputContent { get; set; }
-        private ChatMessage CurMessageItem { get; set; }
+        private OpenAIClient apiClient;
+        private ChatMessageManager messageManager;
         private ChatTopicManager topicManager;
-        private ChatTopic CurTopicItem { get; set; }
+        public string InputContent { get; set; }
+        public ChatMessage CurMessageItem { get; set; }
+        public ChatTopic CurTopicItem { get; set; }
         public ObservableCollection<ChatMessage> Messages { get; set; }
         public ObservableCollection<ChatTopic> Topics { get; set; }
 
-        public bool isNewTopic = false;
+        private bool isNewTopic = false;
+
         public ChatViewModel()
         {
             Messages = new ObservableCollection<ChatMessage>();
@@ -38,8 +39,6 @@ namespace Floai.Pages
             topicManager = new ChatTopicManager(messageSaveDictionary);
             Topics.Clear();
             topicManager.GetChatTopics().ForEach(Topics.Add);
-            //this.TopicCombo.ItemsSource= Topics;
-            //this.TopicCombo.DisplayMemberPath = "Name";
         }
 
         public void CreateNewTopic(string firstMsg)
@@ -47,28 +46,30 @@ namespace Floai.Pages
             var newTopic = topicManager.CreateChatTopic(firstMsg);
             Topics.Add(newTopic);
             SwitchToLatestTopic();
-            LoadMessages(newTopic);
-            //ScrollToBottom();
+            LoadMessages();
             isNewTopic = false;
+        }
+
+        public void BeforeCreateNewTopic()
+        {
+            Messages.Clear();
+            isNewTopic = true;
         }
 
         private void SwitchToLatestTopic()
         {
             if (Topics.Count > 0)
             {
-                LoadMessages(Topics.Last());
-                //ScrollToBottom();
                 CurTopicItem = Topics.Last();
+                LoadMessages();
             }
         }
 
-        public void LoadMessages(ChatTopic topic)
+        public void LoadMessages()
         {
-            messageManager = new ChatMessageManager(topic.FilePath);
+            messageManager = new ChatMessageManager(CurTopicItem.FilePath);
             Messages.Clear();
             messageManager.LoadMessages().ForEach(Messages.Add);
-            //Messages = new ObservableCollection<ChatMessage>(messagesList);
-            //this.MessageList.ItemsSource = Messages;
         }
 
         public void SetWindowSize(double width, double height)
@@ -107,6 +108,7 @@ namespace Floai.Pages
                 InputContent = ex.Message;
                 return;
             }
+
             //Generate message sent by the user
             var userMsg = new ChatMessage(DateTime.Now, "user", InputContent);
             InputContent = "";

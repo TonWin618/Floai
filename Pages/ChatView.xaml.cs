@@ -85,13 +85,12 @@ public partial class ChatView : Window
 
     private void TopicCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        chatViewModel.LoadMessages((ChatTopic)TopicCombo.SelectedItem);
+        chatViewModel.LoadMessages();
         ScrollToBottom();
     }
 
     private void BtnNewChat_Click(object sender, RoutedEventArgs e)
     {
-        chatViewModel.Messages.Clear();
-        chatViewModel.isNewTopic = true;
+        chatViewModel.BeforeCreateNewTopic();
     }
 }
