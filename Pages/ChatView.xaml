@@ -47,7 +47,7 @@
                  Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,30"
                  ItemTemplateSelector="{StaticResource chatBubbleSelector}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" 
-                 ItemsSource="{Binding Messages}">
+                 ItemsSource="{Binding Messages}" SelectedItem="{Binding CurMessageItem}">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MessageItemStyle}"></Style>
             </ListBox.ItemContainerStyle>
@@ -95,7 +95,7 @@
                       Width="auto" Height="30" Margin="0,5,5,0"
                       SelectionChanged="TopicCombo_SelectionChanged"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"
-                      ItemsSource="{Binding Topics}" DisplayMemberPath="Name"/>
+                      ItemsSource="{Binding Topics}" DisplayMemberPath="Name" SelectedItem="{Binding CurTopicItem}"/>
 
             <Button x:Name="BtnNewChat" Style="{DynamicResource MainButtonStyle}"
                     Width="30" Height="30"  Margin="0,5,0,0" 

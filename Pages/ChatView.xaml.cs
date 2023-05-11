@@ -14,98 +14,44 @@ namespace Floai.Pages;
 
 public partial class ChatView : Window
 {
-    private ChatViewModel chatViewModel = new();
-
-    private ChatMessageManager messageManager;
-    private ChatTopicManager topicManager;
-
+    public ChatViewModel chatViewModel;
     private static FloatView? floatView;
-    private OpenAIClient apiClient;
-
-    private bool isNewTopic = false;
-
-    //Binding ListBox ListSource
-    public ObservableCollection<ChatMessage> Messages { get; set; }
-    public ObservableCollection<ChatTopic> Topics { get; set; }
-
     public ChatView()
     {
         InitializeComponent();
         TransparentClick.Enable(this);
-        Messages = new ObservableCollection<ChatMessage>();
-        Topics = new ObservableCollection<ChatTopic>();
-        this.DataContext= this;
-        LoadTopics();
-        SwitchToLatestTopic();
+        chatViewModel = new ChatViewModel();
+        this.DataContext = chatViewModel;
     }
-
-    private void LoadTopics()
-    {
-        string messageSaveDictionary = chatViewModel.GetMsgSaveDir();
-        topicManager = new ChatTopicManager(messageSaveDictionary);
-        Topics.Clear();
-        topicManager.GetChatTopics().ForEach(Topics.Add);
-        //this.TopicCombo.ItemsSource= Topics;
-        //this.TopicCombo.DisplayMemberPath = "Name";
-    }
-
-    private void LoadMessages(ChatTopic topic)
-    {
-        messageManager = new ChatMessageManager(topic.FilePath);
-        Messages.Clear();
-        messageManager.LoadMessages().ForEach(Messages.Add);
-        //Messages = new ObservableCollection<ChatMessage>(messagesList);
-        //this.MessageList.ItemsSource = Messages;
-    }
-
-    private bool InitializeApiClient()
-    {
-        string? apiKey = chatViewModel.GetApiKey();
-        if (string.IsNullOrEmpty(apiKey))
-        {
-            InputBox.Text = "ApiKey is not configured.";
-            ShowSettingsView();
-            return false;
-        }
-
-        try
-        {
-            apiClient = new(apiKey);
-            return true;
-        }
-        catch(Exception e)
-        {
-            InputBox.Text = "Invalid API key.";
-            ShowSettingsView();
-            return false;
-        }
-    }
-
     private async void BtnSend_Click(object sender, RoutedEventArgs e)
     {
         //Ensure proper initialization of apiClient.
-        if (!InitializeApiClient())
+        if (!chatViewModel.InitializeApiClient())
+        {
+            ShowSettingsView();
             return;
+        }
+            
 
         //Generate message sent by the user
         var userMsg = new ChatMessage( DateTime.Now, "user", InputBox.Text);
-        if (isNewTopic)
+        if (chatViewModel.isNewTopic)
         {
-            CreateNewTopic(userMsg.Content);
+            chatViewModel.CreateNewTopic(userMsg.Content);
         }
-        Messages.Add(userMsg);
-        messageManager.SaveMessage(userMsg);
+        chatViewModel.Messages.Add(userMsg);
+        chatViewModel.messageManager.SaveMessage(userMsg);
         InputBox.Text = "";
 
         //Generate messages sent by the AI
         var newMsg = new ChatMessage( DateTime.Now, "ai", "");
-        Messages.Add(newMsg);
+        chatViewModel.Messages.Add(newMsg);
         ScrollToBottom();
 
         //Context of conversations between user and AI.
         var messageContext = new List<Message> { };
 
-        foreach (var message in Messages)
+        foreach (var message in chatViewModel.Messages)
             messageContext.Add(new Message(message.Sender == "user" ? Role.User : Role.Assistant, message.Content));
 
         messageContext.Add(new Message(Role.User, userMsg.Content));
@@ -113,7 +59,7 @@ public partial class ChatView : Window
         var chatRequest = new ChatRequest(messageContext, OpenAI.Models.Model.GPT3_5_Turbo);
         try
         {
-            await foreach (var result in apiClient.ChatEndpoint.StreamCompletionEnumerableAsync(chatRequest))
+            await foreach (var result in chatViewModel.apiClient.ChatEndpoint.StreamCompletionEnumerableAsync(chatRequest))
             {
                 foreach (var choice in result.Choices.Where(choice => choice.Delta?.Content != null))
                 {
@@ -127,7 +73,7 @@ public partial class ChatView : Window
             newMsg.AppendContent(ex.Message);
             ScrollToBottom();
         }
-        messageManager.SaveMessage(newMsg);
+        chatViewModel.messageManager.SaveMessage(newMsg);
     }
 
     private void BtnClose_Click(object sender, RoutedEventArgs e)
@@ -183,36 +129,17 @@ public partial class ChatView : Window
             MessageList.ScrollIntoView(lastItem);
         }
     }
-
-    private void CreateNewTopic(string firstMsg)
-    {
-        var newTopic = topicManager.CreateChatTopic(firstMsg);
-        Topics.Add(newTopic);
-        SwitchToLatestTopic();
-        LoadMessages(newTopic);
-        ScrollToBottom();
-        isNewTopic = false;
-    }
-
-    private void SwitchToLatestTopic()
-    {
-        if (TopicCombo.Items.Count > 0)
-        {
-            LoadMessages(Topics.Last());
-            ScrollToBottom();
-            TopicCombo.SelectedItem = Topics.Last();
-        }
-    }
+    
 
     private void TopicCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        LoadMessages((ChatTopic)TopicCombo.SelectedItem);
+        chatViewModel.LoadMessages((ChatTopic)TopicCombo.SelectedItem);
         ScrollToBottom();
     }
 
     private void BtnNewChat_Click(object sender, RoutedEventArgs e)
     {
-        MessageList.ItemsSource = null;
-        isNewTopic = true;
+        chatViewModel.Messages.Clear();
+        chatViewModel.isNewTopic = true;
     }
 }
