@@ -22,7 +22,7 @@ public partial class ChatView : Window
 
     //Binding ListBox ListSource
     public ObservableCollection<ChatMessage> Messages { get; set; }
-    public ObservableCollection<string> Topics { get; set; }
+    public ObservableCollection<ChatTopic> Topics { get; set; }
 
     public ChatView()
     {
@@ -40,15 +40,15 @@ public partial class ChatView : Window
     {
         string messageSaveDictionary = AppConfiger.GetValue("messageSaveDirectory");
         topicManager = new ChatTopicManager(messageSaveDictionary);
-        List<string> topicList = topicManager.GetLogNameWithoutExtension();
-        Topics = new ObservableCollection<string>(topicList);
+        List<ChatTopic> topicList = topicManager.GetChatTopics();
+        Topics = new ObservableCollection<ChatTopic>(topicList);
         this.TopicCombo.ItemsSource= Topics;
+        this.TopicCombo.DisplayMemberPath = "Name";
     }
 
-    private void LoadMessages(string fileNameWithOutExtension)
+    private void LoadMessages(ChatTopic topic)
     {
-        string messageSaveDictionary = AppConfiger.GetValue("messageSaveDirectory");
-        messageManager = new ChatMessageManager($"{messageSaveDictionary}/{fileNameWithOutExtension}.{topicManager.fileExtension}");
+        messageManager = new ChatMessageManager(topic.FilePath);
         List<ChatMessage> messagesList = messageManager.LoadMessages();
         Messages = new ObservableCollection<ChatMessage>(messagesList);
         this.MessageList.ItemsSource = Messages;
@@ -180,6 +180,6 @@ public partial class ChatView : Window
 
     private void TopicCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        LoadMessages((string)TopicCombo.SelectedItem);
+        LoadMessages((ChatTopic)TopicCombo.SelectedItem);
     }
 }
