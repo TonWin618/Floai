@@ -17,10 +17,10 @@
     </Window.Resources>
 
     <Grid x:Name="canvas" >
-        <Border x:Name="border" CornerRadius="5" Background="{DynamicResource btn_main_bg_brush}"
+        <Border x:Name="FloatingBorder" CornerRadius="5" Background="{DynamicResource btn_main_bg_brush}"
                 HorizontalAlignment="Center" VerticalAlignment="Center"
-                MouseLeftButtonDown="Border_MouseLeftButtonDown"
-                MouseLeave="border_MouseLeave" MouseEnter="border_MouseEnter">
+                MouseLeftButtonDown="FloatingBorder_MouseLeftButtonDown"
+                MouseLeave="FloatingBorder_MouseLeave" MouseEnter="FloatingBorder_MouseEnter">
             <Label Content="@Floai" FontSize="16" Foreground="{DynamicResource btn_main_fg_brush}" Width="80" 
                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         </Border>

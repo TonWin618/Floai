@@ -9,6 +9,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Floai.Utils;
 
 namespace Floai.Pages;
 
@@ -143,15 +144,10 @@ public partial class ChatView : Window
 
     private void ShowSettingsView()
     {
-        if (IsWindowOpen<SettingsView>())
+        if (WindowHelper.IsWindowOpen<SettingsView>())
             return;
         var settingsView = new SettingsView();
         settingsView.Show();
-    }
-
-    private bool IsWindowOpen<T>() where T : Window
-    {
-        return Application.Current.Windows.OfType<T>().Any();
     }
 
     private void ScrollToBottom()

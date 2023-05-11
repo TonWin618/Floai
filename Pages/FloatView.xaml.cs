@@ -1,10 +1,7 @@
 ﻿using Floai.Utils;
-using System;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace Floai.Pages
 {
@@ -20,47 +17,57 @@ namespace Floai.Pages
             this.Top = window_y;
         }
 
-        private void ShowWindow()
+        private void SwitchToChatWindow()
         {
             if (chatView == null)
                 chatView = new ChatView();
-            double window_height = AppConfiger.GetValue<double>("initialWindowHeight");
-            double window_width = AppConfiger.GetValue<double>("initialWindowWidth");
 
-            chatView.Left = this.Left - window_width + 80;
-            chatView.Top = this.Top - window_height + 30;
-            chatView.Width = window_width;
-            chatView.Height = window_height;
-            chatView.Closed += (s, evenArgs) => chatView = null;
+            double windowHeight = AppConfiger.GetValue<double>("initialWindowHeight");
+            double windowWidth = AppConfiger.GetValue<double>("initialWindowWidth");
 
-            AppConfiger.SetValue("initialPositionX", this.Left.ToString());
-            AppConfiger.SetValue("initialPositionY", this.Top.ToString());
+            chatView.Left = this.Left - windowWidth + this.Width;
+            chatView.Top = this.Top - windowHeight + this.Height;
+            chatView.Width = windowWidth;
+            chatView.Height = windowHeight;
 
             this.Visibility = Visibility.Collapsed;
             chatView.Visibility = Visibility.Visible;
         }
 
-        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void FloatingBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            // Indicate that the event has been handled
             e.Handled= true;
-            if(e.LeftButton== MouseButtonState.Pressed) 
+
+            Point beforeDragMovePosition = new Point(this.Left, this.Top);
+            if (e.LeftButton== MouseButtonState.Pressed)
                 this.DragMove();
-            if(e.LeftButton== MouseButtonState.Released)
-                ShowWindow();
+            Point afterDragMovePosition = new Point(this.Left, this.Top);
+
+            // If the window position remains the same, it means the user wants to perform a click operation
+            if (beforeDragMovePosition == afterDragMovePosition)
+            {
+                SwitchToChatWindow();
+            }
+            else
+            {
+                AppConfiger.SetValue("initialPositionX", this.Left.ToString());
+                AppConfiger.SetValue("initialPositionY", this.Top.ToString());
+            }
         }
 
-        private void border_MouseLeave(object sender, MouseEventArgs e)
+        private void FloatingBorder_MouseLeave(object sender, MouseEventArgs e)
         {
             var brush = FindResource("btn_main_bg_brush") as SolidColorBrush;
             if (brush != null)
-                border.Background = brush;
+                FloatingBorder.Background = brush;
         }
 
-        private void border_MouseEnter(object sender, MouseEventArgs e)
+        private void FloatingBorder_MouseEnter(object sender, MouseEventArgs e)
         {
             var brush = FindResource("btn_main_hover_bg_brush") as SolidColorBrush;
             if (brush != null)
-                border.Background = brush;
+                FloatingBorder.Background = brush;
         }
     }
 }
