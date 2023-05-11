@@ -40,15 +40,15 @@ public partial class ChatView : Window
     {
         string messageSaveDictionary = AppConfiger.GetValue("messageSaveDirectory");
         topicManager = new ChatTopicManager(messageSaveDictionary);
-        List<string> topicList = topicManager.GetMessageLogFileNames();
+        List<string> topicList = topicManager.GetLogNameWithoutExtension();
         Topics = new ObservableCollection<string>(topicList);
         this.TopicCombo.ItemsSource= Topics;
     }
 
-    private void LoadMessages(string msgFileName)
+    private void LoadMessages(string fileNameWithOutExtension)
     {
         string messageSaveDictionary = AppConfiger.GetValue("messageSaveDirectory");
-        messageManager = new ChatMessageManager($"{messageSaveDictionary}/{msgFileName}");
+        messageManager = new ChatMessageManager($"{messageSaveDictionary}/{fileNameWithOutExtension}.{topicManager.fileExtension}");
         List<ChatMessage> messagesList = messageManager.LoadMessages();
         Messages = new ObservableCollection<ChatMessage>(messagesList);
         this.MessageList.ItemsSource = Messages;
