@@ -25,55 +25,19 @@ public partial class ChatView : Window
     }
     private async void BtnSend_Click(object sender, RoutedEventArgs e)
     {
-        //Ensure proper initialization of apiClient.
-        if (!chatViewModel.InitializeApiClient())
-        {
-            ShowSettingsView();
-            return;
-        }
-            
-
-        //Generate message sent by the user
-        var userMsg = new ChatMessage( DateTime.Now, "user", InputBox.Text);
-        if (chatViewModel.isNewTopic)
-        {
-            chatViewModel.CreateNewTopic(userMsg.Content);
-        }
-        chatViewModel.Messages.Add(userMsg);
-        chatViewModel.messageManager.SaveMessage(userMsg);
-        InputBox.Text = "";
-
-        //Generate messages sent by the AI
-        var newMsg = new ChatMessage( DateTime.Now, "ai", "");
-        chatViewModel.Messages.Add(newMsg);
-        ScrollToBottom();
-
-        //Context of conversations between user and AI.
-        var messageContext = new List<Message> { };
-
-        foreach (var message in chatViewModel.Messages)
-            messageContext.Add(new Message(message.Sender == "user" ? Role.User : Role.Assistant, message.Content));
-
-        messageContext.Add(new Message(Role.User, userMsg.Content));
-
-        var chatRequest = new ChatRequest(messageContext, OpenAI.Models.Model.GPT3_5_Turbo);
         try
         {
-            await foreach (var result in chatViewModel.apiClient.ChatEndpoint.StreamCompletionEnumerableAsync(chatRequest))
-            {
-                foreach (var choice in result.Choices.Where(choice => choice.Delta?.Content != null))
-                {
-                    newMsg.AppendContent(choice.Delta.Content);
-                    ScrollToBottom();
-                }
-            }
+            chatViewModel.InitializeApiClient();
         }
         catch (Exception ex)
         {
-            newMsg.AppendContent(ex.Message);
-            ScrollToBottom();
+            InputBox.Text = ex.Message;
+            ShowSettingsView();
+            return;
         }
-        chatViewModel.messageManager.SaveMessage(newMsg);
+
+        chatViewModel.SendMessage(InputBox.Text);
+        InputBox.Text = "";
     }
 
     private void BtnClose_Click(object sender, RoutedEventArgs e)
