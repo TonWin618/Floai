@@ -38,7 +38,7 @@ public class ChatTopicManager
         {
 
         }
-        return new ChatTopic(dateTime, fileName, filePath);
+        return new ChatTopic(dateTime, topicName, filePath);
     }
 
     public ChatTopic ParseFileName(string fileName)

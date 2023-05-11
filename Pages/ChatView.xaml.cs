@@ -20,6 +20,8 @@ public partial class ChatView : Window
     private static FloatView? floatView;
     private OpenAIClient apiClient;
 
+    private bool isNewTopic = false;
+
     //Binding ListBox ListSource
     public ObservableCollection<ChatMessage> Messages { get; set; }
     public ObservableCollection<ChatTopic> Topics { get; set; }
@@ -29,11 +31,7 @@ public partial class ChatView : Window
         InitializeComponent();
         TransparentClick.Enable(this);
         LoadTopics();
-        if(Topics!.Count > 0 )
-        {
-            LoadMessages(Topics[0]);
-            TopicCombo.SelectedItem = Topics[0];
-        }
+        SwitchToLatestTopic();
     }
 
     private void LoadTopics()
@@ -86,6 +84,10 @@ public partial class ChatView : Window
 
         //Generate message sent by the user
         var userMsg = new ChatMessage( DateTime.Now, "user", InputBox.Text);
+        if (isNewTopic)
+        {
+            CreateNewTopic(userMsg.Content);
+        }
         Messages.Add(userMsg);
         messageManager.SaveMessage(userMsg);
         InputBox.Text = "";
@@ -178,8 +180,32 @@ public partial class ChatView : Window
         }
     }
 
+    private void CreateNewTopic(string firstMsg)
+    {
+        var newTopic = topicManager.CreateChatTopic(firstMsg);
+        Topics.Add(newTopic);
+        SwitchToLatestTopic();
+        LoadMessages(newTopic);
+        isNewTopic = false;
+    }
+
+    private void SwitchToLatestTopic()
+    {
+        if (Topics!.Count > 0)
+        {
+            LoadMessages(Topics.Last());
+            TopicCombo.SelectedItem = Topics.Last();
+        }
+    }
+
     private void TopicCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         LoadMessages((ChatTopic)TopicCombo.SelectedItem);
+    }
+
+    private void BtnNewChat_Click(object sender, RoutedEventArgs e)
+    {
+        MessageList.ItemsSource = null;
+        isNewTopic = true;
     }
 }

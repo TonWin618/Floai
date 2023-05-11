@@ -24,11 +24,13 @@
                 <ResourceDictionary Source="../Styles/Controls.MessageList.xaml"/>
                 <ResourceDictionary Source="../Styles/Controls.MessageItem.xaml"/>
                 <ResourceDictionary Source="../Styles/Controls.ScrollViewer.xaml"/>
-                
+
                 <ResourceDictionary Source="../Resources/Icons/AimDrawing.xaml"/>
                 <ResourceDictionary Source="../Resources/Icons/CloseDrawing.xaml"/>
                 <ResourceDictionary Source="../Resources/Icons/SendDrawing.xaml"/>
                 <ResourceDictionary Source="../Resources/Icons/SettingDrawing.xaml"/>
+                <ResourceDictionary Source="../Resources/Icons/AddDrawing.xaml"/>
+
             </ResourceDictionary.MergedDictionaries>
             <local1:ChatBubbleSelector x:Key="chatBubbleSelector"/>
         </ResourceDictionary>
@@ -67,6 +69,7 @@
                 <ColumnDefinition Width="30" />
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="30" />
                 <ColumnDefinition Width="90" />
                 <ColumnDefinition Width="30" />
             </Grid.ColumnDefinitions>
@@ -88,9 +91,23 @@
                 </Button.Content>
             </Button>
 
+            <ComboBox x:Name="TopicCombo" Style="{DynamicResource ComboBoxStyle}" Grid.Column="2" VerticalAlignment="Top" 
+                      Width="auto" Height="30" Margin="0,5,5,0"
+                      SelectionChanged="TopicCombo_SelectionChanged"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+
+            <Button x:Name="BtnNewChat" Style="{DynamicResource MainButtonStyle}"
+                    Width="30" Height="30"  Margin="0,5,0,0" 
+                    HorizontalAlignment="Center"  HorizontalContentAlignment="Center" VerticalAlignment="Top" Grid.Column="3"
+                    Click="BtnNewChat_Click">
+                <Button.Content>
+                    <Image Source="{StaticResource addDrawingImage}" Width="20"/>
+                </Button.Content>
+            </Button>
+
             <Button x:Name="BtnSend" Style="{DynamicResource MainButtonStyle}"
                     Width="80" Height="30" Margin="0,5,0,0" 
-                    HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Column="3"
+                    HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Column="4"
                     Click="BtnSend_Click" >
                 <WrapPanel>
                     <Image Source="{StaticResource sendDrawingImage}" Width="22"/>
@@ -100,17 +117,13 @@
 
             <Button x:Name="BtnClose" Style="{DynamicResource SecondaryButtonStyle}"
                     Width="30" Height="30"  Margin="0,5,0,0"
-                    HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Top"  Grid.Column="4" 
+                    HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Top"  Grid.Column="5" 
                     IsCancel="True" Click="BtnClose_Click" >
                 <Button.Content>
                     <Image Source="{StaticResource closeDrawingImage}" Width="24"/>
                 </Button.Content>
             </Button>
-            <ComboBox x:Name="TopicCombo" Style="{DynamicResource ComboBoxStyle}" 
-                      Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" 
-                      Width="90" Height="30" Margin="0,5,0,0"
-                      SelectionChanged="TopicCombo_SelectionChanged">
-            </ComboBox>
+
         </Grid>
     </Grid>
 </Window>
