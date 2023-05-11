@@ -9,7 +9,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Floai.Utils;
 
 namespace Floai.Pages;
 
@@ -79,10 +78,12 @@ public partial class ChatView : Window
         ScrollToBottom();
 
         //Context of conversations between user and AI.
-        var messageContext = new List<Message>
-        {
-            new Message(Role.User, userMsg.Content),
-        };
+        var messageContext = new List<Message> { };
+
+        foreach (var message in Messages)
+            messageContext.Add(new Message(message.Sender == "user" ? Role.User : Role.Assistant, message.Content));
+
+        messageContext.Add(new Message(Role.User, userMsg.Content));
 
         var chatRequest = new ChatRequest(messageContext, OpenAI.Models.Model.GPT3_5_Turbo);
         try
