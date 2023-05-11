@@ -19,10 +19,12 @@
                 <ResourceDictionary Source="../Styles/Themes/Light.xaml"/>
                 <ResourceDictionary Source="../Styles/Controls.SecondaryButton.xaml"/>
                 <ResourceDictionary Source="../Styles/Controls.MainButton.xaml"/>
+                <ResourceDictionary Source="../Styles/Controls.ComboBox.xaml"/>
                 <ResourceDictionary Source="../Styles/Controls.InputBox.xaml"/>
                 <ResourceDictionary Source="../Styles/Controls.MessageList.xaml"/>
                 <ResourceDictionary Source="../Styles/Controls.MessageItem.xaml"/>
                 <ResourceDictionary Source="../Styles/Controls.ScrollViewer.xaml"/>
+                
                 <ResourceDictionary Source="../Resources/Icons/AimDrawing.xaml"/>
                 <ResourceDictionary Source="../Resources/Icons/CloseDrawing.xaml"/>
                 <ResourceDictionary Source="../Resources/Icons/SendDrawing.xaml"/>
@@ -41,7 +43,7 @@
 
         <ListBox x:Name="MessageList" Style="{DynamicResource MessageListStyle}"  
                  Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,30"
-                 ItemTemplateSelector="{StaticResource chatBubbleSelector}" ItemsSource="{Binding Messages}"
+                 ItemTemplateSelector="{StaticResource chatBubbleSelector}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" 
                  >
             <ListBox.ItemContainerStyle>
@@ -104,6 +106,11 @@
                     <Image Source="{StaticResource closeDrawingImage}" Width="24"/>
                 </Button.Content>
             </Button>
+            <ComboBox x:Name="TopicCombo" Style="{DynamicResource ComboBoxStyle}" 
+                      Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                      Width="90" Height="30" Margin="0,5,0,0"
+                      SelectionChanged="TopicCombo_SelectionChanged">
+            </ComboBox>
         </Grid>
     </Grid>
 </Window>

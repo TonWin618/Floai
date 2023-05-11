@@ -15,26 +15,44 @@ namespace Floai.Pages;
 public partial class ChatView : Window
 {
     private ChatMessageManager messageManager;
+    private ChatTopicManager topicManager;
+
     private static FloatView? floatView;
     private OpenAIClient apiClient;
 
     //Binding ListBox ListSource
     public ObservableCollection<ChatMessage> Messages { get; set; }
+    public ObservableCollection<string> Topics { get; set; }
 
     public ChatView()
     {
         InitializeComponent();
         TransparentClick.Enable(this);
-        LoadMessages("/msg.txt");
+        LoadTopics();
+        if(Topics!.Count > 0 )
+        {
+            LoadMessages(Topics[0]);
+            TopicCombo.SelectedItem = Topics[0];
+        }
+    }
+
+    private void LoadTopics()
+    {
+        string messageSaveDictionary = AppConfiger.GetValue("messageSaveDirectory");
+        topicManager = new ChatTopicManager(messageSaveDictionary);
+        List<string> topicList = topicManager.GetMessageLogFileNames();
+        Topics = new ObservableCollection<string>(topicList);
+        this.TopicCombo.ItemsSource= Topics;
     }
 
     private void LoadMessages(string msgFileName)
     {
         string messageSaveDictionary = AppConfiger.GetValue("messageSaveDirectory");
-        messageManager = new ChatMessageManager(messageSaveDictionary + msgFileName);
+        messageManager = new ChatMessageManager($"{messageSaveDictionary}/{msgFileName}");
         List<ChatMessage> messagesList = messageManager.LoadMessages();
         Messages = new ObservableCollection<ChatMessage>(messagesList);
         this.MessageList.ItemsSource = Messages;
+        ScrollToBottom();
     }
 
     private bool InitializeApiClient()
@@ -158,5 +176,10 @@ public partial class ChatView : Window
             var lastItem = MessageList.Items[MessageList.Items.Count - 1];
             MessageList.ScrollIntoView(lastItem);
         }
+    }
+
+    private void TopicCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        LoadMessages((string)TopicCombo.SelectedItem);
     }
 }
