@@ -32,6 +32,9 @@ public partial class ChatView : Window
     {
         InitializeComponent();
         TransparentClick.Enable(this);
+        Messages = new ObservableCollection<ChatMessage>();
+        Topics = new ObservableCollection<ChatTopic>();
+        this.DataContext= this;
         LoadTopics();
         SwitchToLatestTopic();
     }
@@ -40,19 +43,19 @@ public partial class ChatView : Window
     {
         string messageSaveDictionary = chatViewModel.GetMsgSaveDir();
         topicManager = new ChatTopicManager(messageSaveDictionary);
-        List<ChatTopic> topicList = topicManager.GetChatTopics();
-        Topics = new ObservableCollection<ChatTopic>(topicList);
-        this.TopicCombo.ItemsSource= Topics;
-        this.TopicCombo.DisplayMemberPath = "Name";
+        Topics.Clear();
+        topicManager.GetChatTopics().ForEach(Topics.Add);
+        //this.TopicCombo.ItemsSource= Topics;
+        //this.TopicCombo.DisplayMemberPath = "Name";
     }
 
     private void LoadMessages(ChatTopic topic)
     {
         messageManager = new ChatMessageManager(topic.FilePath);
-        List<ChatMessage> messagesList = messageManager.LoadMessages();
-        Messages = new ObservableCollection<ChatMessage>(messagesList);
-        this.MessageList.ItemsSource = Messages;
-        ScrollToBottom();
+        Messages.Clear();
+        messageManager.LoadMessages().ForEach(Messages.Add);
+        //Messages = new ObservableCollection<ChatMessage>(messagesList);
+        //this.MessageList.ItemsSource = Messages;
     }
 
     private bool InitializeApiClient()
@@ -187,14 +190,16 @@ public partial class ChatView : Window
         Topics.Add(newTopic);
         SwitchToLatestTopic();
         LoadMessages(newTopic);
+        ScrollToBottom();
         isNewTopic = false;
     }
 
     private void SwitchToLatestTopic()
     {
-        if (Topics!.Count > 0)
+        if (TopicCombo.Items.Count > 0)
         {
             LoadMessages(Topics.Last());
+            ScrollToBottom();
             TopicCombo.SelectedItem = Topics.Last();
         }
     }
@@ -202,6 +207,7 @@ public partial class ChatView : Window
     private void TopicCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         LoadMessages((ChatTopic)TopicCombo.SelectedItem);
+        ScrollToBottom();
     }
 
     private void BtnNewChat_Click(object sender, RoutedEventArgs e)
