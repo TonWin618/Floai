@@ -14,6 +14,8 @@ namespace Floai.Pages;
 
 public partial class ChatView : Window
 {
+    private ChatViewModel chatViewModel = new();
+
     private ChatMessageManager messageManager;
     private ChatTopicManager topicManager;
 
@@ -36,7 +38,7 @@ public partial class ChatView : Window
 
     private void LoadTopics()
     {
-        string messageSaveDictionary = AppConfiger.GetValue("messageSaveDirectory");
+        string messageSaveDictionary = chatViewModel.GetMsgSaveDir();
         topicManager = new ChatTopicManager(messageSaveDictionary);
         List<ChatTopic> topicList = topicManager.GetChatTopics();
         Topics = new ObservableCollection<ChatTopic>(topicList);
@@ -55,7 +57,7 @@ public partial class ChatView : Window
 
     private bool InitializeApiClient()
     {
-        string? apiKey = AppConfiger.GetValue("apiKey");
+        string? apiKey = chatViewModel.GetApiKey();
         if (string.IsNullOrEmpty(apiKey))
         {
             InputBox.Text = "ApiKey is not configured.";
@@ -159,8 +161,7 @@ public partial class ChatView : Window
 
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        AppConfiger.SetValue("initialWindowHeight", this.Height.ToString());
-        AppConfiger.SetValue("initialWindowWidth", this.Width.ToString());
+        chatViewModel.SetWindowSize(this.Width, this.Height);
     }
 
     private void ShowSettingsView()
