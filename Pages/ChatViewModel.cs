@@ -20,13 +20,15 @@ namespace Floai.Pages
         public string InputContent { get; set; }
         public ChatMessage CurMessageItem { get; set; }
         public ChatTopic CurTopicItem { get; set; }
+        public Action ScrollToBottom;//temp
         public ObservableCollection<ChatMessage> Messages { get; set; }
         public ObservableCollection<ChatTopic> Topics { get; set; }
 
         private bool isNewTopic = false;
 
-        public ChatViewModel()
+        public ChatViewModel(Action ScrollToBottom)
         {
+            this.ScrollToBottom += ScrollToBottom;
             Messages = new ObservableCollection<ChatMessage>();
             Topics = new ObservableCollection<ChatTopic>();
             LoadTopics();
@@ -70,6 +72,7 @@ namespace Floai.Pages
             messageManager = new ChatMessageManager(CurTopicItem.FilePath);
             Messages.Clear();
             messageManager.LoadMessages().ForEach(Messages.Add);
+            ScrollToBottom();//temp
         }
 
         public void SetWindowSize(double width, double height)
@@ -117,11 +120,13 @@ namespace Floai.Pages
                 CreateNewTopic(userMsg.Content);
             }
             Messages.Add(userMsg);
+            ScrollToBottom();//temp
             messageManager.SaveMessage(userMsg);
 
             //Generate messages sent by the AI
             var newMsg = new ChatMessage(DateTime.Now, "ai", "");
             Messages.Add(newMsg);
+            ScrollToBottom();//temp
 
             //Context of conversations between user and AI.
             var messageContext = new List<Message> { };
@@ -139,12 +144,14 @@ namespace Floai.Pages
                     foreach (var choice in result.Choices.Where(choice => choice.Delta?.Content != null))
                     {
                         newMsg.AppendContent(choice.Delta.Content);
+                        ScrollToBottom();//temp
                     }
                 }
             }
             catch (Exception ex)
             {
                 newMsg.AppendContent(ex.Message);
+                ScrollToBottom();//temp
             }
             messageManager.SaveMessage(newMsg);
         }

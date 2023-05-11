@@ -20,7 +20,7 @@ public partial class ChatView : Window
     {
         InitializeComponent();
         TransparentClick.Enable(this);
-        chatViewModel = new ChatViewModel();
+        chatViewModel = new ChatViewModel(this.ScrollToBottom);
         this.DataContext = chatViewModel;
     }
     private async void BtnSend_Click(object sender, RoutedEventArgs e)
@@ -81,8 +81,6 @@ public partial class ChatView : Window
             MessageList.ScrollIntoView(lastItem);
         }
     }
-    
-
     private void TopicCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         chatViewModel.LoadMessages();
