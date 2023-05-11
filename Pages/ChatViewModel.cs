@@ -16,6 +16,7 @@ namespace Floai.Pages
     {
         public OpenAIClient apiClient;
         public ChatMessageManager messageManager;
+        public string InputContent { get; set; }
         private ChatMessage CurMessageItem { get; set; }
         private ChatTopicManager topicManager;
         private ChatTopic CurTopicItem { get; set; }
@@ -95,10 +96,20 @@ namespace Floai.Pages
             apiClient = new(apiKey);
         }
 
-        public async void SendMessage(string content)
+        public async void SendMessage()
         {
+            try
+            {
+                InitializeApiClient();
+            }
+            catch (Exception ex)
+            {
+                InputContent = ex.Message;
+                return;
+            }
             //Generate message sent by the user
-            var userMsg = new ChatMessage(DateTime.Now, "user", content);
+            var userMsg = new ChatMessage(DateTime.Now, "user", InputContent);
+            InputContent = "";
             if (isNewTopic)
             {
                 CreateNewTopic(userMsg.Content);

@@ -60,7 +60,7 @@
                      TextWrapping="Wrap" AcceptsReturn="True"
                      VerticalContentAlignment="Center"
                      ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                     >
+                     Text="{Binding InputContent}">
             </TextBox>
         </Grid>
 

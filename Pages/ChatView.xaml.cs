@@ -25,19 +25,7 @@ public partial class ChatView : Window
     }
     private async void BtnSend_Click(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            chatViewModel.InitializeApiClient();
-        }
-        catch (Exception ex)
-        {
-            InputBox.Text = ex.Message;
-            ShowSettingsView();
-            return;
-        }
-
-        chatViewModel.SendMessage(InputBox.Text);
-        InputBox.Text = "";
+        chatViewModel.SendMessage();
     }
 
     private void BtnClose_Click(object sender, RoutedEventArgs e)
