@@ -34,8 +34,33 @@ namespace Floai.Pages
         public ObservableCollection<ChatMessage> Messages { get; set; }
         public ObservableCollection<ChatTopic> Topics { get; set; }
 
-        public ChatMessage CurMessageItem { get; set; }
-        public ChatTopic CurTopicItem { get; set; }
+        private ChatMessage selectedMessageItem;
+        public ChatMessage SelectedMessageItem
+        {
+            get
+            {
+                return selectedMessageItem;
+            }
+            set
+            {
+                selectedMessageItem = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(SelectedMessageItem)));
+            }
+        }
+        private ChatTopic selectedTopicItem;
+        public ChatTopic SelectedTopicItem
+        {
+            get
+            {
+                return selectedTopicItem;
+            }
+            set
+            {
+                selectedTopicItem = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(SelectedTopicItem)));
+            }
+        }
+
         private bool isNewTopic = false;
         public ChatViewModel(Action ScrollToBottom)
         {
@@ -64,7 +89,7 @@ namespace Floai.Pages
             var newTopic = topicManager.CreateChatTopic(firstMsg);
             Topics.Add(newTopic);
             SwitchToLatestTopic();
-            CurTopicItem = newTopic;
+            SelectedTopicItem = newTopic;
             isNewTopic = false;
         }
 
@@ -78,14 +103,14 @@ namespace Floai.Pages
         {
             if (Topics.Count > 0)
             {
-                CurTopicItem = Topics.Last();
+                SelectedTopicItem = Topics.Last();
                 LoadMessages();
             }
         }
 
         public void LoadMessages()
         {
-            messageManager = new ChatMessageManager(CurTopicItem.FilePath);
+            messageManager = new ChatMessageManager(SelectedTopicItem.FilePath);
             Messages.Clear();
             messageManager.LoadMessages().ForEach(Messages.Add);
             ScrollToBottom();//temp
