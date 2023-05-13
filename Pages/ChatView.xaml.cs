@@ -67,7 +67,7 @@ public partial class ChatView : Window
 
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        chatViewModel.SetWindowSize(this.Width, this.Height);
+        chatViewModel.SaveWindowSize(this.Width, this.Height);
     }
 
     private void ShowSettingsView()

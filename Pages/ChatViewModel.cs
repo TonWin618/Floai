@@ -8,13 +8,13 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 
 namespace Floai.Pages
 {
     public class ChatViewModel: INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged = delegate { };
+        public Action ScrollToBottom;//temp
 
         private OpenAIClient apiClient;
         private ChatMessageManager messageManager;
@@ -30,14 +30,13 @@ namespace Floai.Pages
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(InputContent)));
             }
         }
+
         public ObservableCollection<ChatMessage> Messages { get; set; }
         public ObservableCollection<ChatTopic> Topics { get; set; }
 
         public ChatMessage CurMessageItem { get; set; }
         public ChatTopic CurTopicItem { get; set; }
-        public Action ScrollToBottom;//temp
         private bool isNewTopic = false;
-
         public ChatViewModel(Action ScrollToBottom)
         {
             this.ScrollToBottom += ScrollToBottom;
@@ -55,6 +54,7 @@ namespace Floai.Pages
             topicManager.GetChatTopics().ForEach(Topics.Add);
         }
 
+        //To create a new topic, the first message needs to name the topic.
         public void CreateNewTopic(string firstMsg)
         {
             var newTopic = topicManager.CreateChatTopic(firstMsg);
@@ -87,7 +87,7 @@ namespace Floai.Pages
             ScrollToBottom();//temp
         }
 
-        public void SetWindowSize(double width, double height)
+        public void SaveWindowSize(double width, double height)
         {
             AppConfiger.SetValue("initialWindowHeight", width.ToString());
             AppConfiger.SetValue("initialWindowWidth", height.ToString());
@@ -117,10 +117,9 @@ namespace Floai.Pages
             messageManager.SaveMessage(userMsg);
 
             //Context of conversations between user and AI.
-            var messageContext = new List<Message> { };
-
-            foreach (var message in Messages)
-                messageContext.Add(new Message(message.Sender == "user" ? Role.User : Role.Assistant, message.Content));
+            var messageContext = Messages.Select(
+                msg => new Message(msg.Sender=="user"?Role.User:Role.Assistant,msg.Content))
+                .ToList();
 
             messageContext.Add(new Message(Role.User, userMsg.Content));
 
