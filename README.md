@@ -5,13 +5,13 @@ Chat with AI through a transparent floating window.
 
 ## Features
 
-- Transparent background & Floating button: It can assist you in your work without interrupting your workflow.
+- **Transparent background & Floating button**: It can assist you in your work without interrupting your workflow.
 
-- Word-by-word display: The replies are displayed word-by-word, similar to how it's shown on the ChatGPT website.
+- **Word-by-word display**: The replies are displayed word-by-word, similar to how it's shown on the ChatGPT website.
 
-- Tray icon: The application won't occupy your taskbar when minimized, as it is represented by a tray icon.
+- **Tray icon**: The application won't occupy your taskbar when minimized, as it is represented by a tray icon.
 
-- Save message records in TXT format: The application can save the conversation history in TXT format, making it easier for you to review, modify, and perform other operations.
+- **Save message records in TXT format**: The application can save the conversation history in TXT format, making it easier for you to review, modify, and perform other operations.
 
 ## Releases
  | Version | Release date | Download                                                               |
