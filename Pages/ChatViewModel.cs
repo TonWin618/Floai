@@ -88,9 +88,9 @@ namespace Floai.Pages
         }
         public (double,double) ReadWindowSize()
         {
-            double windowHeight = AppConfiger.GetValue<double>("initialWindowHeight");
             double windowWidth = AppConfiger.GetValue<double>("initialWindowWidth");
-            return (windowHeight, windowWidth);
+            double windowHeight = AppConfiger.GetValue<double>("initialWindowHeight");
+            return (windowWidth, windowHeight);
         }
 
         public void WriteWindowSize(double width, double height)

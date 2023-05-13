@@ -12,14 +12,14 @@ public class FloatViewModel
 {
     public (double,double) ReadWindowPostion()
     {
-        double window_x = AppConfiger.GetValue<double>("initialPositionX");
-        double window_y = AppConfiger.GetValue<double>("initialPositionY");
-        return (window_x,window_y);
+        double positionX = AppConfiger.GetValue<double>("initialPositionX");
+        double positionY = AppConfiger.GetValue<double>("initialPositionY");
+        return (positionX, positionY);
     }
 
-    public void WriteWindowPostion(double window_x,double window_y)
+    public void WriteWindowPostion(double positionX, double positionY)
     {
-        AppConfiger.SetValue("initialPositionX", window_x.ToString());
-        AppConfiger.SetValue("initialPositionY", window_y.ToString());
+        AppConfiger.SetValue("initialPositionX", positionX.ToString());
+        AppConfiger.SetValue("initialPositionY", positionY.ToString());
     }
 }
