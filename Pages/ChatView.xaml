@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local1="clr-namespace:Floai.Utils"
         mc:Ignorable="d"
-        Title="Floai" Height="600" Width="300"
+        Title="Floai" Height="500" Width="300"
         WindowStyle="None" AllowsTransparency="True" Background="{DynamicResource window_bg_brush}" Topmost="True"
         PreviewKeyDown="Window_PreviewKeyDown" SizeChanged="Window_SizeChanged">
 

@@ -12,9 +12,10 @@ public partial class ChatView : Window
     public ChatView()
     {
         InitializeComponent();
-        TransparentClick.Enable(this);
         chatViewModel = new ChatViewModel(this.ScrollToBottom);
         this.DataContext = chatViewModel;
+        (this.Width, this.Height) = chatViewModel.ReadWindowSize();
+        TransparentClick.Enable(this);
     }
 
     private void BtnDrag_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -67,7 +68,7 @@ public partial class ChatView : Window
 
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        chatViewModel.SaveWindowSize(this.Width, this.Height);
+        chatViewModel.WriteWindowSize(this.Width, this.Height);
     }
 
     private void ShowSettingsView()

@@ -86,8 +86,14 @@ namespace Floai.Pages
             messageManager.LoadMessages().ForEach(Messages.Add);
             ScrollToBottom();//temp
         }
+        public (double,double) ReadWindowSize()
+        {
+            double windowHeight = AppConfiger.GetValue<double>("initialWindowHeight");
+            double windowWidth = AppConfiger.GetValue<double>("initialWindowWidth");
+            return (windowHeight, windowWidth);
+        }
 
-        public void SaveWindowSize(double width, double height)
+        public void WriteWindowSize(double width, double height)
         {
             AppConfiger.SetValue("initialWindowHeight", width.ToString());
             AppConfiger.SetValue("initialWindowWidth", height.ToString());

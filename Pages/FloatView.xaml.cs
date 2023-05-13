@@ -7,14 +7,16 @@ namespace Floai.Pages
 {
     public partial class FloatView : Window
     {
+        FloatViewModel viewModel;
         static ChatView? chatView;
+        SolidColorBrush? borderDefaultBrush;
+        SolidColorBrush? borderHoverbrush;
         public FloatView()
         {
             InitializeComponent();
-            double window_x = AppConfiger.GetValue<double>("initialPositionX");
-            double window_y = AppConfiger.GetValue<double>("initialPositionY");
-            this.Left = window_x;
-            this.Top = window_y;
+            viewModel = new FloatViewModel();
+            (this.Left, this.Top) = viewModel.ReadWindowPostion();
+            LoadResources();
         }
 
         private void SwitchToChatWindow()
@@ -22,13 +24,8 @@ namespace Floai.Pages
             if (chatView == null)
                 chatView = new ChatView();
 
-            double windowHeight = AppConfiger.GetValue<double>("initialWindowHeight");
-            double windowWidth = AppConfiger.GetValue<double>("initialWindowWidth");
-
-            chatView.Left = this.Left - windowWidth + this.Width;
-            chatView.Top = this.Top - windowHeight + this.Height;
-            chatView.Width = windowWidth;
-            chatView.Height = windowHeight;
+            chatView.Left = this.Left - chatView.Width + this.Width;
+            chatView.Top = this.Top - chatView.Height + this.Height;
 
             this.Visibility = Visibility.Collapsed;
             chatView.Visibility = Visibility.Visible;
@@ -51,23 +48,28 @@ namespace Floai.Pages
             }
             else
             {
-                AppConfiger.SetValue("initialPositionX", this.Left.ToString());
-                AppConfiger.SetValue("initialPositionY", this.Top.ToString());
+                viewModel.WriteWindowPostion(this.Left, this.Top);
             }
         }
 
         private void FloatingBorder_MouseLeave(object sender, MouseEventArgs e)
         {
-            var brush = FindResource("btn_main_bg_brush") as SolidColorBrush;
-            if (brush != null)
-                FloatingBorder.Background = brush;
+            
+            if (borderDefaultBrush != null)
+                FloatingBorder.Background = borderDefaultBrush;
         }
 
         private void FloatingBorder_MouseEnter(object sender, MouseEventArgs e)
         {
-            var brush = FindResource("btn_main_hover_bg_brush") as SolidColorBrush;
-            if (brush != null)
-                FloatingBorder.Background = brush;
+            
+            if (borderHoverbrush != null)
+                FloatingBorder.Background = borderHoverbrush;
+        }
+
+        private void LoadResources()
+        {
+            borderDefaultBrush = FindResource("btn_main_bg_brush") as SolidColorBrush;
+            borderHoverbrush = FindResource("btn_main_hover_bg_brush") as SolidColorBrush;
         }
     }
 }
