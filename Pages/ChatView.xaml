@@ -43,20 +43,20 @@
             <RowDefinition Height="35" />
         </Grid.RowDefinitions>
 
-        <ListBox x:Name="MessageList" Style="{DynamicResource MessageListStyle}"  
-                 Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,30"
+        <Grid Grid.Row="0">
+            <ListBox x:Name="MessageList" Style="{DynamicResource MessageListStyle}"
                  ItemTemplateSelector="{StaticResource chatBubbleSelector}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" 
                  ItemsSource="{Binding Messages}" SelectedItem="{Binding CurMessageItem}">
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MessageItemStyle}"></Style>
-            </ListBox.ItemContainerStyle>
-
-        </ListBox>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MessageItemStyle}"></Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+        </Grid>
 
         <Grid Grid.Row="1" >
             <TextBox x:Name="InputBox" Style="{DynamicResource InputBoxStyle}"
-                     Margin="0,20,0,0" MinHeight="30" MaxHeight="250" 
+                     MinHeight="30" MaxHeight="250" 
                      TextWrapping="Wrap" AcceptsReturn="True"
                      VerticalContentAlignment="Center"
                      ScrollViewer.VerticalScrollBarVisibility="Auto" 
