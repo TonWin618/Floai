@@ -59,9 +59,11 @@ public partial class ChatView : Window
 
     private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
     {
+        
         if (e.Key == Key.Enter && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
         {
-            e.Handled = true; 
+            e.Handled = true;
+            FocusManager.SetFocusedElement(this, BtnSend);//Transfer focus to notify the variable bound to the input box to update its value.
             BtnSend?.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         }
     }
