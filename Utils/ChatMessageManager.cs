@@ -67,15 +67,9 @@ public class ChatMessageManager
     // Ensure that file and its parent directory exist, create them if they do not exist
     private void EnsureFileExists()
     {
-        string directoryPath = Path.GetDirectoryName(filePath);
-        if (!Directory.Exists(directoryPath))
-        {
-            Directory.CreateDirectory(directoryPath);
-        }
-
         if (!File.Exists(filePath))
         {
-            File.Create(filePath);
+            using (File.Create(filePath)){ };
         }
     }
 }

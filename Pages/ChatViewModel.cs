@@ -52,6 +52,10 @@ namespace Floai.Pages
             topicManager = new ChatTopicManager(messageSaveDictionary);
             Topics.Clear();
             topicManager.GetChatTopics().ForEach(Topics.Add);
+            if(Topics.Count == 0)
+            {
+                isNewTopic= true;
+            }
         }
 
         //To create a new topic, the first message needs to name the topic.
@@ -60,7 +64,7 @@ namespace Floai.Pages
             var newTopic = topicManager.CreateChatTopic(firstMsg);
             Topics.Add(newTopic);
             SwitchToLatestTopic();
-            LoadMessages();
+            CurTopicItem = newTopic;
             isNewTopic = false;
         }
 
