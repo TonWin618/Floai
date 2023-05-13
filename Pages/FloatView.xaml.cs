@@ -14,6 +14,7 @@ namespace Floai.Pages
         public FloatView()
         {
             InitializeComponent();
+            this.ShowInTaskbar = false;
             viewModel = new FloatViewModel();
             (this.Left, this.Top) = viewModel.ReadWindowPostion();
             LoadResources();

@@ -4,6 +4,7 @@
         xmlns:local="clr-namespace:Floai.Pages"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         Title="Settings" Height="350" Width="500">
+    
     <Window.Resources>
         <ObjectDataProvider x:Key="BubbleLayoutEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
