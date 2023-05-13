@@ -124,8 +124,8 @@ namespace Floai.Pages
 
         public void WriteWindowSize(double width, double height)
         {
-            AppConfiger.SetValue("initialWindowHeight", width.ToString());
-            AppConfiger.SetValue("initialWindowWidth", height.ToString());
+            AppConfiger.SetValue("initialWindowWidth", width.ToString());
+            AppConfiger.SetValue("initialWindowHeight", height.ToString());
         }
 
         public void InitializeApiClient()
