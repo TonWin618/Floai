@@ -1,11 +1,4 @@
-﻿using Floai.Model;
-using Floai.Utils;
-using OpenAI;
-using OpenAI.Chat;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
+﻿using Floai.Utils;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -23,9 +16,20 @@ public partial class ChatView : Window
         chatViewModel = new ChatViewModel(this.ScrollToBottom);
         this.DataContext = chatViewModel;
     }
+
+    private void BtnDrag_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        DragMove();
+    }
+
     private async void BtnSend_Click(object sender, RoutedEventArgs e)
     {
-        chatViewModel.SendMessage();
+        await chatViewModel.RequestAndReceiveResponse();
+    }
+
+    private void BtnSetting_Click(object sender, RoutedEventArgs e)
+    {
+        ShowSettingsView();
     }
 
     private void BtnClose_Click(object sender, RoutedEventArgs e)
@@ -41,6 +45,17 @@ public partial class ChatView : Window
         floatView.Visibility = Visibility.Visible;
     }
 
+    private void BtnNewChat_Click(object sender, RoutedEventArgs e)
+    {
+        chatViewModel.BeforeCreateNewTopic();
+    }
+
+    private void TopicCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        chatViewModel.LoadMessages();
+        ScrollToBottom();
+    }
+
     private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
     {
         if (e.Key == Key.Enter && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
@@ -48,16 +63,6 @@ public partial class ChatView : Window
             e.Handled = true; 
             BtnSend?.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         }
-    }
-
-    private void BtnDrag_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-    {
-        DragMove();
-    }
-
-    private void BtnSetting_Click(object sender, RoutedEventArgs e)
-    {
-        ShowSettingsView();
     }
 
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -80,15 +85,5 @@ public partial class ChatView : Window
             var lastItem = MessageList.Items[MessageList.Items.Count - 1];
             MessageList.ScrollIntoView(lastItem);
         }
-    }
-    private void TopicCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        chatViewModel.LoadMessages();
-        ScrollToBottom();
-    }
-
-    private void BtnNewChat_Click(object sender, RoutedEventArgs e)
-    {
-        chatViewModel.BeforeCreateNewTopic();
     }
 }

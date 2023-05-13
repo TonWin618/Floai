@@ -5,25 +5,37 @@ using OpenAI.Chat;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
-using System.Printing;
-using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 
 namespace Floai.Pages
 {
-    public class ChatViewModel
+    public class ChatViewModel: INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler? PropertyChanged = delegate { };
+
         private OpenAIClient apiClient;
         private ChatMessageManager messageManager;
         private ChatTopicManager topicManager;
-        public string InputContent { get; set; }
-        public ChatMessage CurMessageItem { get; set; }
-        public ChatTopic CurTopicItem { get; set; }
-        public Action ScrollToBottom;//temp
+
+        private string inputContent;
+        public string InputContent
+        {
+            get{ return inputContent; }
+            set
+            {
+                inputContent = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(InputContent)));
+            }
+        }
         public ObservableCollection<ChatMessage> Messages { get; set; }
         public ObservableCollection<ChatTopic> Topics { get; set; }
 
+        public ChatMessage CurMessageItem { get; set; }
+        public ChatTopic CurTopicItem { get; set; }
+        public Action ScrollToBottom;//temp
         private bool isNewTopic = false;
 
         public ChatViewModel(Action ScrollToBottom)
@@ -37,7 +49,7 @@ namespace Floai.Pages
 
         private void LoadTopics()
         {
-            string messageSaveDictionary = GetMsgSaveDir();
+            string messageSaveDictionary = AppConfiger.GetValue("messageSaveDirectory");
             topicManager = new ChatTopicManager(messageSaveDictionary);
             Topics.Clear();
             topicManager.GetChatTopics().ForEach(Topics.Add);
@@ -80,19 +92,10 @@ namespace Floai.Pages
             AppConfiger.SetValue("initialWindowHeight", width.ToString());
             AppConfiger.SetValue("initialWindowWidth", height.ToString());
         }
-        public string GetMsgSaveDir()
-        {
-            return AppConfiger.GetValue("messageSaveDirectory");
-        }
-
-        public string GetApiKey()
-        {
-            return AppConfiger.GetValue("apiKey");
-        }
 
         public void InitializeApiClient()
         {
-            string? apiKey = GetApiKey();
+            string? apiKey = AppConfiger.GetValue("apiKey"); ;
             if (string.IsNullOrEmpty(apiKey))
             {
                 throw new Exception("ApiKey is not configured.");
@@ -100,18 +103,8 @@ namespace Floai.Pages
             apiClient = new(apiKey);
         }
 
-        public async void SendMessage()
+        public List<Message> GenerateChatContext()
         {
-            try
-            {
-                InitializeApiClient();
-            }
-            catch (Exception ex)
-            {
-                InputContent = ex.Message;
-                return;
-            }
-
             //Generate message sent by the user
             var userMsg = new ChatMessage(DateTime.Now, "user", InputContent);
             InputContent = "";
@@ -123,11 +116,6 @@ namespace Floai.Pages
             ScrollToBottom();//temp
             messageManager.SaveMessage(userMsg);
 
-            //Generate messages sent by the AI
-            var newMsg = new ChatMessage(DateTime.Now, "ai", "");
-            Messages.Add(newMsg);
-            ScrollToBottom();//temp
-
             //Context of conversations between user and AI.
             var messageContext = new List<Message> { };
 
@@ -136,7 +124,29 @@ namespace Floai.Pages
 
             messageContext.Add(new Message(Role.User, userMsg.Content));
 
-            var chatRequest = new ChatRequest(messageContext, OpenAI.Models.Model.GPT3_5_Turbo);
+            return messageContext;
+        }
+
+        public async Task RequestAndReceiveResponse()
+        {
+            //Initialize OpenAI API client.
+            try
+            {
+                InitializeApiClient();
+            }
+            catch (Exception ex)
+            {
+                InputContent = ex.Message;
+                return;
+            }
+
+            List<Message> chatContext = GenerateChatContext();
+
+            //Generate messages sent by the AI
+            var newMsg = new ChatMessage(DateTime.Now, "ai", "");
+            Messages.Add(newMsg);
+            ScrollToBottom();//temp
+            var chatRequest = new ChatRequest(chatContext, OpenAI.Models.Model.GPT3_5_Turbo);
             try
             {
                 await foreach (var result in apiClient.ChatEndpoint.StreamCompletionEnumerableAsync(chatRequest))
