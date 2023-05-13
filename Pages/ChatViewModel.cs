@@ -191,13 +191,13 @@ namespace Floai.Pages
                         ScrollToBottom();//temp
                     }
                 }
+                messageManager.SaveMessage(newMsg);
             }
             catch (Exception ex)
             {
                 newMsg.AppendContent(ex.Message);
                 ScrollToBottom();//temp
             }
-            messageManager.SaveMessage(newMsg);
         }
     }
 }
