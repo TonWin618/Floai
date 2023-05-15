@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Floai.Pages
 {
-    public class ChatViewModel: INotifyPropertyChanged
+    public class ChatViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged = delegate { };
         public Action ScrollToBottom;//temp
@@ -23,7 +23,7 @@ namespace Floai.Pages
         private string inputContent;
         public string InputContent
         {
-            get{ return inputContent; }
+            get { return inputContent; }
             set
             {
                 inputContent = value;
@@ -77,9 +77,9 @@ namespace Floai.Pages
             topicManager = new ChatTopicManager(messageSaveDictionary);
             Topics.Clear();
             topicManager.GetChatTopics().ForEach(Topics.Add);
-            if(Topics.Count == 0)
+            if (Topics.Count == 0)
             {
-                isNewTopic= true;
+                isNewTopic = true;
             }
         }
 
@@ -115,7 +115,7 @@ namespace Floai.Pages
             messageManager.LoadMessages().ForEach(Messages.Add);
             ScrollToBottom();//temp
         }
-        public (double,double) ReadWindowSize()
+        public (double, double) ReadWindowSize()
         {
             double windowWidth = AppConfiger.GetValue<double>("initialWindowWidth");
             double windowHeight = AppConfiger.GetValue<double>("initialWindowHeight");
@@ -153,7 +153,7 @@ namespace Floai.Pages
 
             //Context of conversations between user and AI.
             var messageContext = Messages.Select(
-                msg => new Message(msg.Sender=="user"?Role.User:Role.Assistant,msg.Content))
+                msg => new Message(msg.Sender == "user" ? Role.User : Role.Assistant, msg.Content))
                 .ToList();
 
             messageContext.Add(new Message(Role.User, userMsg.Content));

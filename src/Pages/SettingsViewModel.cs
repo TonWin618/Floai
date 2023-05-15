@@ -1,13 +1,12 @@
 ﻿using Floai.Utils;
 using System;
 using System.ComponentModel;
-using System.Windows;
 
 namespace Floai.Pages;
 
 public class SettingsViewModel : INotifyPropertyChanged
 {
-    
+
     public event PropertyChangedEventHandler? PropertyChanged = delegate { };
     public enum ChatBubbleLayout
     {

@@ -59,7 +59,7 @@ public partial class ChatView : Window
 
     private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
     {
-        
+
         if (e.Key == Key.Enter && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
         {
             e.Handled = true;

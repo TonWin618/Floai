@@ -3,11 +3,11 @@ using System.ComponentModel;
 
 namespace Floai.Model;
 
-public class ChatMessage: INotifyPropertyChanged
+public class ChatMessage : INotifyPropertyChanged
 {
     public DateTime DateTime { get; set; }
     public string Sender { get; set; }
-    public string Content{get; set; }
+    public string Content { get; set; }
 
     public ChatMessage(DateTime dateTime, string sender, string content)
     {

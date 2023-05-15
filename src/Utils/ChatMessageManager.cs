@@ -69,7 +69,7 @@ public class ChatMessageManager
     {
         if (!File.Exists(filePath))
         {
-            using (File.Create(filePath)){ };
+            using (File.Create(filePath)) { };
         }
     }
 }

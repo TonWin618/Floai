@@ -1,16 +1,10 @@
 ﻿using Floai.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Floai.Pages;
 
 public class FloatViewModel
 {
-    public (double,double) ReadWindowPostion()
+    public (double, double) ReadWindowPostion()
     {
         double positionX = AppConfiger.GetValue<double>("initialPositionX");
         double positionY = AppConfiger.GetValue<double>("initialPositionY");

@@ -1,9 +1,5 @@
-﻿using System;
-using System.ComponentModel;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace Floai.Pages;
 

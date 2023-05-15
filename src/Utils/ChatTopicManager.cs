@@ -28,7 +28,7 @@ public class ChatTopicManager
         }
         string[] fileNameList = Directory.GetFiles(directoryPath, $"*.{fileExtension}").Select(Path.GetFileName).ToArray();
 
-        foreach(var fileName in fileNameList)
+        foreach (var fileName in fileNameList)
         {
             chatTopics.Add(ParseFileName(fileName));
         }
@@ -38,7 +38,7 @@ public class ChatTopicManager
 
     public ChatTopic CreateChatTopic(string firstMsg)
     {
-        DateTime dateTime= DateTime.Now;
+        DateTime dateTime = DateTime.Now;
         string dateTimeString = dateTime.ToString(dateFormatString);
 
         StringBuilder topicNameStringBuilder = new StringBuilder(Math.Min(topicNameLenthLimit, firstMsg.Length));
@@ -53,14 +53,14 @@ public class ChatTopicManager
         string topicName = topicNameStringBuilder.ToString();
         string fileName = $"{dateTimeString}{fileNameSeparator}{topicName}.{fileExtension}";
         string filePath = Path.Combine(directoryPath, fileName);
-        
+
         using (File.Create(filePath)) { }
         return new ChatTopic(dateTime, topicName, filePath);
     }
 
     public ChatTopic ParseFileName(string fileName)
     {
-        
+
         string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
         string filePath = Path.Combine(directoryPath, fileName);
 
@@ -73,7 +73,7 @@ public class ChatTopicManager
             throw new ArgumentException("Invalid date time format.");
         }
 
-        string topicName = fileNameWithoutExtension.Substring(dateTimeLenth+fileNameSeparator.Length);
+        string topicName = fileNameWithoutExtension.Substring(dateTimeLenth + fileNameSeparator.Length);
 
         return new ChatTopic(dateTime, topicName, filePath);
     }

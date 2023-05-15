@@ -1,5 +1,4 @@
-﻿using Floai.Utils;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -35,10 +34,10 @@ namespace Floai.Pages
         private void FloatingBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             // Indicate that the event has been handled
-            e.Handled= true;
+            e.Handled = true;
 
             Point beforeDragMovePosition = new Point(this.Left, this.Top);
-            if (e.LeftButton== MouseButtonState.Pressed)
+            if (e.LeftButton == MouseButtonState.Pressed)
                 this.DragMove();
             Point afterDragMovePosition = new Point(this.Left, this.Top);
 
@@ -55,14 +54,14 @@ namespace Floai.Pages
 
         private void FloatingBorder_MouseLeave(object sender, MouseEventArgs e)
         {
-            
+
             if (borderDefaultBrush != null)
                 FloatingBorder.Background = borderDefaultBrush;
         }
 
         private void FloatingBorder_MouseEnter(object sender, MouseEventArgs e)
         {
-            
+
             if (borderHoverbrush != null)
                 FloatingBorder.Background = borderHoverbrush;
         }
