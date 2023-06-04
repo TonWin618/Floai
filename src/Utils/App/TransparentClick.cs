@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 
-namespace Floai.Utils
+namespace Floai.Utils.App
 {
     static class TransparentClick
     {

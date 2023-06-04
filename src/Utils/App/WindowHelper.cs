@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
 
-namespace Floai.Utils
+namespace Floai.Utils.App
 {
     public static class WindowHelper
     {

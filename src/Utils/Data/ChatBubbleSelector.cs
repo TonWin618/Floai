@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Floai.Utils
+namespace Floai.Utils.Data
 {
     class ChatBubbleSelector : DataTemplateSelector
     {

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace Floai.Utils;
+namespace Floai.Utils.Data;
 public static class AppConfiger
 {
     private static readonly string _configFilePath;

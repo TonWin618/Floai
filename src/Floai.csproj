@@ -28,7 +28,7 @@
     <Compile Update="Models\ChatTopic.cs">
       <Generator>MSBuild:Compile</Generator>
     </Compile>
-    <Compile Update="Utils\WindowsTaskbarIcon.cs">
+    <Compile Update="Utils\App\WindowsTaskbarIcon.cs">
       <Generator>MSBuild:Compile</Generator>
     </Compile>
   </ItemGroup>

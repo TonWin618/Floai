@@ -1,4 +1,4 @@
-﻿using Floai.Utils;
+﻿using Floai.Utils.Data;
 
 namespace Floai.Pages;
 
