@@ -4,7 +4,7 @@ using System.Windows.Interop;
 
 namespace Floai.Utils.App
 {
-    static class TransparentClick
+    public static class TransparentClick
     {
         //Mouse click penetration of WPF transparent control
         private const int WS_EX_TRANSPARENT = 0x20;

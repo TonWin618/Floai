@@ -1,4 +1,5 @@
-﻿using Floai.Utils.Data;
+﻿using Floai.Utils.App;
+using Floai.Utils.Data;
 using System;
 using System.ComponentModel;
 
@@ -49,6 +50,14 @@ public class SettingsViewModel : INotifyPropertyChanged
         {
             if (_startWithWindows != value)
             {
+                if (value)
+                {
+                    AppAutoStarter.EnableAutoStart();
+                }
+                else
+                {
+                    AppAutoStarter.DisableAutoStart();
+                }
                 _startWithWindows = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(StartWithWindows)));
                 AppConfiger.SetValue("startWithWindows", value.ToString());
