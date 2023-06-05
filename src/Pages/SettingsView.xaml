@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:Floai.Pages"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        Title="Settings" Height="350" Width="500">
+        Title="Settings" Height="300" Width="520">
     
     <Window.Resources>
         <ObjectDataProvider x:Key="BubbleLayoutEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
@@ -12,11 +12,11 @@
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Window.Resources>
-    
-    <Grid>
+
+    <Grid Margin="10,10,10,10">
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="120"/>
+            <RowDefinition Height="20"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
@@ -26,19 +26,41 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        
+        <DataGrid Grid.Row="0" Grid.ColumnSpan="2" x:Name="ApiKeysDataGrid" AutoGenerateColumns="False" ItemsSource="{Binding ApiKeys}" 
+                  RowHeaderWidth="0" Background="White">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="API Key" Binding="{Binding .}" Width="*" IsReadOnly="True"/>
+                <DataGridTemplateColumn Header="Options" Width="60">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Remove" Click="BtnRemoveApiKey_Click"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5" Text="ApiKey:" HorizontalAlignment="Center"/>
-        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ApiKey,Mode=TwoWay}" Width="250"  Height="20" HorizontalAlignment="Left" Margin="10,0,0,0" />
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="60"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" x:Name="ApiKeyTextBox" Text="{Binding NewApiKey}"/>
+            <Button Grid.Column="1" x:Name="BtnAddApiKey" Content="Add" Click="BtnAddApiKey_Click"/>
+        </Grid>
 
-        <TextBlock Grid.Row="1" Grid.Column="0" Margin="5" Text="Start with Windows:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <CheckBox Grid.Row="1" Grid.Column="1" Margin="10,5,5,5" IsChecked="{Binding StartWithWindows}" VerticalAlignment="Center"/>
+        
 
-        <TextBlock Grid.Row="2" Grid.Column="0"  Text="Message save directory:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBox x:Name="DirTextBox" Grid.Row="2" Grid.Column="1"  Text="{Binding MessageSaveDirectory,UpdateSourceTrigger=PropertyChanged}" Width="250" Height="20" HorizontalAlignment="Left" Margin="10,5,0,5"/>
-        <Button Grid.Row="2" Grid.Column="1" Content="Browse" Width="50" Height="20" HorizontalAlignment="Left" Margin="260,5,0,5" x:Name="BtnBrowse" Click="BtnBrowse_Click"/>
+        <TextBlock Grid.Row="2" Grid.Column="0" Margin="5" Text="Start with Windows:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <CheckBox Grid.Row="2" Grid.Column="1" Margin="10,5,5,5" IsChecked="{Binding StartWithWindows}" VerticalAlignment="Center"/>
 
-        <TextBlock Grid.Row="3" Grid.Column="0" Margin="5" Text="Chat view:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <ComboBox Grid.Row="3" Grid.Column="1" Margin="10,5,0,5" Width="125" ItemsSource="{Binding Source={StaticResource BubbleLayoutEnum}}" SelectedItem="{Binding BubbleLayout}" HorizontalAlignment="Left">
+        <TextBlock Grid.Row="3" Grid.Column="0"  Text="Message save directory:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBox x:Name="DirTextBox" Grid.Row="3" Grid.Column="1"  Text="{Binding MessageSaveDirectory,UpdateSourceTrigger=PropertyChanged}" Width="250" Height="20" HorizontalAlignment="Left" Margin="10,5,0,5"/>
+        <Button Grid.Row="3" Grid.Column="1" Content="Browse" Width="50" Height="20" HorizontalAlignment="Left" Margin="260,5,0,5" x:Name="BtnBrowse" Click="BtnBrowse_Click"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Margin="5" Text="Chat view:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <ComboBox Grid.Row="4" Grid.Column="1" Margin="10,5,0,5" Width="125" ItemsSource="{Binding Source={StaticResource BubbleLayoutEnum}}" SelectedItem="{Binding BubbleLayout}" HorizontalAlignment="Left">
         </ComboBox>
     </Grid>
 </Window>

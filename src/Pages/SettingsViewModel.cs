@@ -1,14 +1,16 @@
 ﻿using Floai.Utils.App;
 using Floai.Utils.Data;
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace Floai.Pages;
 
 public class SettingsViewModel : INotifyPropertyChanged
 {
-
     public event PropertyChangedEventHandler? PropertyChanged = delegate { };
+
+    public ObservableCollection<string> ApiKeys { get; set; }
     public enum ChatBubbleLayout
     {
         Left,
@@ -18,7 +20,7 @@ public class SettingsViewModel : INotifyPropertyChanged
 
     public SettingsViewModel()
     {
-        ApiKey = AppConfiger.GetValue("apiKey");
+        ApiKeys = new ObservableCollection<string>(AppConfiger.GetValue("apiKeys").Split(";"));
         StartWithWindows = AppConfiger.GetValue<bool>("startWithWindows");
         MessageSaveDirectory = AppConfiger.GetValue("messageSaveDirectory");
         if (Enum.TryParse(AppConfiger.GetValue("chatBubbleLayout"), out ChatBubbleLayout bubbleLayout))
@@ -27,19 +29,19 @@ public class SettingsViewModel : INotifyPropertyChanged
         }
     }
 
-    private string _apiKey;
-    public string ApiKey
+    public void AppendApiKey(string apiKey)
     {
-        get { return _apiKey; }
-        set
+        if (!ApiKeys.Contains(apiKey))
         {
-            if (_apiKey != value)
-            {
-                _apiKey = value;
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(ApiKey)));
-                AppConfiger.SetValue("apiKey", value);
-            }
+            this.ApiKeys.Add(apiKey);
         }
+        AppConfiger.SetValue("apiKeys", string.Join(";", ApiKeys));
+    }
+
+    public void RemoveApiKey(string apiKey)
+    {
+        this.ApiKeys.Remove(apiKey);
+        AppConfiger.SetValue("apiKeys", string.Join(";", ApiKeys));
     }
 
     private bool _startWithWindows;

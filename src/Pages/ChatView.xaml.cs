@@ -7,14 +7,14 @@ namespace Floai.Pages;
 
 public partial class ChatView : Window
 {
-    public ChatViewModel chatViewModel;
+    public ChatViewModel viewModel;
     private static FloatView? floatView;
     public ChatView()
     {
         InitializeComponent();
-        chatViewModel = new ChatViewModel(this.ScrollToBottom);
-        this.DataContext = chatViewModel;
-        (this.Width, this.Height) = chatViewModel.ReadWindowSize();
+        viewModel = new ChatViewModel(this.ScrollToBottom);
+        this.DataContext = viewModel;
+        (this.Width, this.Height) = viewModel.ReadWindowSize();
         TransparentClick.Enable(this);
     }
 
@@ -25,7 +25,7 @@ public partial class ChatView : Window
 
     private async void BtnSend_Click(object sender, RoutedEventArgs e)
     {
-        await chatViewModel.RequestAndReceiveResponse();
+        await viewModel.RequestAndReceiveResponse();
     }
 
     private void BtnSetting_Click(object sender, RoutedEventArgs e)
@@ -48,12 +48,12 @@ public partial class ChatView : Window
 
     private void BtnNewChat_Click(object sender, RoutedEventArgs e)
     {
-        chatViewModel.BeforeCreateNewTopic();
+        viewModel.BeforeCreateNewTopic();
     }
 
     private void TopicCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        chatViewModel.LoadMessages();
+        viewModel.LoadMessages();
         ScrollToBottom();
     }
 
@@ -70,7 +70,7 @@ public partial class ChatView : Window
 
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        chatViewModel.WriteWindowSize(this.Width, this.Height);
+        viewModel.WriteWindowSize(this.Width, this.Height);
     }
 
     private void ShowSettingsView()
