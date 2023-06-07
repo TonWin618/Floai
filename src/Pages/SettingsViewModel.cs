@@ -47,13 +47,13 @@ public class SettingsViewModel : INotifyPropertyChanged
         AppConfiger.SetValue("isApiKeysReloadNeeded", "True");
     }
 
-    private bool _startWithWindows;
+    private bool startWithWindows;
     public bool StartWithWindows
     {
-        get { return _startWithWindows; }
+        get { return startWithWindows; }
         set
         {
-            if (_startWithWindows != value)
+            if (startWithWindows != value)
             {
                 if (value)
                 {
@@ -63,37 +63,37 @@ public class SettingsViewModel : INotifyPropertyChanged
                 {
                     AppAutoStarter.DisableAutoStart();
                 }
-                _startWithWindows = value;
+                startWithWindows = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(StartWithWindows)));
                 AppConfiger.SetValue("startWithWindows", value.ToString());
             }
         }
     }
 
-    private string _messageSaveDirectory;
+    private string messageSaveDirectory;
     public string MessageSaveDirectory
     {
-        get { return _messageSaveDirectory; }
+        get { return messageSaveDirectory; }
         set
         {
-            if (_messageSaveDirectory != value)
+            if (messageSaveDirectory != value)
             {
-                _messageSaveDirectory = value;
+                messageSaveDirectory = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(MessageSaveDirectory)));
                 AppConfiger.SetValue("messageSaveDirectory", value);
             }
         }
     }
 
-    private ChatBubbleLayout _bubbleLayout;
+    private ChatBubbleLayout bubbleLayout;
     public ChatBubbleLayout BubbleLayout
     {
-        get { return _bubbleLayout; }
+        get { return bubbleLayout; }
         set
         {
-            if (_bubbleLayout != value)
+            if (bubbleLayout != value)
             {
-                _bubbleLayout = value;
+                bubbleLayout = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(BubbleLayout)));
                 AppConfiger.SetValue("chatBubbleLayout", value.ToString());
             }
