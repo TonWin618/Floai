@@ -1,4 +1,6 @@
-﻿using Hardcodet.Wpf.TaskbarNotification;
+﻿using Floai.Pages;
+using Floai.Utils.App;
+using Hardcodet.Wpf.TaskbarNotification;
 using System;
 using System.Drawing;
 using System.Windows;
@@ -21,9 +23,21 @@ public static class WindowsTaskbarIcon
         WindowsNotifyIcon.Icon = new Icon("./Floai.ico");
         ContextMenu context = new ContextMenu();
 
+        MenuItem settings = new MenuItem();
+        settings.Header = "Settings";
+        settings.FontSize = 14;
+        settings.Click += delegate (object sender, RoutedEventArgs e)
+        {
+            if (WindowHelper.IsWindowOpen<SettingsView>())
+                return;
+            var settingsView = new SettingsView();
+            settingsView.Show();
+        };
+        context.Items.Add(settings);
+
         MenuItem exit = new MenuItem();
         exit.Header = "Exit";
-        exit.FontSize = 16;
+        exit.FontSize = 14;
         exit.Click += delegate (object sender, RoutedEventArgs e)
         {
             Environment.Exit(0);
