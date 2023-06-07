@@ -1,26 +1,41 @@
-﻿using System;
+﻿using Stylet;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Documents;
+using System.Windows.Forms;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace Floai.Utils.Data;
 public static class AppConfiger
 {
-    private static readonly string _configFilePath;
-    private static readonly XDocument _configFile;
-
+    private static readonly string configFilePath;
+    private static readonly XmlDocument xmlDoc;
+    private static readonly string rootNodeName = "configuration";
+    private static readonly char nodeSeparator = '/';
     static AppConfiger()
     {
-        _configFilePath = "App.config";
-        _configFile = LoadConfigFile(_configFilePath);
+        configFilePath = "App.config";
+        xmlDoc = new XmlDocument();
+        XmlReaderSettings settings= new XmlReaderSettings();
+        XmlReader reader = XmlReader.Create(configFilePath, settings);
+        xmlDoc.Load(reader);
+        reader.Close();
     }
 
+    /// <summary>
+    /// Getting the value of a configuration item.
+    /// </summary>
+    /// <param name="key">Divide by "/" (eg. /apiKeys/apiKey)</param>
+    /// <param name="defaultValue"></param>
+    /// <returns></returns>
     public static string GetValue(string key, string defaultValue = null)
     {
-        var element = GetConfigElement(key);
-        return element?.Attribute("value")?.Value ?? defaultValue;
+        ConvertKeyToFullKey(ref key);
+        return xmlDoc.SelectSingleNode(key)?.InnerText ?? defaultValue;
     }
-
     public static T GetValue<T>(string key, T defaultValue = default)
     {
         var strValue = GetValue(key);
@@ -28,53 +43,118 @@ public static class AppConfiger
         {
             return defaultValue;
         }
-        else
-        {
-            return (T)Convert.ChangeType(strValue, typeof(T));
-        }
+        return (T)Convert.ChangeType(strValue, typeof(T));
     }
 
+    /// <summary>
+    /// Setting the value of an existing configuration item.
+    /// </summary>
+    /// <param name="key">Divide by "/" (eg. /apiKeys/apiKey)</param>
+    /// <param name="value"></param>
     public static void SetValue(string key, string value)
     {
-        var element = GetConfigElement(key);
-        if (element != null)
+        ConvertKeyToFullKey(ref key);
+        XmlNode? node = xmlDoc.SelectSingleNode(key);
+        if (node == null)
         {
-            element.Attribute("value")?.SetValue(value);
+            throw new NullReferenceException("Cannot find the specified node.");
         }
-        else
-        {
-            var newElement = new XElement("add", new XAttribute("key", key), new XAttribute("value", value));
-            _configFile.Root.Add(newElement);
-        }
-        SaveConfigFile();
+        node.InnerText = value;
+        xmlDoc.Save(configFilePath);
     }
 
-    private static XElement GetConfigElement(string key)
+    /// <summary>
+    /// Getting values of multiple configuration items with the same name.
+    /// </summary>
+    /// <param name="key">Divide by "/" (eg. /apiKeys/apiKey)</param>
+    /// <returns></returns>
+    public static IEnumerable<string> GetValues(string key)
     {
-        var elements = _configFile.Descendants("add");
-        return elements.FirstOrDefault(e => e.Attribute("key")?.Value == key);
+        ConvertKeyToFullKey(ref key);
+        XmlNodeList? nodes = xmlDoc.SelectNodes(key);
+        if(nodes == null)
+        {
+            throw new NullReferenceException("Cannot find the specified node.");
+        }
+        foreach(XmlNode node in nodes)
+        {
+            yield return node.InnerText;
+        }
     }
 
-    private static void SaveConfigFile()
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="key">Divide by "/" (eg. /apiKeys/apiKey)</param>
+    /// <returns></returns>
+    public static IEnumerable<T> GetValues<T>(string key)
     {
-        _configFile.Save(_configFilePath);
+        foreach(var value in GetValues(key))
+        {
+            yield return (T)Convert.ChangeType(value, typeof(T));
+        }
     }
 
-    private static XDocument LoadConfigFile(string filePath)
+    /// <summary>
+    /// Adding a new configuration item.
+    /// </summary>
+    /// <param name="key">Divide by "/" (eg. /apiKeys/apiKey)</param>
+    /// <param name="value"></param>
+    public static void AddValue(string key, string value)
     {
-        if (!File.Exists(filePath))
+        ConvertKeyToFullKey(ref key);
+        IEnumerable<string> nodeNames = key.Split(nodeSeparator).ToList();
+        string childName = nodeNames.Last();
+
+        string parentKey = string.Join(nodeSeparator, nodeNames.SkipLast(1));
+        XmlNode? parentNode = xmlDoc.SelectSingleNode(parentKey);
+        if (parentNode == null)
         {
-            throw new FileNotFoundException($"Configuration file '{filePath}' does not exist.");
+            throw new NullReferenceException("Cannot find the specified node.");
         }
 
-        try
+        XmlNode childNode = xmlDoc.CreateElement(childName);
+        childNode.InnerText = value;
+        parentNode.AppendChild(childNode);
+        xmlDoc.Save(configFilePath);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="key">Divide by "/" (eg. /apiKeys/apiKey)</param>
+    /// <param name="value"></param>
+    /// <exception cref="NullReferenceException"></exception>
+    public static void RemoveValue(string key, string value)
+    {
+        ConvertKeyToFullKey(ref key);
+
+        XmlNodeList? nodes = xmlDoc.SelectNodes(key);
+        if (nodes == null)
         {
-            using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
-            return XDocument.Load(fileStream, LoadOptions.PreserveWhitespace);
+            throw new NullReferenceException("Cannot find the specified node.");
         }
-        catch (Exception ex)
+
+        if(nodes.Count == 0)
         {
-            throw new Exception($"Failed to load configuration file '{filePath}', error message: {ex.Message}", ex);
+            return;
         }
+
+        XmlNode parentNode = nodes[0]!.ParentNode!;
+
+        foreach (XmlNode node in nodes)
+        {
+            if(node.InnerText == value)
+            {
+                parentNode.RemoveChild(node);
+            }
+        }
+        xmlDoc.Save(configFilePath);
+    }
+
+    private static void ConvertKeyToFullKey(ref string key)
+    {
+        key = rootNodeName + nodeSeparator + key;
     }
 }

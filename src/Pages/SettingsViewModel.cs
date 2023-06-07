@@ -20,7 +20,7 @@ public class SettingsViewModel : INotifyPropertyChanged
 
     public SettingsViewModel()
     {
-        ApiKeys = new ObservableCollection<string>(AppConfiger.GetValue("apiKeys").Split(";"));
+        ApiKeys = new ObservableCollection<string>(AppConfiger.GetValues("apiKeys/apiKey"));
         StartWithWindows = AppConfiger.GetValue<bool>("startWithWindows");
         MessageSaveDirectory = AppConfiger.GetValue("messageSaveDirectory");
         if (Enum.TryParse(AppConfiger.GetValue("chatBubbleLayout"), out ChatBubbleLayout bubbleLayout))
@@ -34,14 +34,15 @@ public class SettingsViewModel : INotifyPropertyChanged
         if (!ApiKeys.Contains(apiKey))
         {
             this.ApiKeys.Add(apiKey);
+            AppConfiger.AddValue("apiKeys/apiKey", apiKey);
         }
-        AppConfiger.SetValue("apiKeys", string.Join(";", ApiKeys));
+        
     }
 
     public void RemoveApiKey(string apiKey)
     {
         this.ApiKeys.Remove(apiKey);
-        AppConfiger.SetValue("apiKeys", string.Join(";", ApiKeys));
+        AppConfiger.RemoveValue("apiKeys/apiKey", apiKey);
     }
 
     private bool _startWithWindows;
