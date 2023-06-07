@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Floai.Pages
 {
@@ -17,6 +19,8 @@ namespace Floai.Pages
         public Action ScrollToBottom;//temp
 
         private OpenAIClient apiClient;
+        private string[] apiKeys;
+        private int lastApiKeyIndex;
         private ChatMessageManager messageManager;
         private ChatTopicManager topicManager;
 
@@ -81,6 +85,7 @@ namespace Floai.Pages
             {
                 isNewTopic = true;
             }
+            apiKeys = AppConfiger.GetValues("apiKeys/apiKey").ToArray();
         }
 
         //To create a new topic, the first message needs to name the topic.
@@ -130,12 +135,24 @@ namespace Floai.Pages
 
         public void InitializeApiClient()
         {
-            string? apiKey = AppConfiger.GetValue("apiKey"); ;
-            if (string.IsNullOrEmpty(apiKey))
+            //If the list of ApiKeys changes in the configuration, then reloading is necessary.
+            if (AppConfiger.GetValue<bool>("isApiKeysReloadNeeded"))
             {
-                throw new Exception("ApiKey is not configured.");
+                apiKeys = AppConfiger.GetValues("apiKeys/apiKey").ToArray();
+                lastApiKeyIndex = 0;
+                AppConfiger.SetValue("isApiKeysReloadNeeded", "False");
             }
+
+            if(apiKeys.Length == 0)
+            {
+                throw new Exception("API key not configured.");
+            }
+            string apiKey = apiKeys[lastApiKeyIndex];
             apiClient = new(apiKey);
+
+            lastApiKeyIndex++;
+            if (lastApiKeyIndex > apiKeys.Length)
+                lastApiKeyIndex = 0;
         }
 
         public List<Message> GenerateChatContext()

@@ -35,6 +35,7 @@ public class SettingsViewModel : INotifyPropertyChanged
         {
             this.ApiKeys.Add(apiKey);
             AppConfiger.AddValue("apiKeys/apiKey", apiKey);
+            AppConfiger.SetValue("isApiKeysReloadNeeded", "True");
         }
         
     }
@@ -43,6 +44,7 @@ public class SettingsViewModel : INotifyPropertyChanged
     {
         this.ApiKeys.Remove(apiKey);
         AppConfiger.RemoveValue("apiKeys/apiKey", apiKey);
+        AppConfiger.SetValue("isApiKeysReloadNeeded", "True");
     }
 
     private bool _startWithWindows;
