@@ -16,6 +16,11 @@ namespace Floai.Pages
             this.ShowInTaskbar = false;
             viewModel = new FloatViewModel();
             (this.Left, this.Top) = viewModel.ReadWindowPostion();
+            if ((SystemParameters.PrimaryScreenWidth < this.Left - this.Width) || (SystemParameters.PrimaryScreenHeight < this.Top - this.Height))
+            {
+                this.Left = SystemParameters.PrimaryScreenWidth / 2;
+                this.Top = SystemParameters.PrimaryScreenHeight / 2;
+            }
             LoadResources();
         }
 
