@@ -4,7 +4,7 @@
         xmlns:local="clr-namespace:Floai.Pages"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         Title="Settings" Height="300" Width="520">
-    
+
     <Window.Resources>
         <ObjectDataProvider x:Key="BubbleLayoutEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
@@ -19,14 +19,9 @@
             <RowDefinition Height="20"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        
+
         <DataGrid Grid.Row="0" Grid.ColumnSpan="2" x:Name="ApiKeysDataGrid" AutoGenerateColumns="False" ItemsSource="{Binding ApiKeys}" 
                   RowHeaderWidth="0" Background="White">
             <DataGrid.Columns>
@@ -41,7 +36,7 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="60"/>
@@ -50,18 +45,32 @@
             <Button Grid.Column="1" x:Name="BtnAddApiKey" Content="Add" Click="BtnAddApiKey_Click"/>
         </Grid>
 
-        
 
-        <TextBlock Grid.Row="2" Grid.Column="0" Margin="5" Text="Start with Windows:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <CheckBox Grid.Row="2" Grid.Column="1" Margin="10,5,5,5" IsChecked="{Binding StartWithWindows}" VerticalAlignment="Center"/>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="140"/>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="90"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Margin="5" Text="Start with Windows:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <CheckBox Grid.Column="1" Margin="10,5,5,5" IsChecked="{Binding StartWithWindows}" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="2" Margin="5" Text="Chat view:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <ComboBox Grid.Column="3" Margin="10,5,0,5" Width="125" ItemsSource="{Binding Source={StaticResource BubbleLayoutEnum}}" SelectedItem="{Binding BubbleLayout}" HorizontalAlignment="Left"/>
+        </Grid>
 
-        <TextBlock Grid.Row="3" Grid.Column="0"  Text="Message save directory:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBox x:Name="DirTextBox" Grid.Row="3" Grid.Column="1"  Text="{Binding MessageSaveDirectory,UpdateSourceTrigger=PropertyChanged}" Width="250" Height="20" HorizontalAlignment="Left" Margin="10,5,0,5"/>
-        <Button Grid.Row="3" Grid.Column="1" Content="Browse" Width="50" Height="20" HorizontalAlignment="Left" Margin="260,5,0,5" x:Name="BtnBrowse" Click="BtnBrowse_Click"/>
-
-        <TextBlock Grid.Row="4" Grid.Column="0" Margin="5" Text="Chat view:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <ComboBox Grid.Row="4" Grid.Column="1" Margin="10,5,0,5" Width="125" ItemsSource="{Binding Source={StaticResource BubbleLayoutEnum}}" SelectedItem="{Binding BubbleLayout}" HorizontalAlignment="Left">
-        </ComboBox>
+        <Grid  Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="50"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"  Text="Message save directory:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="1" x:Name="DirTextBox" Text="{Binding MessageSaveDirectory,UpdateSourceTrigger=PropertyChanged}" Height="20" HorizontalAlignment="Stretch"/>
+            <Button Grid.Column="2" Content="Browse" Width="50" Height="20" HorizontalAlignment="Left" x:Name="BtnBrowse" Click="BtnBrowse_Click"/>
+            <Button Grid.Column="3" Content="Open" Width="50" Height="20" HorizontalAlignment="Left" x:Name="BtnOpen" Click="BtnOpen_Click"/>
+        </Grid>
     </Grid>
 </Window>
 

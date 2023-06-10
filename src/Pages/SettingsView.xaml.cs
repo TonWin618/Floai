@@ -1,4 +1,7 @@
 ﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -35,5 +38,10 @@ public partial class SettingsView : Window
         var button = sender as Button;
         var item = button.DataContext as string;
         viewModel.RemoveApiKey(item);
+    }
+
+    private void BtnOpen_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Path.GetFullPath(DirTextBox.Text));
     }
 }
