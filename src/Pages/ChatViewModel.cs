@@ -71,9 +71,27 @@ namespace Floai.Pages
             this.ScrollToBottom += ScrollToBottom;
             Messages = new ObservableCollection<ChatMessage>();
             Topics = new ObservableCollection<ChatTopic>();
-            LoadTopics();
+            AppConfiger.SettingChanged += OnSettingChange;
+            ReloadData();
+        }
+
+        private void OnSettingChange(string key, string value)
+        {
+            if (key == "messageSaveDirectory")
+            {
+                ReloadData();
+                fileWatcher = new(value, OnMsgLogFileChanged);
+            }
+            if (key == "apiKeys/apiKey")
+            {
+                ReloadApiKeys();
+            }
+        }
+
+        private void ReloadData()
+        {
+            ReloadTopics();
             SwitchToLatestTopic();
-            fileWatcher = new(topicManager.directoryPath, OnMsgLogFileChanged);
         }
 
         public void OnMsgLogFileChanged(object sender, FileSystemEventArgs e)
@@ -85,8 +103,7 @@ namespace Floai.Pages
                 {
                     System.Windows.Application.Current.Dispatcher.Invoke((Action)(() =>
                     {
-                        LoadTopics();
-                        SwitchToLatestTopic();
+                        ReloadData();
                     }));
                 }
             }
@@ -94,13 +111,12 @@ namespace Floai.Pages
             {
                 System.Windows.Application.Current.Dispatcher.Invoke((Action)(() =>
                 {
-                    LoadTopics();
-                    SwitchToLatestTopic();
+                    ReloadData();
                 }));
             }
         }
 
-        private void LoadTopics()
+        private void ReloadTopics()
         {
             string messageSaveDictionary = AppConfiger.GetValue("messageSaveDirectory");
             topicManager = new ChatTopicManager(messageSaveDictionary);
@@ -163,14 +179,6 @@ namespace Floai.Pages
 
         public void InitializeApiClient()
         {
-            //If the list of ApiKeys changes in the configuration, then reloading is necessary.
-            if (AppConfiger.GetValue<bool>("isApiKeysReloadNeeded"))
-            {
-                apiKeys = AppConfiger.GetValues("apiKeys/apiKey").ToArray();
-                lastApiKeyIndex = 0;
-                AppConfiger.SetValue("isApiKeysReloadNeeded", "False");
-            }
-
             if(apiKeys.Length == 0)
             {
                 throw new Exception("API key not configured.");
@@ -181,6 +189,13 @@ namespace Floai.Pages
             lastApiKeyIndex++;
             if (lastApiKeyIndex >= apiKeys.Length)
                 lastApiKeyIndex = 0;
+        }
+
+        public void ReloadApiKeys()
+        {
+            //If the list of ApiKeys changes in the configuration, then reloading is necessary.
+            apiKeys = AppConfiger.GetValues("apiKeys/apiKey").ToArray();
+            lastApiKeyIndex = 0;
         }
 
         public List<Message> GenerateChatContext()

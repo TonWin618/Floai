@@ -1,12 +1,7 @@
-﻿using Stylet;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace Floai.Utils.Data;
 public static class AppConfiger
@@ -15,6 +10,9 @@ public static class AppConfiger
     private static readonly XmlDocument xmlDoc;
     private static readonly string rootNodeName = "configuration";
     private static readonly char nodeSeparator = '/';
+    public delegate void SettingChangedEventHandler(string key, string value);
+    public static event SettingChangedEventHandler SettingChanged = delegate{ };
+
     static AppConfiger()
     {
         configFilePath = "App.config";
@@ -33,8 +31,8 @@ public static class AppConfiger
     /// <returns></returns>
     public static string GetValue(string key, string defaultValue = null)
     {
-        ConvertKeyToFullKey(ref key);
-        return xmlDoc.SelectSingleNode(key)?.InnerText ?? defaultValue;
+        string fullKey = GetFullKey(key);
+        return xmlDoc.SelectSingleNode(fullKey)?.InnerText ?? defaultValue;
     }
     public static T GetValue<T>(string key, T defaultValue = default)
     {
@@ -53,13 +51,14 @@ public static class AppConfiger
     /// <param name="value"></param>
     public static void SetValue(string key, string value)
     {
-        ConvertKeyToFullKey(ref key);
-        XmlNode? node = xmlDoc.SelectSingleNode(key);
+        string fullKey = GetFullKey(key);
+        XmlNode? node = xmlDoc.SelectSingleNode(fullKey);
         if (node == null)
         {
             throw new NullReferenceException("Cannot find the specified node.");
         }
         node.InnerText = value;
+        SettingChanged(key, value);
         xmlDoc.Save(configFilePath);
     }
 
@@ -70,8 +69,8 @@ public static class AppConfiger
     /// <returns></returns>
     public static IEnumerable<string> GetValues(string key)
     {
-        ConvertKeyToFullKey(ref key);
-        XmlNodeList? nodes = xmlDoc.SelectNodes(key);
+        string fullKey = GetFullKey(key);
+        XmlNodeList? nodes = xmlDoc.SelectNodes(fullKey);
         if(nodes == null)
         {
             throw new NullReferenceException("Cannot find the specified node.");
@@ -103,8 +102,8 @@ public static class AppConfiger
     /// <param name="value"></param>
     public static void AddValue(string key, string value)
     {
-        ConvertKeyToFullKey(ref key);
-        IEnumerable<string> nodeNames = key.Split(nodeSeparator).ToList();
+        string fullKey = GetFullKey(key);
+        IEnumerable<string> nodeNames = fullKey.Split(nodeSeparator).ToList();
         string childName = nodeNames.Last();
 
         string parentKey = string.Join(nodeSeparator, nodeNames.SkipLast(1));
@@ -117,6 +116,7 @@ public static class AppConfiger
         XmlNode childNode = xmlDoc.CreateElement(childName);
         childNode.InnerText = value;
         parentNode.AppendChild(childNode);
+        SettingChanged(key, value);
         xmlDoc.Save(configFilePath);
     }
 
@@ -128,9 +128,8 @@ public static class AppConfiger
     /// <exception cref="NullReferenceException"></exception>
     public static void RemoveValue(string key, string value)
     {
-        ConvertKeyToFullKey(ref key);
-
-        XmlNodeList? nodes = xmlDoc.SelectNodes(key);
+        string fullKey = GetFullKey(key);
+        XmlNodeList? nodes = xmlDoc.SelectNodes(fullKey);
         if (nodes == null)
         {
             throw new NullReferenceException("Cannot find the specified node.");
@@ -150,11 +149,12 @@ public static class AppConfiger
                 parentNode.RemoveChild(node);
             }
         }
+        SettingChanged(key, value);
         xmlDoc.Save(configFilePath);
     }
 
-    private static void ConvertKeyToFullKey(ref string key)
+    private static string GetFullKey(string key)
     {
-        key = rootNodeName + nodeSeparator + key;
+        return rootNodeName + nodeSeparator + key;
     }
 }

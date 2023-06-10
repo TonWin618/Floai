@@ -28,6 +28,7 @@ public class SettingsViewModel : INotifyPropertyChanged
         {
             BubbleLayout = bubbleLayout;
         }
+        AppConfiger.SettingChanged += ConfigAutoStart;
     }
 
     public void AppendApiKey(string apiKey)
@@ -40,16 +41,15 @@ public class SettingsViewModel : INotifyPropertyChanged
         {
             this.ApiKeys.Add(apiKey);
             AppConfiger.AddValue("apiKeys/apiKey", apiKey);
-            AppConfiger.SetValue("isApiKeysReloadNeeded", "True");
+            //AppConfiger.SetValue("isApiKeysReloadNeeded", "True");
         }
-        
     }
 
     public void RemoveApiKey(string apiKey)
     {
         this.ApiKeys.Remove(apiKey);
         AppConfiger.RemoveValue("apiKeys/apiKey", apiKey);
-        AppConfiger.SetValue("isApiKeysReloadNeeded", "True");
+        //AppConfiger.SetValue("isApiKeysReloadNeeded", "True");
     }
 
     private bool startWithWindows;
@@ -60,14 +60,6 @@ public class SettingsViewModel : INotifyPropertyChanged
         {
             if (startWithWindows != value)
             {
-                if (value)
-                {
-                    AppAutoStarter.EnableAutoStart();
-                }
-                else
-                {
-                    AppAutoStarter.DisableAutoStart();
-                }
                 startWithWindows = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(StartWithWindows)));
                 AppConfiger.SetValue("startWithWindows", value.ToString());
@@ -101,6 +93,21 @@ public class SettingsViewModel : INotifyPropertyChanged
                 bubbleLayout = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(BubbleLayout)));
                 AppConfiger.SetValue("chatBubbleLayout", value.ToString());
+            }
+        }
+    }
+
+    private void ConfigAutoStart(string key,string value)
+    {
+        if(key == "startWithWindows")
+        {
+            if (bool.Parse(value))
+            {
+                AppAutoStarter.EnableAutoStart();
+            }
+            else
+            {
+                AppAutoStarter.DisableAutoStart();
             }
         }
     }

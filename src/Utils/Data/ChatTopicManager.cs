@@ -9,24 +9,29 @@ namespace Floai.Utils.Data;
 
 public class ChatTopicManager
 {
-    public readonly string directoryPath;
+    private string directoryPath;
+    public string DirectoryPath
+    {
+        get;
+        set;
+    }
     public readonly string fileExtension = "txt";
     private readonly int topicNameLenthLimit = 80;
     private readonly string fileNameSeparator = "-";
     private readonly string dateFormatString = "yyyyMMddHHmmss";
     public ChatTopicManager(string directoryPath)
     {
-        this.directoryPath = directoryPath;
+        this.DirectoryPath = directoryPath;
     }
 
     public List<ChatTopic> GetChatTopics()
     {
         List<ChatTopic> chatTopics = new List<ChatTopic>();
-        if (!Directory.Exists(directoryPath))
+        if (!Directory.Exists(DirectoryPath))
         {
-            Directory.CreateDirectory(directoryPath);
+            Directory.CreateDirectory(DirectoryPath);
         }
-        string[] fileNameList = Directory.GetFiles(directoryPath, $"*.{fileExtension}").Select(Path.GetFileName).ToArray();
+        string[] fileNameList = Directory.GetFiles(DirectoryPath, $"*.{fileExtension}").Select(Path.GetFileName).ToArray();
 
         foreach (var fileName in fileNameList)
         {
@@ -52,7 +57,7 @@ public class ChatTopicManager
         }
         string topicName = topicNameStringBuilder.ToString();
         string fileName = $"{dateTimeString}{fileNameSeparator}{topicName}.{fileExtension}";
-        string filePath = Path.Combine(directoryPath, fileName);
+        string filePath = Path.Combine(DirectoryPath, fileName);
 
         using (File.Create(filePath)) { }
         return new ChatTopic(dateTime, topicName, filePath);
@@ -62,7 +67,7 @@ public class ChatTopicManager
     {
 
         string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-        string filePath = Path.Combine(directoryPath, fileName);
+        string filePath = Path.Combine(DirectoryPath, fileName);
 
         int dateTimeLenth = new DateTime().ToString(dateFormatString).Length;
 
