@@ -9,7 +9,7 @@ namespace Floai.Utils.Data;
 
 public class ChatTopicManager
 {
-    private readonly string directoryPath;
+    public readonly string directoryPath;
     public readonly string fileExtension = "txt";
     private readonly int topicNameLenthLimit = 80;
     private readonly string fileNameSeparator = "-";

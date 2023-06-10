@@ -6,10 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Floai.Pages
 {
@@ -23,6 +22,7 @@ namespace Floai.Pages
         private int lastApiKeyIndex;
         private ChatMessageManager messageManager;
         private ChatTopicManager topicManager;
+        public FileWatcher fileWatcher;
 
         private string inputContent;
         public string InputContent
@@ -51,8 +51,8 @@ namespace Floai.Pages
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(SelectedMessageItem)));
             }
         }
-        private ChatTopic selectedTopicItem;
-        public ChatTopic SelectedTopicItem
+        private ChatTopic? selectedTopicItem;
+        public ChatTopic? SelectedTopicItem
         {
             get
             {
@@ -73,6 +73,31 @@ namespace Floai.Pages
             Topics = new ObservableCollection<ChatTopic>();
             LoadTopics();
             SwitchToLatestTopic();
+            fileWatcher = new(topicManager.directoryPath, OnMsgLogFileChanged);
+        }
+
+        public void OnMsgLogFileChanged(object sender, FileSystemEventArgs e)
+        {
+            //Console.WriteLine("File {0} was created.", e.Name);
+            if(e.ChangeType == WatcherChangeTypes.Created)
+            {
+                if(e.Name != Path.GetFileName(Topics.Last().FilePath))
+                {
+                    System.Windows.Application.Current.Dispatcher.Invoke((Action)(() =>
+                    {
+                        LoadTopics();
+                        SwitchToLatestTopic();
+                    }));
+                }
+            }
+            if(e.ChangeType == WatcherChangeTypes.Deleted)
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke((Action)(() =>
+                {
+                    LoadTopics();
+                    SwitchToLatestTopic();
+                }));
+            }
         }
 
         private void LoadTopics()
@@ -80,6 +105,7 @@ namespace Floai.Pages
             string messageSaveDictionary = AppConfiger.GetValue("messageSaveDirectory");
             topicManager = new ChatTopicManager(messageSaveDictionary);
             Topics.Clear();
+            selectedTopicItem = null;
             topicManager.GetChatTopics().ForEach(Topics.Add);
             if (Topics.Count == 0)
             {
@@ -109,12 +135,14 @@ namespace Floai.Pages
             if (Topics.Count > 0)
             {
                 SelectedTopicItem = Topics.Last();
-                LoadMessages();
+                SwitchTopic();
             }
         }
 
-        public void LoadMessages()
+        public void SwitchTopic()
         {
+            if (SelectedTopicItem == null)
+                return;
             messageManager = new ChatMessageManager(SelectedTopicItem.FilePath);
             Messages.Clear();
             messageManager.LoadMessages().ForEach(Messages.Add);

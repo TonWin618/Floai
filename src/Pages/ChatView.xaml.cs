@@ -47,7 +47,7 @@ public partial class ChatView : Window
 
     private void TopicCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        viewModel.LoadMessages();
+        viewModel.SwitchTopic();
         ScrollToBottom();
     }
 
