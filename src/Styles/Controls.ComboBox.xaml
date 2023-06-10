@@ -49,7 +49,8 @@
                             <TextBox x:Name="PART_EditableTextBox" HorizontalAlignment="Stretch" Focusable="True" Visibility="Collapsed" IsReadOnly="False"/>
                             <!--Dropdown Display Panel HorizontalOffset-->
                             <Popup HorizontalOffset="-1" Width="{TemplateBinding ActualWidth}"
-                                       IsOpen="{TemplateBinding IsDropDownOpen}" Focusable="False"    PopupAnimation="Slide">
+                                   IsOpen="{TemplateBinding IsDropDownOpen}" Focusable="False" PopupAnimation="Slide"
+                                   Placement="Top" MaxHeight="{TemplateBinding MaxDropDownHeight}">
                                 <Grid  SnapsToDevicePixels="True" HorizontalAlignment="Stretch">
                                     <Border  BorderThickness="1,1,1,1" BorderBrush="{DynamicResource message_recv_border_brush}" HorizontalAlignment="Stretch" CornerRadius="0">
                                         <Border.Background>
