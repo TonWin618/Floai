@@ -3,6 +3,7 @@ using Floai.Utils.Data;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
 
 namespace Floai.Pages;
 
@@ -31,6 +32,10 @@ public class SettingsViewModel : INotifyPropertyChanged
 
     public void AppendApiKey(string apiKey)
     {
+        string pattern = @"[^a-zA-Z0-9-]";
+        Regex.Replace(apiKey, pattern, "");
+        if (string.IsNullOrEmpty(apiKey))
+            return;
         if (!ApiKeys.Contains(apiKey))
         {
             this.ApiKeys.Add(apiKey);
