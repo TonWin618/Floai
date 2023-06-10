@@ -11,13 +11,13 @@ public static class AppConfiger
     private static readonly string rootNodeName = "configuration";
     private static readonly char nodeSeparator = '/';
     public delegate void SettingChangedEventHandler(string key, string value);
-    public static event SettingChangedEventHandler SettingChanged = delegate{ };
+    public static event SettingChangedEventHandler SettingChanged = delegate { };
 
     static AppConfiger()
     {
         configFilePath = "App.config";
         xmlDoc = new XmlDocument();
-        XmlReaderSettings settings= new XmlReaderSettings();
+        XmlReaderSettings settings = new XmlReaderSettings();
         XmlReader reader = XmlReader.Create(configFilePath, settings);
         xmlDoc.Load(reader);
         reader.Close();
@@ -71,11 +71,11 @@ public static class AppConfiger
     {
         string fullKey = GetFullKey(key);
         XmlNodeList? nodes = xmlDoc.SelectNodes(fullKey);
-        if(nodes == null)
+        if (nodes == null)
         {
             throw new NullReferenceException("Cannot find the specified node.");
         }
-        foreach(XmlNode node in nodes)
+        foreach (XmlNode node in nodes)
         {
             yield return node.InnerText;
         }
@@ -89,7 +89,7 @@ public static class AppConfiger
     /// <returns></returns>
     public static IEnumerable<T> GetValues<T>(string key)
     {
-        foreach(var value in GetValues(key))
+        foreach (var value in GetValues(key))
         {
             yield return (T)Convert.ChangeType(value, typeof(T));
         }
@@ -135,7 +135,7 @@ public static class AppConfiger
             throw new NullReferenceException("Cannot find the specified node.");
         }
 
-        if(nodes.Count == 0)
+        if (nodes.Count == 0)
         {
             return;
         }
@@ -144,7 +144,7 @@ public static class AppConfiger
 
         foreach (XmlNode node in nodes)
         {
-            if(node.InnerText == value)
+            if (node.InnerText == value)
             {
                 parentNode.RemoveChild(node);
             }

@@ -97,9 +97,9 @@ namespace Floai.Pages
         public void OnMsgLogFileChanged(object sender, FileSystemEventArgs e)
         {
             //Console.WriteLine("File {0} was created.", e.Name);
-            if(e.ChangeType == WatcherChangeTypes.Created)
+            if (e.ChangeType == WatcherChangeTypes.Created)
             {
-                if(e.Name != Path.GetFileName(Topics.Last().FilePath))
+                if (e.Name != Path.GetFileName(Topics.Last().FilePath))
                 {
                     System.Windows.Application.Current.Dispatcher.Invoke((Action)(() =>
                     {
@@ -107,7 +107,7 @@ namespace Floai.Pages
                     }));
                 }
             }
-            if(e.ChangeType == WatcherChangeTypes.Deleted)
+            if (e.ChangeType == WatcherChangeTypes.Deleted)
             {
                 System.Windows.Application.Current.Dispatcher.Invoke((Action)(() =>
                 {
@@ -179,7 +179,7 @@ namespace Floai.Pages
 
         public void InitializeApiClient()
         {
-            if(apiKeys.Length == 0)
+            if (apiKeys.Length == 0)
             {
                 throw new Exception("API key not configured.");
             }

@@ -97,9 +97,9 @@ public class SettingsViewModel : INotifyPropertyChanged
         }
     }
 
-    private void ConfigAutoStart(string key,string value)
+    private void ConfigAutoStart(string key, string value)
     {
-        if(key == "startWithWindows")
+        if (key == "startWithWindows")
         {
             if (bool.Parse(value))
             {
