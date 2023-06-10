@@ -28,11 +28,6 @@ public partial class ChatView : Window
         await viewModel.RequestAndReceiveResponse();
     }
 
-    private void BtnSetting_Click(object sender, RoutedEventArgs e)
-    {
-        ShowSettingsView();
-    }
-
     private void BtnClose_Click(object sender, RoutedEventArgs e)
     {
         if (floatView == null)
@@ -72,14 +67,6 @@ public partial class ChatView : Window
     {
         viewModel.WriteWindowSize(this.Width, this.Height);
         MessageList.MaxHeight = this.Height - 67;//67 represents the height from the top of the input box to the bottom of the window.
-    }
-
-    private void ShowSettingsView()
-    {
-        if (WindowHelper.IsWindowOpen<SettingsView>())
-            return;
-        var settingsView = new SettingsView();
-        settingsView.Show();
     }
 
     private void ScrollToBottom()
