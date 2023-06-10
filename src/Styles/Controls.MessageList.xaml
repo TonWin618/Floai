@@ -8,5 +8,6 @@
     <Style x:Key="MessageListStyle" TargetType="{x:Type ListBox}">
         <Setter Property="Background" Value="{DynamicResource message_box_bg_brsuh}"/>
         <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Margin" Value="0,0,0,30"/>
     </Style>
 </ResourceDictionary>
