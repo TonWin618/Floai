@@ -40,7 +40,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="35" />
         </Grid.RowDefinitions>
 
@@ -57,19 +56,18 @@
                     <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MessageItemStyle}"></Style>
                 </ListBox.ItemContainerStyle>
             </ListBox>
+            <DockPanel LastChildFill="False">
+                <TextBox x:Name="InputBox" Style="{DynamicResource InputBoxStyle}"
+                     MinHeight="30" MaxHeight="250" 
+                     TextWrapping="Wrap" AcceptsReturn="True"
+                     VerticalContentAlignment="Center" DockPanel.Dock="Bottom"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                     Text="{Binding InputContent}">
+                </TextBox>
+            </DockPanel>
         </Grid>
 
         <Grid Grid.Row="2" >
-            <TextBox x:Name="InputBox" Style="{DynamicResource InputBoxStyle}"
-                     MinHeight="30" MaxHeight="250" 
-                     TextWrapping="Wrap" AcceptsReturn="True"
-                     VerticalContentAlignment="Center"
-                     ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                     Text="{Binding InputContent}">
-            </TextBox>
-        </Grid>
-
-        <Grid Grid.Row="3" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="30" />
                 <ColumnDefinition Width="40" />
