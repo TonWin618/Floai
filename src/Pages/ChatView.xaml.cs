@@ -15,7 +15,6 @@ public partial class ChatView : Window
         viewModel = new ChatViewModel(this.ScrollToBottom);
         this.DataContext = viewModel;
         (this.Width, this.Height) = viewModel.ReadWindowSize();
-        TransparentClick.Enable(this);
     }
 
     private void BtnDrag_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
