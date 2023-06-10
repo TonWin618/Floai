@@ -40,10 +40,15 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="35" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
+        <Grid Grid.Row="0" Background="Transparent">
+            
+        </Grid>
+
+        <Grid Grid.Row="1">
             <ListBox x:Name="MessageList" Style="{DynamicResource MessageListStyle}"
                  ItemTemplateSelector="{StaticResource chatBubbleSelector}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" 
@@ -54,7 +59,7 @@
             </ListBox>
         </Grid>
 
-        <Grid Grid.Row="1" >
+        <Grid Grid.Row="2" >
             <TextBox x:Name="InputBox" Style="{DynamicResource InputBoxStyle}"
                      MinHeight="30" MaxHeight="250" 
                      TextWrapping="Wrap" AcceptsReturn="True"
@@ -64,7 +69,7 @@
             </TextBox>
         </Grid>
 
-        <Grid Grid.Row="2" >
+        <Grid Grid.Row="3" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="30" />
                 <ColumnDefinition Width="40" />

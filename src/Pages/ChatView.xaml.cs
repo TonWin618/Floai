@@ -71,6 +71,7 @@ public partial class ChatView : Window
     private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         viewModel.WriteWindowSize(this.Width, this.Height);
+        MessageList.MaxHeight = this.Height - 67;//67 represents the height from the top of the input box to the bottom of the window.
     }
 
     private void ShowSettingsView()
