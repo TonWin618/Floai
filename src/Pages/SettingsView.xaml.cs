@@ -31,6 +31,7 @@ public partial class SettingsView : Window
     private void BtnAddApiKey_Click(object sender, RoutedEventArgs e)
     {
         viewModel.AppendApiKey(ApiKeyTextBox.Text);
+        ApiKeyTextBox.Text = "";
     }
 
     private void BtnRemoveApiKey_Click(object sender, RoutedEventArgs e)
