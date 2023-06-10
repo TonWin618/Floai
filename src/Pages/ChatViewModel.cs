@@ -151,7 +151,7 @@ namespace Floai.Pages
             apiClient = new(apiKey);
 
             lastApiKeyIndex++;
-            if (lastApiKeyIndex > apiKeys.Length)
+            if (lastApiKeyIndex >= apiKeys.Length)
                 lastApiKeyIndex = 0;
         }
 
