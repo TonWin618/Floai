@@ -12,22 +12,13 @@ public class SettingsViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged = delegate { };
 
     public ObservableCollection<string> ApiKeys { get; set; }
-    public enum ChatBubbleLayout
-    {
-        Left,
-        Right,
-        Alternate
-    }
 
     public SettingsViewModel()
     {
         ApiKeys = new ObservableCollection<string>(AppConfiger.GetValues("apiKeys/apiKey"));
         StartWithWindows = AppConfiger.GetValue<bool>("startWithWindows");
         MessageSaveDirectory = AppConfiger.GetValue("messageSaveDirectory");
-        if (Enum.TryParse(AppConfiger.GetValue("chatBubbleLayout"), out ChatBubbleLayout bubbleLayout))
-        {
-            BubbleLayout = bubbleLayout;
-        }
+        isMarkdownEnabled = AppConfiger.GetValue<bool>("isMarkdownEnabled");
         AppConfiger.SettingChanged += ConfigAutoStart;
     }
 
@@ -82,17 +73,17 @@ public class SettingsViewModel : INotifyPropertyChanged
         }
     }
 
-    private ChatBubbleLayout bubbleLayout;
-    public ChatBubbleLayout BubbleLayout
+    private bool isMarkdownEnabled;
+    public bool IsMarkdownEnabled
     {
-        get { return bubbleLayout; }
+        get { return isMarkdownEnabled; }
         set
         {
-            if (bubbleLayout != value)
+            if (isMarkdownEnabled != value)
             {
-                bubbleLayout = value;
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(BubbleLayout)));
-                AppConfiger.SetValue("chatBubbleLayout", value.ToString());
+                isMarkdownEnabled = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(IsMarkdownEnabled)));
+                AppConfiger.SetValue("isMarkdownEnabled", value.ToString());
             }
         }
     }

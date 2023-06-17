@@ -26,7 +26,7 @@
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
     </Style>
 
-    <DataTemplate x:Key="ai">
+    <DataTemplate x:Key="ai-markdown">
         <Grid Margin="0,5,0,5">
             <Border x:Name="border"
                     Background="#FFFFFF" CornerRadius="1" 
@@ -46,6 +46,33 @@
             </Canvas>
         </Grid>
         
+        <DataTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="border" Property="Background" Value="{DynamicResource message_recv_hover_brush}"/>
+            </Trigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <DataTemplate x:Key="ai-text">
+        <Grid Margin="0,5,0,5">
+            <Border x:Name="border"
+                    Background="#FFFFFF" CornerRadius="1" 
+                    BorderBrush="{DynamicResource message_recv_border_brush}" BorderThickness="1"  
+                    VerticalAlignment="Top" HorizontalAlignment="Right"
+                    MinHeight="35" MinWidth="50" Padding="5" Margin="0,2,10,2" >
+                <Label VerticalContentAlignment="Center">
+                    <TextBox x:Name="contentBox" Text="{Binding Content}" IsReadOnly="True" TextWrapping="Wrap" BorderThickness="0" Background="Transparent"/>
+                </Label>
+            </Border>
+            <Canvas Width="10" Height="16" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,14,0,0" Background="Transparent">
+                <Path x:Name="path" Stroke="{DynamicResource message_recv_border_brush}" StrokeThickness="1" Fill="{DynamicResource message_recv_border_brush}">
+                    <Path.Data>
+                        <PathGeometry Figures="M 0,12 L 0,0,8,6"/>
+                    </Path.Data>
+                </Path>
+            </Canvas>
+        </Grid>
+
         <DataTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter TargetName="border" Property="Background" Value="{DynamicResource message_recv_hover_brush}"/>

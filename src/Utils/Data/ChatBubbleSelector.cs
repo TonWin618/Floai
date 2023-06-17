@@ -11,13 +11,13 @@ namespace Floai.Utils.Data
             var u = container as FrameworkElement;
 
             ChatMessage message = item as ChatMessage;
-
+            AppConfiger.GetValue("isMarkdownEnabled");
             if (message.Sender == "user")
                 return u.FindResource("user") as DataTemplate;
-            else if (message.Sender == "ai")
-                return u.FindResource("ai") as DataTemplate;
+            else if (message.Sender == "ai" && AppConfiger.GetValue<bool>("isMarkdownEnabled"))
+                return u.FindResource("ai-markdown") as DataTemplate;
             else
-                return u.FindResource("ai") as DataTemplate;
+                return u.FindResource("ai-text") as DataTemplate;
         }
     }
 }
