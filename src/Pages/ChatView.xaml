@@ -51,7 +51,7 @@
             <ListBox x:Name="MessageList" Style="{DynamicResource MessageListStyle}"
                  ItemTemplateSelector="{StaticResource chatBubbleSelector}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" 
-                 ItemsSource="{Binding Messages}" SelectedItem="{Binding SelectedMessageItem}">
+                 ItemsSource="{Binding Messages}" SelectedItem="{Binding SelectedMessageItem}" PreviewMouseWheel="MessageList_PreviewMouseWheel">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MessageItemStyle}"></Style>
                 </ListBox.ItemContainerStyle>

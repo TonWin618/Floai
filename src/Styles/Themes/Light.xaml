@@ -27,7 +27,7 @@
 
     <SolidColorBrush x:Key="message_recv_bg_brush" Color="#FFF6F6F6" options:Freeze="True" />
     <SolidColorBrush x:Key="message_recv_border_brush" Color="#FF75A99C" options:Freeze="True" />
-    <SolidColorBrush x:Key="message_recv_hover_brush" Color="#FFF0F0F0" options:Freeze="True" />
+    <SolidColorBrush x:Key="message_recv_hover_brush" Color="#FFFBFBFB" options:Freeze="True" />
 
     <SolidColorBrush x:Key="scrollbar_thumb_brush" Color="#FF75A99C" options:Freeze="True" />
 </ResourceDictionary>

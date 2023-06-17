@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Floai.Pages;
 
@@ -8,12 +9,14 @@ public partial class ChatView : Window
 {
     public ChatViewModel viewModel;
     private static FloatView? floatView;
+    ScrollViewer scrollViewer;
     public ChatView()
     {
         InitializeComponent();
         viewModel = new ChatViewModel(this.ScrollToBottom);
         this.DataContext = viewModel;
         (this.Width, this.Height) = viewModel.ReadWindowSize();
+        
     }
 
     private void BtnDrag_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -74,5 +77,33 @@ public partial class ChatView : Window
             var lastItem = MessageList.Items[MessageList.Items.Count - 1];
             MessageList.ScrollIntoView(lastItem);
         }
+    }
+
+    private void MessageList_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        e.Handled = true;
+        scrollViewer = FindVisualChild<ScrollViewer>(MessageList);
+        scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta);
+    }
+
+    private T FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
+    {
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+        {
+            DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+            if (child != null && child is T)
+            {
+                return (T)child;
+            }
+            else
+            {
+                T grandChild = FindVisualChild<T>(child);
+                if (grandChild != null)
+                {
+                    return grandChild;
+                }
+            }
+        }
+        return null;
     }
 }
