@@ -14,12 +14,12 @@ Chat with AI through a transparent floating window.
 - **Save message records in TXT format**: The application can save the conversation history in TXT format, making it easier for you to review, modify, and perform other operations.
 
 ## Releases
- | Version | Release date | Download                                                               |
- | ------- | ------------ | ---------------------------------------------------------------------- |
- | v1.0.0  | May 13,2023  | [Floai v1.0.0](https://github.com/TonWin618/Floai/releases/tag/v1.0.0) |
- | v1.1.0  | May 13,2023  | [Floai v1.1.0](https://github.com/TonWin618/Floai/releases/tag/v1.1.0) |
- | v1.2.0  | May 13,2023  | [Floai v1.2.0](https://github.com/TonWin618/Floai/releases/tag/v1.2.0) |
- | v1.2.0  | May 13,2023  | [Floai v1.3.0](https://github.com/TonWin618/Floai/releases/tag/v1.3.0) |
+| Version | Release date | Download                                                     |
+| ------- | ------------ | ------------------------------------------------------------ |
+| v1.0.0  | May 13,2023  | [Floai v1.0.0](https://github.com/TonWin618/Floai/releases/tag/v1.0.0) |
+| v1.1.0  | May 13,2023  | [Floai v1.1.0](https://github.com/TonWin618/Floai/releases/tag/v1.1.0) |
+| v1.2.0  | May 13,2023  | [Floai v1.2.0](https://github.com/TonWin618/Floai/releases/tag/v1.2.0) |
+| v1.3.0  | May 13,2023  | [Floai v1.3.0](https://github.com/TonWin618/Floai/releases/tag/v1.3.0) |
 
 ## How to Use
 1. Download the compressed package for the corresponding platform and extract it.  
