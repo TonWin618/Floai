@@ -45,5 +45,6 @@ Here is the latest version: [Floai v1.3.0](https://github.com/TonWin618/Floai/re
 - [ ] Custom API. 
 - [ ] Right-click to delete a message.
 - [ ] Personalize appearance.
+- [ ] User Customized Chat Template. 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
