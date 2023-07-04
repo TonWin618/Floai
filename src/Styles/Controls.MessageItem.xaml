@@ -34,7 +34,7 @@
                     VerticalAlignment="Top" HorizontalAlignment="Right"
                     MinHeight="35" MinWidth="50" Padding="5" Margin="0,2,10,2" >
                 <Label VerticalContentAlignment="Center">
-                    <mdxam:MarkdownScrollViewer Markdown="{Binding Content}" Zoom="90" ClickAction="OpenBrowser"/>
+                    <mdxam:MarkdownScrollViewer Markdown="{Binding Content}" Zoom="90" ClickAction="OpenBrowser" VerticalScrollBarVisibility="Disabled"/>
                 </Label>
             </Border>
             <Canvas Width="10" Height="16" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,14,0,0" Background="Transparent">

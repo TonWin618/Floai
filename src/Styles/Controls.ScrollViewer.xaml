@@ -78,5 +78,5 @@
         </Setter>
     </Style>
     <!--Deafault ScrollBar-->
-    <Style TargetType="ScrollBar" BasedOn="{StaticResource for_scrollbar}"/>
+    <Style x:Key="VerticalScrollBarStyle" TargetType="ScrollBar" BasedOn="{StaticResource for_scrollbar}"/>
 </ResourceDictionary>
