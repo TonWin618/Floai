@@ -23,6 +23,20 @@ public static class WindowsTaskbarIcon
         WindowsNotifyIcon.Icon = new Icon("./Floai.ico");
         ContextMenu context = new ContextMenu();
 
+        WindowsNotifyIcon.TrayLeftMouseDown += delegate (object sender, RoutedEventArgs e)
+        {
+            var chatView = WindowHelper.FindiWindow<ChatView>();
+            if (chatView != null)
+            {
+                chatView.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                chatView = new ChatView();
+                chatView.Show();
+            }
+        };
+
         MenuItem settings = new MenuItem();
         settings.Header = "Settings";
         settings.FontSize = 12;
