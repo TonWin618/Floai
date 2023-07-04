@@ -9,7 +9,8 @@ public partial class ChatView : Window
 {
     public ChatViewModel viewModel;
     private static FloatView? floatView;
-    ScrollViewer scrollViewer;
+    private bool autoScrollEnabled = true;
+    ScrollViewer? scrollViewer;
     public ChatView()
     {
         InitializeComponent();
@@ -26,6 +27,7 @@ public partial class ChatView : Window
 
     private async void BtnSend_Click(object sender, RoutedEventArgs e)
     {
+        autoScrollEnabled = true;
         await viewModel.RequestAndReceiveResponse();
     }
 
@@ -46,6 +48,7 @@ public partial class ChatView : Window
 
     private void TopicCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        autoScrollEnabled = true;
         viewModel.SwitchTopic();
         ScrollToBottom();
     }
@@ -69,6 +72,8 @@ public partial class ChatView : Window
 
     private void ScrollToBottom()
     {
+        if (!autoScrollEnabled) return;
+
         if (MessageList.Items.Count > 0)
         {
             var lastItem = MessageList.Items[^1];
@@ -79,6 +84,7 @@ public partial class ChatView : Window
     private void MessageList_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
     {
         e.Handled = true;
+        autoScrollEnabled = false;
         scrollViewer = FindVisualChild<ScrollViewer>(MessageList);
         scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta);
     }

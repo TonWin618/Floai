@@ -29,12 +29,12 @@ public static class AppConfiger
     /// <param name="key">Divide by "/" (eg. /apiKeys/apiKey)</param>
     /// <param name="defaultValue"></param>
     /// <returns></returns>
-    public static string GetValue(string key, string defaultValue = null)
+    public static string GetValue(string key, string defaultValue = "")
     {
         string fullKey = GetFullKey(key);
         return xmlDoc.SelectSingleNode(fullKey)?.InnerText ?? defaultValue;
     }
-    public static T GetValue<T>(string key, T defaultValue = default)
+    public static T GetValue<T>(string key, T? defaultValue = default)
     {
         var strValue = GetValue(key);
         if (string.IsNullOrEmpty(strValue))
