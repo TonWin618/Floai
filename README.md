@@ -23,7 +23,7 @@ Chat with AI through a transparent floating window.
 
 ## How to Use
 1. Download the compressed package for the corresponding platform and extract it.  
-Here is the latest version: [Floai v1.3.0](https://github.com/TonWin618/Floai/releases/tag/v1.3.0)
+Here is the latest version: [Floai-releases-latest](https://github.com/TonWin618/Floai/releases/latest)
 
 2. Launch the application. You will see a floating button, click on it to open the chat interface.  
 ![image](images/step2.png)
