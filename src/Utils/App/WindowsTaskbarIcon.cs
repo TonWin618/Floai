@@ -25,19 +25,25 @@ public static class WindowsTaskbarIcon
 
         MenuItem settings = new MenuItem();
         settings.Header = "Settings";
-        settings.FontSize = 14;
+        settings.FontSize = 12;
         settings.Click += delegate (object sender, RoutedEventArgs e)
         {
-            if (WindowHelper.IsWindowOpen<SettingsView>())
-                return;
-            var settingsView = new SettingsView();
-            settingsView.Show();
+            var settingsView = WindowHelper.FindiWindow<SettingsView>();
+            if (settingsView != null)
+            {
+                settingsView.Activate();
+            }
+            else
+            {
+                settingsView = new SettingsView();
+                settingsView.Show();
+            }
         };
         context.Items.Add(settings);
 
         MenuItem exit = new MenuItem();
         exit.Header = "Exit";
-        exit.FontSize = 14;
+        exit.FontSize = 12;
         exit.Click += delegate (object sender, RoutedEventArgs e)
         {
             Environment.Exit(0);

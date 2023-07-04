@@ -5,9 +5,9 @@ namespace Floai.Utils.App
 {
     public static class WindowHelper
     {
-        public static bool IsWindowOpen<T>() where T : Window
+        public static Window? FindiWindow <T>() where T : Window
         {
-            return Application.Current.Windows.OfType<T>().Any();
+            return Application.Current.Windows.OfType<T>().FirstOrDefault();
         }
     }
 }
