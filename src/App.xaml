@@ -1,8 +1,7 @@
 ﻿<Application x:Class="Floai.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Floai"
-             StartupUri="/Pages/FloatView.xaml">
+             xmlns:local="clr-namespace:Floai">
     <Application.Resources>
     </Application.Resources>
 </Application>
