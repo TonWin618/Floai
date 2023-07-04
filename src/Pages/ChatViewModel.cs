@@ -159,6 +159,7 @@ namespace Floai.Pages
         {
             if (SelectedTopicItem == null)
                 return;
+            if (isNewTopic) isNewTopic = false;
             messageManager = new ChatMessageManager(SelectedTopicItem.FilePath);
             Messages.Clear();
             messageManager.LoadMessages().ForEach(Messages.Add);
