@@ -17,7 +17,7 @@ public static class AppConfiger
     {
         configFilePath = "App.config";
         xmlDoc = new XmlDocument();
-        XmlReaderSettings settings = new XmlReaderSettings();
+        XmlReaderSettings settings = new();
         XmlReader reader = XmlReader.Create(configFilePath, settings);
         xmlDoc.Load(reader);
         reader.Close();
@@ -52,11 +52,7 @@ public static class AppConfiger
     public static void SetValue(string key, string value)
     {
         string fullKey = GetFullKey(key);
-        XmlNode? node = xmlDoc.SelectSingleNode(fullKey);
-        if (node == null)
-        {
-            throw new NullReferenceException("Cannot find the specified node.");
-        }
+        XmlNode? node = xmlDoc.SelectSingleNode(fullKey) ?? throw new NullReferenceException("Cannot find the specified node.");
         node.InnerText = value;
         SettingChanged(key, value);
         xmlDoc.Save(configFilePath);
@@ -70,11 +66,7 @@ public static class AppConfiger
     public static IEnumerable<string> GetValues(string key)
     {
         string fullKey = GetFullKey(key);
-        XmlNodeList? nodes = xmlDoc.SelectNodes(fullKey);
-        if (nodes == null)
-        {
-            throw new NullReferenceException("Cannot find the specified node.");
-        }
+        XmlNodeList? nodes = xmlDoc.SelectNodes(fullKey) ?? throw new NullReferenceException("Cannot find the specified node.");
         foreach (XmlNode node in nodes)
         {
             yield return node.InnerText;
@@ -107,12 +99,7 @@ public static class AppConfiger
         string childName = nodeNames.Last();
 
         string parentKey = string.Join(nodeSeparator, nodeNames.SkipLast(1));
-        XmlNode? parentNode = xmlDoc.SelectSingleNode(parentKey);
-        if (parentNode == null)
-        {
-            throw new NullReferenceException("Cannot find the specified node.");
-        }
-
+        XmlNode? parentNode = xmlDoc.SelectSingleNode(parentKey) ?? throw new NullReferenceException("Cannot find the specified node.");
         XmlNode childNode = xmlDoc.CreateElement(childName);
         childNode.InnerText = value;
         parentNode.AppendChild(childNode);
@@ -129,12 +116,7 @@ public static class AppConfiger
     public static void RemoveValue(string key, string value)
     {
         string fullKey = GetFullKey(key);
-        XmlNodeList? nodes = xmlDoc.SelectNodes(fullKey);
-        if (nodes == null)
-        {
-            throw new NullReferenceException("Cannot find the specified node.");
-        }
-
+        XmlNodeList? nodes = xmlDoc.SelectNodes(fullKey) ?? throw new NullReferenceException("Cannot find the specified node.");
         if (nodes.Count == 0)
         {
             return;

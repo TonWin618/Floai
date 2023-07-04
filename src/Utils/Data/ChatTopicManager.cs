@@ -9,7 +9,6 @@ namespace Floai.Utils.Data;
 
 public class ChatTopicManager
 {
-    private string directoryPath;
     public string DirectoryPath
     {
         get;
@@ -26,7 +25,7 @@ public class ChatTopicManager
 
     public List<ChatTopic> GetChatTopics()
     {
-        List<ChatTopic> chatTopics = new List<ChatTopic>();
+        List<ChatTopic> chatTopics = new();
         if (!Directory.Exists(DirectoryPath))
         {
             Directory.CreateDirectory(DirectoryPath);
@@ -46,7 +45,7 @@ public class ChatTopicManager
         DateTime dateTime = DateTime.Now;
         string dateTimeString = dateTime.ToString(dateFormatString);
 
-        StringBuilder topicNameStringBuilder = new StringBuilder(Math.Min(topicNameLenthLimit, firstMsg.Length));
+        StringBuilder topicNameStringBuilder = new(Math.Min(topicNameLenthLimit, firstMsg.Length));
         char[] invalidChars = Path.GetInvalidFileNameChars();
         for (int i = 0; i < Math.Min(topicNameLenthLimit, firstMsg.Length); i++)
         {
@@ -71,14 +70,13 @@ public class ChatTopicManager
 
         int dateTimeLenth = new DateTime().ToString(dateFormatString).Length;
 
-        string formattedDateTime = fileNameWithoutExtension.Substring(0, dateTimeLenth);
-        DateTime dateTime;
-        if (!DateTime.TryParseExact(formattedDateTime, dateFormatString, null, System.Globalization.DateTimeStyles.None, out dateTime))
+        string formattedDateTime = fileNameWithoutExtension[..dateTimeLenth];
+        if (!DateTime.TryParseExact(formattedDateTime, dateFormatString, null, System.Globalization.DateTimeStyles.None, out DateTime dateTime))
         {
             throw new ArgumentException("Invalid date time format.");
         }
 
-        string topicName = fileNameWithoutExtension.Substring(dateTimeLenth + fileNameSeparator.Length);
+        string topicName = fileNameWithoutExtension[(dateTimeLenth + fileNameSeparator.Length)..];
 
         return new ChatTopic(dateTime, topicName, filePath);
     }

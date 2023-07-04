@@ -6,7 +6,7 @@ namespace Floai.Pages
 {
     public partial class FloatView : Window
     {
-        FloatViewModel viewModel;
+        readonly FloatViewModel viewModel;
         static ChatView? chatView;
         SolidColorBrush? borderDefaultBrush;
         SolidColorBrush? borderHoverbrush;
@@ -26,8 +26,7 @@ namespace Floai.Pages
 
         private void SwitchToChatWindow()
         {
-            if (chatView == null)
-                chatView = new ChatView();
+            chatView ??= new ChatView();
 
             chatView.Left = this.Left - chatView.Width + this.Width;
             chatView.Top = this.Top - chatView.Height + this.Height;
@@ -41,10 +40,10 @@ namespace Floai.Pages
             // Indicate that the event has been handled
             e.Handled = true;
 
-            Point beforeDragMovePosition = new Point(this.Left, this.Top);
+            Point beforeDragMovePosition = new(this.Left, this.Top);
             if (e.LeftButton == MouseButtonState.Pressed)
                 this.DragMove();
-            Point afterDragMovePosition = new Point(this.Left, this.Top);
+            Point afterDragMovePosition = new(this.Left, this.Top);
 
             // If the window position remains the same, it means the user wants to perform a click operation
             if (beforeDragMovePosition == afterDragMovePosition)

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Floai.Utils.App;
+using System.Windows;
 
 namespace Floai
 {

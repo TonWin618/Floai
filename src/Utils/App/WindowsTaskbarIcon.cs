@@ -1,69 +1,78 @@
 ﻿using Floai.Pages;
-using Floai.Utils.App;
 using Hardcodet.Wpf.TaskbarNotification;
 using System;
 using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
-public static class WindowsTaskbarIcon
+
+namespace Floai.Utils.App
 {
-    static TaskbarIcon WindowsNotifyIcon { get; set; }
-
-    public static void Open()
+    public static class WindowsTaskbarIcon
     {
-        if (WindowsNotifyIcon == null)
+        static TaskbarIcon WindowsNotifyIcon { get; set; }
+
+        public static void Open()
         {
-            InitNotifyIcon();
+            if (WindowsNotifyIcon == null)
+            {
+                InitNotifyIcon();
+            }
         }
-    }
 
-    static void InitNotifyIcon()
-    {
-        WindowsNotifyIcon = new TaskbarIcon();
-        WindowsNotifyIcon.Icon = new Icon("./Floai.ico");
-        ContextMenu context = new ContextMenu();
-
-        WindowsNotifyIcon.TrayLeftMouseDown += delegate (object sender, RoutedEventArgs e)
+        static void InitNotifyIcon()
         {
-            var chatView = WindowHelper.FindiWindow<ChatView>();
-            if (chatView != null)
+            WindowsNotifyIcon = new TaskbarIcon
             {
-                chatView.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                chatView = new ChatView();
-                chatView.Show();
-            }
-        };
+                Icon = new Icon("./Floai.ico")
+            };
+            ContextMenu context = new();
 
-        MenuItem settings = new MenuItem();
-        settings.Header = "Settings";
-        settings.FontSize = 12;
-        settings.Click += delegate (object sender, RoutedEventArgs e)
-        {
-            var settingsView = WindowHelper.FindiWindow<SettingsView>();
-            if (settingsView != null)
+            WindowsNotifyIcon.TrayLeftMouseDown += delegate (object sender, RoutedEventArgs e)
             {
-                settingsView.Activate();
-            }
-            else
+                var chatView = WindowHelper.FindiWindow<ChatView>();
+                if (chatView != null)
+                {
+                    chatView.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    chatView = new ChatView();
+                    chatView.Show();
+                }
+            };
+
+            MenuItem settings = new()
             {
-                settingsView = new SettingsView();
-                settingsView.Show();
-            }
-        };
-        context.Items.Add(settings);
+                Header = "Settings",
+                FontSize = 12
+            };
+            settings.Click += delegate (object sender, RoutedEventArgs e)
+            {
+                var settingsView = WindowHelper.FindiWindow<SettingsView>();
+                if (settingsView != null)
+                {
+                    settingsView.Activate();
+                }
+                else
+                {
+                    settingsView = new SettingsView();
+                    settingsView.Show();
+                }
+            };
+            context.Items.Add(settings);
 
-        MenuItem exit = new MenuItem();
-        exit.Header = "Exit";
-        exit.FontSize = 12;
-        exit.Click += delegate (object sender, RoutedEventArgs e)
-        {
-            Environment.Exit(0);
-        };
-        context.Items.Add(exit);
+            MenuItem exit = new()
+            {
+                Header = "Exit",
+                FontSize = 12
+            };
+            exit.Click += delegate (object sender, RoutedEventArgs e)
+            {
+                Environment.Exit(0);
+            };
+            context.Items.Add(exit);
 
-        WindowsNotifyIcon.ContextMenu = context;
+            WindowsNotifyIcon.ContextMenu = context;
+        }
     }
 }

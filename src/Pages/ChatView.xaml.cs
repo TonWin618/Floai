@@ -31,10 +31,7 @@ public partial class ChatView : Window
 
     private void BtnClose_Click(object sender, RoutedEventArgs e)
     {
-        if (floatView == null)
-        {
-            floatView = new FloatView();
-        }
+        floatView ??= new FloatView();
         floatView.Left = this.Left + this.Width - floatView.Width;
         floatView.Top = this.Top + this.Height - floatView.Height;
         floatView.Closed += (s, evenArgs) => floatView = null;
@@ -74,7 +71,7 @@ public partial class ChatView : Window
     {
         if (MessageList.Items.Count > 0)
         {
-            var lastItem = MessageList.Items[MessageList.Items.Count - 1];
+            var lastItem = MessageList.Items[^1];
             MessageList.ScrollIntoView(lastItem);
         }
     }
@@ -91,9 +88,9 @@ public partial class ChatView : Window
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
         {
             DependencyObject child = VisualTreeHelper.GetChild(obj, i);
-            if (child != null && child is T)
+            if (child != null && child is T t)
             {
-                return (T)child;
+                return t;
             }
             else
             {
