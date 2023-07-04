@@ -202,7 +202,7 @@ namespace Floai.Pages
         public List<Message> GenerateChatContext()
         {
             //Generate message sent by the user
-            var userMsg = new ChatMessage(DateTime.Now, "user", InputContent);
+            var userMsg = new ChatMessage(DateTime.Now, Sender.User, InputContent);
             InputContent = "";
             if (isNewTopic)
             {
@@ -214,7 +214,7 @@ namespace Floai.Pages
 
             //Context of conversations between user and AI.
             var messageContext = Messages.Select(
-                msg => new Message(msg.Sender == "user" ? Role.User : Role.Assistant, msg.Content))
+                msg => new Message(msg.Sender == Sender.AI ? Role.User : Role.Assistant, msg.Content))
                 .ToList();
 
             messageContext.Add(new Message(Role.User, userMsg.Content));
@@ -238,7 +238,7 @@ namespace Floai.Pages
             List<Message> chatContext = GenerateChatContext();
 
             //Generate messages sent by the AI
-            var newMsg = new ChatMessage(DateTime.Now, "ai", "");
+            var newMsg = new ChatMessage(DateTime.Now, Sender.AI, "");
             Messages.Add(newMsg);
             ScrollToBottom();//temp
             var chatRequest = new ChatRequest(chatContext, OpenAI.Models.Model.GPT3_5_Turbo);

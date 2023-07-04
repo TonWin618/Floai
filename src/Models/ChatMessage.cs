@@ -2,17 +2,21 @@
 using System.ComponentModel;
 
 namespace Floai.Model;
-
+public enum Sender
+{
+    AI,
+    User
+}
 public class ChatMessage : INotifyPropertyChanged
 {
     public DateTime DateTime { get; set; }
-    public string Sender { get; set; }
+    public Sender Sender { get; set; }
     public string Content { get; set; }
 
-    public ChatMessage(DateTime dateTime, string sender, string content)
+    public ChatMessage(DateTime dateTime, Sender sender, string content)
     {
         this.DateTime = dateTime;
-        this.Sender = sender;
+        this.Sender = Sender.AI;
         this.Content = content;
     }
 
