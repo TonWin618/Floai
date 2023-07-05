@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Floai.Utils.Data;
+namespace Floai.Utils.Model;
 
 public class ChatTopicManager
 {

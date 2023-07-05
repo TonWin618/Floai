@@ -1,4 +1,4 @@
-﻿namespace Floai.Utils.App
+﻿namespace Floai.Utils.View
 {
     public interface ISetWindowProperties
     {

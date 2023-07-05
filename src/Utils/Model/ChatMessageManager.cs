@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Floai.Utils.Data;
+namespace Floai.Utils.Model;
 
 public class ChatMessageManager
 {

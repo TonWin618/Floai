@@ -1,5 +1,5 @@
 ﻿using Floai.Models;
-using Floai.Utils.Data;
+using Floai.Utils.Model;
 
 namespace Floai.Pages;
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 
-namespace Floai.Utils.App
+namespace Floai.Utils.View
 {
     public class WindowManager
     {

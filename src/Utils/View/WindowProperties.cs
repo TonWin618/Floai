@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Floai.Utils.App;
+namespace Floai.Utils.View;
 
 public record WindowProperties
 {

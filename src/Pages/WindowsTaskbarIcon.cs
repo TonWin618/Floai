@@ -1,4 +1,4 @@
-﻿using Floai.Utils.App;
+﻿using Floai.Utils.View;
 using Hardcodet.Wpf.TaskbarNotification;
 using System;
 using System.Drawing;

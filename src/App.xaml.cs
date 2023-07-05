@@ -1,7 +1,7 @@
 ﻿using Floai.Models;
 using Floai.Pages;
-using Floai.Utils.App;
-using Floai.Utils.Data;
+using Floai.Utils.View;
+using Floai.Utils.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

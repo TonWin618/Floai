@@ -1,6 +1,6 @@
 ﻿using Floai.Models;
-using Floai.Utils.App;
-using Floai.Utils.Data;
+using Floai.Utils.View;
+using Floai.Utils.Model;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;

@@ -1,6 +1,6 @@
 ﻿using Floai.Model;
 using Floai.Models;
-using Floai.Utils.Data;
+using Floai.Utils.Model;
 using OpenAI;
 using OpenAI.Chat;
 using System;
