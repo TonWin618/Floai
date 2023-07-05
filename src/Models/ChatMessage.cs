@@ -16,7 +16,7 @@ public class ChatMessage : INotifyPropertyChanged
     public ChatMessage(DateTime dateTime, Sender sender, string content)
     {
         this.DateTime = dateTime;
-        this.Sender = Sender.AI;
+        this.Sender = sender;
         this.Content = content;
     }
 

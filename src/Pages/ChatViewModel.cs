@@ -214,7 +214,7 @@ namespace Floai.Pages
 
             //Context of conversations between user and AI.
             var messageContext = Messages.Select(
-                msg => new Message(msg.Sender == Sender.AI ? Role.User : Role.Assistant, msg.Content))
+                msg => new Message(msg.Sender == Sender.User ? Role.User : Role.Assistant, msg.Content))
                 .ToList();
 
             messageContext.Add(new Message(Role.User, userMsg.Content));
