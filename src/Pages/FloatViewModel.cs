@@ -13,7 +13,7 @@ public class FloatViewModel
     public (double, double) ReadWindowPostion()
     {
         double positionX = appSettings.InitialPositionX;
-        double positionY = appSettings.InitialPositionX;
+        double positionY = appSettings.InitialPositionY;
         return (positionX, positionY);
     }
 

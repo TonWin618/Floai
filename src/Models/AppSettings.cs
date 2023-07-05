@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System;
+using System.Text.Json.Serialization;
+using System.Text.Json.Nodes;
 
 namespace Floai.Models;
 public class AppSettings
@@ -117,7 +119,9 @@ public class AppSettings
         }
     }
 
+    [JsonIgnore]
     private readonly string filePath;
+    [JsonIgnore]
     public Action<string> SettingChanged = delegate{ };
 
     public AppSettings(string filePath)
@@ -132,7 +136,7 @@ public class AppSettings
         {
             WriteIndented = true
         };
-        string json = JsonSerializer.Serialize(this,options);
+        string json = JsonSerializer.Serialize(this, options);
         File.WriteAllText(filePath, json);
     }
 }

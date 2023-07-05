@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Windows;
+using System.Text.Json;
+using System.IO;
 
 namespace Floai
 {
@@ -18,11 +20,12 @@ namespace Floai
         public App()
         {
             string configFilePath = "appsettings.json";
+            var json = File.ReadAllText(configFilePath);
             var config = new ConfigurationBuilder()
                 .AddJsonFile(configFilePath, false, false)
                 .Build();
             var appSettings = new AppSettings(configFilePath);
-            config.GetSection("setting").Bind(appSettings);
+            config.Bind(appSettings);
             AppHost = Host.CreateDefaultBuilder()
                 .ConfigureServices((hostContext, services) =>
                 {
