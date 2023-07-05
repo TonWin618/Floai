@@ -14,7 +14,7 @@ public class ChatTopicManager
         get;
         set;
     }
-    public readonly string fileExtension = "txt";
+    public readonly string fileExtension = "json";
     private readonly int topicNameLenthLimit = 80;
     private readonly string fileNameSeparator = "-";
     private readonly string dateFormatString = "yyyyMMddHHmmss";
