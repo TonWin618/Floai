@@ -1,17 +1,22 @@
-﻿using Floai.Pages;
+﻿using Floai.Utils.View;
 using Hardcodet.Wpf.TaskbarNotification;
 using System;
 using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Floai.Utils.App
+namespace Floai.Pages
 {
-    public static class WindowsTaskbarIcon
+    public class WindowsTaskbarIcon
     {
-        static TaskbarIcon WindowsNotifyIcon { get; set; }
+        TaskbarIcon WindowsNotifyIcon { get; set; }
+        private readonly WindowManager windowManager;
+        public WindowsTaskbarIcon(WindowManager windowManager)
+        {
+            this.windowManager = windowManager;
+        }
 
-        public static void Open()
+        public void Open()
         {
             if (WindowsNotifyIcon == null)
             {
@@ -19,7 +24,7 @@ namespace Floai.Utils.App
             }
         }
 
-        static void InitNotifyIcon()
+        void InitNotifyIcon()
         {
             WindowsNotifyIcon = new TaskbarIcon
             {
@@ -29,16 +34,18 @@ namespace Floai.Utils.App
 
             WindowsNotifyIcon.TrayLeftMouseDown += delegate (object sender, RoutedEventArgs e)
             {
-                var chatView = WindowHelper.FindiWindow<ChatView>();
-                if (chatView != null)
-                {
-                    chatView.Visibility = Visibility.Visible;
-                }
+                var chatView = windowManager.FindWindow<ChatView>();
+                var floatView = windowManager.FindWindow<FloatView>();
+
+                if (floatView != null)
+                    floatView.Visibility = Visibility.Collapsed;
                 else
-                {
-                    chatView = new ChatView();
-                    chatView.Show();
-                }
+                    return;
+
+                if (chatView != null)
+                    chatView.Visibility = Visibility.Visible;
+                else
+                    windowManager.SetWindow<ChatView>(new WindowProperties(floatView));
             };
 
             MenuItem settings = new()
@@ -48,15 +55,14 @@ namespace Floai.Utils.App
             };
             settings.Click += delegate (object sender, RoutedEventArgs e)
             {
-                var settingsView = WindowHelper.FindiWindow<SettingsView>();
+                var settingsView = windowManager.FindWindow<SettingsView>();
                 if (settingsView != null)
                 {
                     settingsView.Activate();
                 }
                 else
                 {
-                    settingsView = new SettingsView();
-                    settingsView.Show();
+                    windowManager.SetWindow<SettingsView>(null);
                 }
             };
             context.Items.Add(settings);

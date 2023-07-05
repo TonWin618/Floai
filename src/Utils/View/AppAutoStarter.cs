@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Floai.Utils.App;
+namespace Floai.Utils.View;
 
 public static class AppAutoStarter
 {

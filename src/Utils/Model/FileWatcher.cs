@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Floai.Utils.Data;
+namespace Floai.Utils.Model;
 
 public class FileWatcher
 {

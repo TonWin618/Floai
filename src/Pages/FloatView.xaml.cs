@@ -1,38 +1,50 @@
-﻿using System.Windows;
+﻿using Floai.Models;
+using Floai.Utils.View;
+using Floai.Utils.Model;
+using System;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Floai.Pages
 {
-    public partial class FloatView : Window
+    public partial class FloatView : Window,ISetWindowProperties
     {
         readonly FloatViewModel viewModel;
-        static ChatView? chatView;
         SolidColorBrush? borderDefaultBrush;
         SolidColorBrush? borderHoverbrush;
-        public FloatView()
+        private readonly WindowManager windowManager;
+        public FloatView(WindowManager windowManager, AppSettings appSettings)
         {
+            this.windowManager = windowManager;
             InitializeComponent();
+            viewModel = new FloatViewModel(appSettings);
+            LoadResources();
             this.ShowInTaskbar = false;
-            viewModel = new FloatViewModel();
-            (this.Left, this.Top) = viewModel.ReadWindowPostion();
+        }
+
+        public void SetWindowProperties(WindowProperties properties)
+        {
+            if(properties == null)
+            {
+                (this.Left, this.Top) = viewModel.ReadWindowPostion();
+                return;
+            }
+
             if ((SystemParameters.PrimaryScreenWidth < this.Left - this.Width) || (SystemParameters.PrimaryScreenHeight < this.Top - this.Height))
             {
                 this.Left = SystemParameters.PrimaryScreenWidth / 2;
                 this.Top = SystemParameters.PrimaryScreenHeight / 2;
             }
-            LoadResources();
+            this.Left = properties.Right - this.Width;
+            this.Top = properties.Bottom - this.Height;
+            this.Visibility = Visibility.Visible;
         }
 
         private void SwitchToChatWindow()
         {
-            chatView ??= new ChatView();
-
-            chatView.Left = this.Left - chatView.Width + this.Width;
-            chatView.Top = this.Top - chatView.Height + this.Height;
-
             this.Visibility = Visibility.Collapsed;
-            chatView.Visibility = Visibility.Visible;
+            windowManager.SetWindow<ChatView>(new WindowProperties(this));
         }
 
         private void FloatingBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

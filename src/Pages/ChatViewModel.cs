@@ -1,5 +1,6 @@
 ﻿using Floai.Model;
-using Floai.Utils.Data;
+using Floai.Models;
+using Floai.Utils.Model;
 using OpenAI;
 using OpenAI.Chat;
 using System;
@@ -18,11 +19,12 @@ namespace Floai.Pages
         public Action ScrollToBottom;//temp
 
         private OpenAIClient apiClient;
-        private string[] apiKeys;
+        private List<string> apiKeys;
         private int lastApiKeyIndex;
         private ChatMessageManager messageManager;
         private ChatTopicManager topicManager;
         public FileWatcher fileWatcher;
+        private readonly AppSettings appSettings;
 
         private string inputContent;
         public string InputContent
@@ -66,25 +68,30 @@ namespace Floai.Pages
         }
 
         private bool isNewTopic = false;
-        public ChatViewModel(Action ScrollToBottom)
+        public ChatViewModel(Action ScrollToBottom, AppSettings appSettings)
         {
+            this.appSettings = appSettings;
             this.ScrollToBottom += ScrollToBottom;
             Messages = new ObservableCollection<ChatMessage>();
             Topics = new ObservableCollection<ChatTopic>();
-            AppConfiger.SettingChanged += OnSettingChange;
+            appSettings.SettingChanged += OnSettingChange;
             ReloadData();
         }
 
-        private void OnSettingChange(string key, string value)
+        private void OnSettingChange(string key)
         {
-            if (key == "messageSaveDirectory")
+            if (key == nameof(appSettings.MessageSaveDirectory))
             {
                 ReloadData();
-                fileWatcher = new(value, OnMsgLogFileChanged);
+                fileWatcher = new(appSettings.MessageSaveDirectory, OnMsgLogFileChanged);
             }
-            if (key == "apiKeys/apiKey")
+            if (key == nameof(appSettings.ApiKeys))
             {
                 ReloadApiKeys();
+            }
+            if(key == nameof(appSettings.IsMarkdownEnabled))
+            {
+                SwitchTopic();
             }
         }
 
@@ -118,7 +125,7 @@ namespace Floai.Pages
 
         private void ReloadTopics()
         {
-            string messageSaveDictionary = AppConfiger.GetValue("messageSaveDirectory");
+            string messageSaveDictionary = appSettings.MessageSaveDirectory;
             topicManager = new ChatTopicManager(messageSaveDictionary);
             Topics.Clear();
             selectedTopicItem = null;
@@ -127,7 +134,7 @@ namespace Floai.Pages
             {
                 isNewTopic = true;
             }
-            apiKeys = AppConfiger.GetValues("apiKeys/apiKey").ToArray();
+            apiKeys = appSettings.ApiKeys;
         }
 
         //To create a new topic, the first message needs to name the topic.
@@ -167,20 +174,20 @@ namespace Floai.Pages
         }
         public (double, double) ReadWindowSize()
         {
-            double windowWidth = AppConfiger.GetValue<double>("initialWindowWidth");
-            double windowHeight = AppConfiger.GetValue<double>("initialWindowHeight");
+            double windowWidth = appSettings.InitialWindowWidth;
+            double windowHeight = appSettings.InitialWindowWidth;
             return (windowWidth, windowHeight);
         }
 
         public void WriteWindowSize(double width, double height)
         {
-            AppConfiger.SetValue("initialWindowWidth", width.ToString());
-            AppConfiger.SetValue("initialWindowHeight", height.ToString());
+            appSettings.InitialWindowWidth = width;
+            appSettings.InitialWindowHeight = height;
         }
 
         public void InitializeApiClient()
         {
-            if (apiKeys.Length == 0)
+            if (apiKeys.Count == 0)
             {
                 throw new Exception("API key not configured.");
             }
@@ -188,21 +195,21 @@ namespace Floai.Pages
             apiClient = new(apiKey);
 
             lastApiKeyIndex++;
-            if (lastApiKeyIndex >= apiKeys.Length)
+            if (lastApiKeyIndex >= apiKeys.Count)
                 lastApiKeyIndex = 0;
         }
 
         public void ReloadApiKeys()
         {
             //If the list of ApiKeys changes in the configuration, then reloading is necessary.
-            apiKeys = AppConfiger.GetValues("apiKeys/apiKey").ToArray();
+            apiKeys = appSettings.ApiKeys;
             lastApiKeyIndex = 0;
         }
 
         public List<Message> GenerateChatContext()
         {
             //Generate message sent by the user
-            var userMsg = new ChatMessage(DateTime.Now, "user", InputContent);
+            var userMsg = new ChatMessage(DateTime.Now, Sender.User, InputContent);
             InputContent = "";
             if (isNewTopic)
             {
@@ -214,7 +221,7 @@ namespace Floai.Pages
 
             //Context of conversations between user and AI.
             var messageContext = Messages.Select(
-                msg => new Message(msg.Sender == "user" ? Role.User : Role.Assistant, msg.Content))
+                msg => new Message(msg.Sender == Sender.User ? Role.User : Role.Assistant, msg.Content))
                 .ToList();
 
             messageContext.Add(new Message(Role.User, userMsg.Content));
@@ -238,7 +245,7 @@ namespace Floai.Pages
             List<Message> chatContext = GenerateChatContext();
 
             //Generate messages sent by the AI
-            var newMsg = new ChatMessage(DateTime.Now, "ai", "");
+            var newMsg = new ChatMessage(DateTime.Now, Sender.AI, "");
             Messages.Add(newMsg);
             ScrollToBottom();//temp
             var chatRequest = new ChatRequest(chatContext, OpenAI.Models.Model.GPT3_5_Turbo);
