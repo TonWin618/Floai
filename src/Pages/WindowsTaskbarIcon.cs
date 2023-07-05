@@ -1,22 +1,21 @@
-﻿using Floai.Pages;
+﻿using Floai.Utils.App;
 using Hardcodet.Wpf.TaskbarNotification;
-using Stylet;
 using System;
 using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Floai.Utils.App
+namespace Floai.Pages
 {
     public class WindowsTaskbarIcon
     {
         TaskbarIcon WindowsNotifyIcon { get; set; }
         private readonly WindowManager windowManager;
-        public WindowsTaskbarIcon(WindowManager windowManager) 
+        public WindowsTaskbarIcon(WindowManager windowManager)
         {
             this.windowManager = windowManager;
         }
-        
+
         public void Open()
         {
             if (WindowsNotifyIcon == null)

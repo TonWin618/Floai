@@ -45,7 +45,7 @@
     <Compile Update="Styles\Themes\Dictionary1.xaml.cs">
       <Generator>MSBuild:Compile</Generator>
     </Compile>
-    <Compile Update="Utils\App\WindowsTaskbarIcon.cs">
+    <Compile Update="Pages\WindowsTaskbarIcon.cs">
       <Generator>MSBuild:Compile</Generator>
     </Compile>
   </ItemGroup>
