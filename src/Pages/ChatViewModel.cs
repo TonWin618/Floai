@@ -74,18 +74,18 @@ namespace Floai.Pages
             this.ScrollToBottom += ScrollToBottom;
             Messages = new ObservableCollection<ChatMessage>();
             Topics = new ObservableCollection<ChatTopic>();
-            //appSettings.SettingChanged += OnSettingChange;
+            appSettings.SettingChanged += OnSettingChange;
             ReloadData();
         }
 
         private void OnSettingChange(string key)
         {
-            if (key == "messageSaveDirectory")
+            if (key == nameof(appSettings.MessageSaveDirectory))
             {
                 ReloadData();
                 fileWatcher = new(appSettings.MessageSaveDirectory, OnMsgLogFileChanged);
             }
-            if (key == "apiKeys/apiKey")
+            if (key == nameof(appSettings.ApiKeys))
             {
                 ReloadApiKeys();
             }
