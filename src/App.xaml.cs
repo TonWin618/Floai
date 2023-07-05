@@ -19,7 +19,7 @@ namespace Floai
         {
             string configFilePath = "appsettings.json";
             var config = new ConfigurationBuilder()
-                .AddJsonFile(configFilePath, false,false)
+                .AddJsonFile(configFilePath, false, false)
                 .Build();
             var appSettings = new AppSettings(configFilePath);
             config.GetSection("setting").Bind(appSettings);

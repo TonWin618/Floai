@@ -13,7 +13,7 @@ public class AppSettings
         set
         {
             apiKeys = value;
-            UpdateJsonConfig(nameof(ApiKeys));
+            OnSettingChanged(nameof(ApiKeys));
         }
     }
 
@@ -24,7 +24,7 @@ public class AppSettings
         set
         {
             startWithWindows = value;
-            UpdateJsonConfig(nameof(StartWithWindows));
+            OnSettingChanged(nameof(StartWithWindows));
         }
     }
 
@@ -35,7 +35,7 @@ public class AppSettings
         set
         {
             initialPositionX = value;
-            UpdateJsonConfig(nameof(InitialPositionX));
+            OnSettingChanged(nameof(InitialPositionX));
         }
     }
 
@@ -46,7 +46,7 @@ public class AppSettings
         set
         {
             initialPositionY = value;
-            UpdateJsonConfig(nameof(InitialPositionY));
+            OnSettingChanged(nameof(InitialPositionY));
         }
     }
 
@@ -57,7 +57,7 @@ public class AppSettings
         set
         {
             initialWindowHeight = value;
-            UpdateJsonConfig(nameof(InitialWindowHeight));
+            OnSettingChanged(nameof(InitialWindowHeight));
         }
     }
 
@@ -68,7 +68,7 @@ public class AppSettings
         set
         {
             initialWindowWidth = value;
-            UpdateJsonConfig(nameof(InitialWindowWidth));
+            OnSettingChanged(nameof(InitialWindowWidth));
         }
     }
 
@@ -79,7 +79,7 @@ public class AppSettings
         set
         {
             messageSaveDirectory = value;
-            UpdateJsonConfig(nameof(MessageSaveDirectory));
+            OnSettingChanged(nameof(MessageSaveDirectory));
         }
     }
 
@@ -90,7 +90,7 @@ public class AppSettings
         set
         {
             themeMode = value;
-            UpdateJsonConfig(nameof(ThemeMode));
+            OnSettingChanged(nameof(ThemeMode));
         }
     }
 
@@ -101,7 +101,7 @@ public class AppSettings
         set
         {
             theme = value;
-            UpdateJsonConfig(nameof(Theme));
+            OnSettingChanged(nameof(Theme));
         }
     }
 
@@ -113,7 +113,7 @@ public class AppSettings
         set
         {
             isMarkdownEnabled = value;
-            UpdateJsonConfig(nameof(IsMarkdownEnabled));
+            OnSettingChanged(nameof(IsMarkdownEnabled));
         }
     }
 
@@ -125,7 +125,7 @@ public class AppSettings
         this.filePath = filePath;
     }
 
-    private void UpdateJsonConfig(string name)
+    private void OnSettingChanged(string name)
     {
         SettingChanged(name);
         var options = new JsonSerializerOptions
