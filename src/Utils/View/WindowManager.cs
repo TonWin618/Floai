@@ -13,16 +13,6 @@ namespace Floai.Utils.View
         public WindowManager(IServiceProvider serviceProvider) 
         {
             this.serviceProvider = serviceProvider;
-            Type[] types = Assembly.GetExecutingAssembly().GetTypes();
-            var matchingTypes = types.Where(t =>
-                t.Namespace == "Floai.Pages" &&
-                t.IsSubclassOf(typeof(Window)) &&
-                t.GetInterfaces().Contains(typeof(ISetWindowProperties)));
-
-            foreach (var type in matchingTypes)
-            {
-                Console.WriteLine(type.Name);
-            }
         }
 
         public Window? FindWindow<T>() where T : Window
@@ -33,12 +23,9 @@ namespace Floai.Utils.View
         public void SetWindow<T>(WindowProperties properties) where T : Window, ISetWindowProperties
         {
             var window = FindWindow<T>();
-            if (window == null)
-            {
-                window = this.serviceProvider.GetRequiredService<T>();
-                window.Show();
-            }
+            window ??= this.serviceProvider.GetRequiredService<T>();
             ((ISetWindowProperties)window).SetWindowProperties(properties);
+            window.Show();
         }
     }
 }
