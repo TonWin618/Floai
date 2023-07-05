@@ -17,10 +17,11 @@ namespace Floai
         public static IHost? AppHost { get; private set; }
         public App()
         {
+            string configFilePath = "appsettings.json";
             var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json",false,true)
+                .AddJsonFile(configFilePath, false,true)
                 .Build();
-            var appSettings = new AppSettings();
+            var appSettings = new AppSettings(configFilePath);
             config.GetSection("setting").Bind(appSettings);
             AppHost = Host.CreateDefaultBuilder()
                 .ConfigureServices((hostContext, services) =>

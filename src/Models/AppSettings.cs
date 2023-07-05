@@ -117,7 +117,13 @@ public class AppSettings
         }
     }
 
+    private readonly string filePath;
     public Action<string> SettingChanged = delegate{ };
+
+    public AppSettings(string filePath)
+    {
+        this.filePath = filePath;
+    }
 
     private void UpdateJsonConfig(string name)
     {
@@ -127,6 +133,6 @@ public class AppSettings
             WriteIndented = true
         };
         string json = JsonSerializer.Serialize(this,options);
-        File.WriteAllText("settings.json", json);
+        File.WriteAllText(filePath, json);
     }
 }
