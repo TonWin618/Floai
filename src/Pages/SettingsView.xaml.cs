@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAPICodePack.Dialogs;
+﻿using Floai.Utils.App;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -7,15 +8,22 @@ using System.Windows.Controls;
 
 namespace Floai.Pages;
 
-public partial class SettingsView : Window
+public partial class SettingsView : Window,ISetWindowProperties
 {
     SettingsViewModel viewModel;
-    public SettingsView()
+    private readonly WindowManager windowManager;
+    public SettingsView(WindowManager windowManager)
     {
+        this.windowManager = windowManager;
         InitializeComponent();
-        WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        
         viewModel = new SettingsViewModel();
         this.DataContext = viewModel;
+    }
+
+    public void SetWindowProperties(WindowProperties? properties = null)
+    {
+        WindowStartupLocation = WindowStartupLocation.CenterScreen;
     }
 
     private void BtnBrowse_Click(object sender, RoutedEventArgs e)

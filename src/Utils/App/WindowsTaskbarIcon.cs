@@ -1,5 +1,6 @@
 ﻿using Floai.Pages;
 using Hardcodet.Wpf.TaskbarNotification;
+using Stylet;
 using System;
 using System.Drawing;
 using System.Windows;
@@ -7,11 +8,16 @@ using System.Windows.Controls;
 
 namespace Floai.Utils.App
 {
-    public static class WindowsTaskbarIcon
+    public class WindowsTaskbarIcon
     {
-        static TaskbarIcon WindowsNotifyIcon { get; set; }
-
-        public static void Open()
+        TaskbarIcon WindowsNotifyIcon { get; set; }
+        private readonly WindowManager windowManager;
+        public WindowsTaskbarIcon(WindowManager windowManager) 
+        {
+            this.windowManager = windowManager;
+        }
+        
+        public void Open()
         {
             if (WindowsNotifyIcon == null)
             {
@@ -19,7 +25,7 @@ namespace Floai.Utils.App
             }
         }
 
-        static void InitNotifyIcon()
+        void InitNotifyIcon()
         {
             WindowsNotifyIcon = new TaskbarIcon
             {
@@ -29,14 +35,13 @@ namespace Floai.Utils.App
 
             WindowsNotifyIcon.TrayLeftMouseDown += delegate (object sender, RoutedEventArgs e)
             {
-                var chatView = WindowHelper.FindiWindow<ChatView>();
+                var chatView = windowManager.FindWindow<ChatView>();
                 if (chatView != null)
                 {
                     chatView.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    chatView = new ChatView();
                     chatView.Show();
                 }
             };
@@ -48,14 +53,13 @@ namespace Floai.Utils.App
             };
             settings.Click += delegate (object sender, RoutedEventArgs e)
             {
-                var settingsView = WindowHelper.FindiWindow<SettingsView>();
+                var settingsView = windowManager.FindWindow<SettingsView>();
                 if (settingsView != null)
                 {
                     settingsView.Activate();
                 }
                 else
                 {
-                    settingsView = new SettingsView();
                     settingsView.Show();
                 }
             };

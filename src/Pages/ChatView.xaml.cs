@@ -1,23 +1,32 @@
-﻿using System.Windows;
+﻿using Floai.Utils.App;
+using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Floai.Pages;
 
-public partial class ChatView : Window
+public partial class ChatView : Window, ISetWindowProperties
 {
     public ChatViewModel viewModel;
-    private static FloatView? floatView;
+    private readonly WindowManager windowManager;
     private bool autoScrollEnabled = true;
     ScrollViewer? scrollViewer;
-    public ChatView()
+    public ChatView(WindowManager windowManager)
     {
+        this.windowManager = windowManager;
         InitializeComponent();
         viewModel = new ChatViewModel(this.ScrollToBottom);
         this.DataContext = viewModel;
+    }
+
+    public void SetWindowProperties(WindowProperties properties)
+    {
         (this.Width, this.Height) = viewModel.ReadWindowSize();
-        
+        this.Left = properties.Right - this.Width;
+        this.Top = properties.Bottom - this.Height;
+        this.Visibility = Visibility.Visible;
     }
 
     private void BtnDrag_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -33,12 +42,8 @@ public partial class ChatView : Window
 
     private void BtnClose_Click(object sender, RoutedEventArgs e)
     {
-        floatView ??= new FloatView();
-        floatView.Left = this.Left + this.Width - floatView.Width;
-        floatView.Top = this.Top + this.Height - floatView.Height;
-        floatView.Closed += (s, evenArgs) => floatView = null;
         this.Visibility = Visibility.Collapsed;
-        floatView.Visibility = Visibility.Visible;
+        windowManager.SetWindow<FloatView>(new WindowProperties(this));
     }
 
     private void BtnNewChat_Click(object sender, RoutedEventArgs e)

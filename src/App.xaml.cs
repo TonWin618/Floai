@@ -17,17 +17,21 @@ namespace Floai
             AppHost = Host.CreateDefaultBuilder()
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddScoped<FloatView>();
+                    services.AddScoped<WindowManager>();
+                    services.AddSingleton<FloatView>();
+                    services.AddSingleton<ChatView>();
+                    services.AddScoped<SettingsView>();
+                    services.AddSingleton<WindowsTaskbarIcon>();
                 }).Build();
         }
         protected override async void OnStartup(StartupEventArgs e)
         {
             await AppHost!.StartAsync();
-            var startup = AppHost.Services.GetRequiredService<FloatView>();
-            startup.Show();
-
+            var manager = AppHost.Services.GetRequiredService<WindowManager>();
+            var taskbarIcon = AppHost.Services.GetRequiredService<WindowsTaskbarIcon>();
+            taskbarIcon.Open();
+            manager.SetWindow<FloatView>(null);
             base.OnStartup(e);
-            WindowsTaskbarIcon.Open();
         }
         protected override async void OnExit(ExitEventArgs e)
         {
