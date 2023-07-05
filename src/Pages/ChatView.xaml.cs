@@ -12,17 +12,32 @@ public partial class ChatView : Window, ISetWindowProperties
 {
     public ChatViewModel viewModel;
     private readonly WindowManager windowManager;
+    private readonly AppSettings appSettings;
+
     private bool autoScrollEnabled = true;
-    ScrollViewer? scrollViewer;
+    private ScrollViewer? scrollViewer;
+    private ChatBubbleSelector chatBubbleSelector;
     public ChatView(WindowManager windowManager, AppSettings appSettings)
     {
         this.windowManager = windowManager;
+        this.appSettings = appSettings;
         InitializeComponent();
-        var chatBubbleSelector = new ChatBubbleSelector(appSettings.IsMarkdownEnabled);
+
+        chatBubbleSelector = new ChatBubbleSelector(appSettings.IsMarkdownEnabled);
         MessageList.ItemTemplateSelector = chatBubbleSelector;
+        appSettings.SettingChanged += OnSettingChanged;
+
         viewModel = new ChatViewModel(this.ScrollToBottom, appSettings);
         this.DataContext = viewModel;
         
+    }
+
+    public void OnSettingChanged(string key)
+    {
+        if(key == nameof(appSettings.IsMarkdownEnabled))
+        {
+            chatBubbleSelector.isMarkdownEnabled = appSettings.IsMarkdownEnabled;
+        }
     }
 
     public void SetWindowProperties(WindowProperties properties)

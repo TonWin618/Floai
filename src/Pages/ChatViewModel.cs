@@ -89,6 +89,10 @@ namespace Floai.Pages
             {
                 ReloadApiKeys();
             }
+            if(key == nameof(appSettings.IsMarkdownEnabled))
+            {
+                SwitchTopic();
+            }
         }
 
         private void ReloadData()
