@@ -113,7 +113,7 @@ public partial class ChatView : Window, ISetWindowProperties
         scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta);
     }
 
-    private T FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
+    private T? FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
     {
         for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
         {

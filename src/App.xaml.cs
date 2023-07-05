@@ -26,6 +26,7 @@ namespace Floai
                 .Build();
             var appSettings = new AppSettings(configFilePath);
             config.Bind(appSettings);
+
             AppHost = Host.CreateDefaultBuilder()
                 .ConfigureServices((hostContext, services) =>
                 {

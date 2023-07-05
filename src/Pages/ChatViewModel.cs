@@ -19,11 +19,12 @@ namespace Floai.Pages
         public Action ScrollToBottom;//temp
 
         private OpenAIClient apiClient;
-        private List<string> apiKeys;
         private int lastApiKeyIndex;
+
         private ChatMessageManager messageManager;
         private ChatTopicManager topicManager;
         public FileWatcher fileWatcher;
+
         private readonly AppSettings appSettings;
 
         private string inputContent;
@@ -85,20 +86,10 @@ namespace Floai.Pages
                 ReloadData();
                 fileWatcher = new(appSettings.MessageSaveDirectory, OnMsgLogFileChanged);
             }
-            if (key == nameof(appSettings.ApiKeys))
-            {
-                ReloadApiKeys();
-            }
             if(key == nameof(appSettings.IsMarkdownEnabled))
             {
                 SwitchTopic();
             }
-        }
-
-        private void ReloadData()
-        {
-            ReloadTopics();
-            SwitchToLatestTopic();
         }
 
         public void OnMsgLogFileChanged(object sender, FileSystemEventArgs e)
@@ -123,6 +114,13 @@ namespace Floai.Pages
             }
         }
 
+        private void ReloadData()
+        {
+            ReloadTopics();
+            SwitchToLatestTopic();
+        }
+        
+
         private void ReloadTopics()
         {
             string messageSaveDictionary = appSettings.MessageSaveDirectory;
@@ -134,7 +132,6 @@ namespace Floai.Pages
             {
                 isNewTopic = true;
             }
-            apiKeys = appSettings.ApiKeys;
         }
 
         //To create a new topic, the first message needs to name the topic.
@@ -187,23 +184,16 @@ namespace Floai.Pages
 
         public void InitializeApiClient()
         {
-            if (apiKeys.Count == 0)
+            if (appSettings.ApiKeys.Count == 0)
             {
                 throw new Exception("API key not configured.");
             }
-            string apiKey = apiKeys[lastApiKeyIndex];
+            string apiKey = appSettings.ApiKeys[lastApiKeyIndex];
             apiClient = new(apiKey);
 
             lastApiKeyIndex++;
-            if (lastApiKeyIndex >= apiKeys.Count)
+            if (lastApiKeyIndex >= appSettings.ApiKeys.Count)
                 lastApiKeyIndex = 0;
-        }
-
-        public void ReloadApiKeys()
-        {
-            //If the list of ApiKeys changes in the configuration, then reloading is necessary.
-            apiKeys = appSettings.ApiKeys;
-            lastApiKeyIndex = 0;
         }
 
         public List<Message> GenerateChatContext()
