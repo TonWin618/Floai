@@ -9,9 +9,11 @@ Chat with AI through a transparent floating window.
 
 - **Word-by-word display**: The replies are displayed word-by-word, similar to how it's shown on the ChatGPT website.
 
+- **Markdown syntax & code highlighting**: Make text reading easier
+
 - **Tray icon**: The application won't occupy your taskbar when minimized, as it is represented by a tray icon.
 
-- **Save message records in TXT format**: The application can save the conversation history in TXT format, making it easier for you to review, modify, and perform other operations.
+- **Save message records in JSON format**: The application can save the conversation history in JSON format, making it easier for you to review, modify, and perform other operations.
 
 ## Releases
 | Version | Release date | Download                                                     |
@@ -20,6 +22,7 @@ Chat with AI through a transparent floating window.
 | v1.1.0  | Jun 7,2023  | [Floai v1.1.0](https://github.com/TonWin618/Floai/releases/tag/v1.1.0) |
 | v1.2.0  | Jun 10,2023  | [Floai v1.2.0](https://github.com/TonWin618/Floai/releases/tag/v1.2.0) |
 | v1.3.0  | Jun 18,2023  | [Floai v1.3.0](https://github.com/TonWin618/Floai/releases/tag/v1.3.0) |
+| v1.3.1  | Jul 6,2023  | [Floai v1.3.1](https://github.com/TonWin618/Floai/releases/tag/v1.3.1) |
 
 ## How to Use
 1. Download the compressed package for the corresponding platform and extract it.  
