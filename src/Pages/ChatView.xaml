@@ -32,7 +32,6 @@
                 <ResourceDictionary Source="../Resources/Icons/AddDrawing.xaml"/>
 
             </ResourceDictionary.MergedDictionaries>
-            <local1:ChatBubbleSelector x:Key="chatBubbleSelector"/>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -49,7 +48,6 @@
 
         <Grid Grid.Row="1">
             <ListBox x:Name="MessageList" Style="{DynamicResource MessageListStyle}"
-                 ItemTemplateSelector="{StaticResource chatBubbleSelector}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="False" 
                  ItemsSource="{Binding Messages}" SelectedItem="{Binding SelectedMessageItem}" PreviewMouseWheel="MessageList_PreviewMouseWheel">
                 <ListBox.ItemContainerStyle>

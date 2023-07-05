@@ -1,4 +1,5 @@
-﻿using Floai.Utils.App;
+﻿using Floai.Models;
+using Floai.Utils.App;
 using Floai.Utils.Data;
 using System;
 using System.Collections.ObjectModel;
@@ -10,16 +11,18 @@ namespace Floai.Pages;
 public class SettingsViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged = delegate { };
+    private readonly AppSettings appSettings;
 
     public ObservableCollection<string> ApiKeys { get; set; }
 
-    public SettingsViewModel()
+    public SettingsViewModel(AppSettings appSettings)
     {
-        ApiKeys = new ObservableCollection<string>(AppConfiger.GetValues("apiKeys/apiKey"));
-        StartWithWindows = AppConfiger.GetValue<bool>("startWithWindows");
-        MessageSaveDirectory = AppConfiger.GetValue("messageSaveDirectory");
-        isMarkdownEnabled = AppConfiger.GetValue<bool>("isMarkdownEnabled");
-        AppConfiger.SettingChanged += ConfigAutoStart;
+        this.appSettings = appSettings;
+        ApiKeys = new ObservableCollection<string>(appSettings.ApiKeys);
+        StartWithWindows = appSettings.StartWithWindows;
+        MessageSaveDirectory = appSettings.MessageSaveDirectory;
+        isMarkdownEnabled = appSettings.IsMarkdownEnabled;
+        appSettings.SettingChanged += ConfigAutoStart;
     }
 
     public void AppendApiKey(string apiKey)
@@ -31,7 +34,7 @@ public class SettingsViewModel : INotifyPropertyChanged
         if (!ApiKeys.Contains(apiKey))
         {
             this.ApiKeys.Add(apiKey);
-            AppConfiger.AddValue("apiKeys/apiKey", apiKey);
+            appSettings.ApiKeys.Add(apiKey);
             //AppConfiger.SetValue("isApiKeysReloadNeeded", "True");
         }
     }
@@ -39,7 +42,7 @@ public class SettingsViewModel : INotifyPropertyChanged
     public void RemoveApiKey(string apiKey)
     {
         this.ApiKeys.Remove(apiKey);
-        AppConfiger.RemoveValue("apiKeys/apiKey", apiKey);
+        appSettings.ApiKeys.Remove(apiKey);
         //AppConfiger.SetValue("isApiKeysReloadNeeded", "True");
     }
 
@@ -53,7 +56,7 @@ public class SettingsViewModel : INotifyPropertyChanged
             {
                 startWithWindows = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(StartWithWindows)));
-                AppConfiger.SetValue("startWithWindows", value.ToString());
+                appSettings.StartWithWindows = value;
             }
         }
     }
@@ -68,7 +71,7 @@ public class SettingsViewModel : INotifyPropertyChanged
             {
                 messageSaveDirectory = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(MessageSaveDirectory)));
-                AppConfiger.SetValue("messageSaveDirectory", value);
+                appSettings.MessageSaveDirectory = value;
             }
         }
     }
@@ -83,16 +86,16 @@ public class SettingsViewModel : INotifyPropertyChanged
             {
                 isMarkdownEnabled = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(IsMarkdownEnabled)));
-                AppConfiger.SetValue("isMarkdownEnabled", value.ToString());
+                appSettings.IsMarkdownEnabled = value;
             }
         }
     }
 
-    private void ConfigAutoStart(string key, string value)
+    private void ConfigAutoStart(string key)
     {
-        if (key == "startWithWindows")
+        if (key == nameof(appSettings.StartWithWindows))
         {
-            if (bool.Parse(value))
+            if (appSettings.StartWithWindows)
             {
                 AppAutoStarter.EnableAutoStart();
             }

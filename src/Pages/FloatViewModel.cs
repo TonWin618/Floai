@@ -1,19 +1,25 @@
-﻿using Floai.Utils.Data;
+﻿using Floai.Models;
+using Floai.Utils.Data;
 
 namespace Floai.Pages;
 
 public class FloatViewModel
 {
+    private readonly AppSettings appSettings;
+    public FloatViewModel(AppSettings appSettings) 
+    {
+        this.appSettings = appSettings;
+    }
     public (double, double) ReadWindowPostion()
     {
-        double positionX = AppConfiger.GetValue<double>("initialPositionX");
-        double positionY = AppConfiger.GetValue<double>("initialPositionY");
+        double positionX = appSettings.InitialPositionX;
+        double positionY = appSettings.InitialPositionX;
         return (positionX, positionY);
     }
 
     public void WriteWindowPostion(double positionX, double positionY)
     {
-        AppConfiger.SetValue("initialPositionX", positionX.ToString());
-        AppConfiger.SetValue("initialPositionY", positionY.ToString());
+        appSettings.InitialPositionX = positionX;
+        appSettings.InitialPositionY = positionY;
     }
 }

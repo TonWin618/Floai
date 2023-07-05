@@ -35,14 +35,17 @@ namespace Floai.Pages
             WindowsNotifyIcon.TrayLeftMouseDown += delegate (object sender, RoutedEventArgs e)
             {
                 var chatView = windowManager.FindWindow<ChatView>();
-                if (chatView != null)
-                {
-                    chatView.Visibility = Visibility.Visible;
-                }
+                var floatView = windowManager.FindWindow<FloatView>();
+
+                if (floatView != null)
+                    floatView.Visibility = Visibility.Collapsed;
                 else
-                {
-                    chatView.Show();
-                }
+                    return;
+
+                if (chatView != null)
+                    chatView.Visibility = Visibility.Visible;
+                else
+                    windowManager.SetWindow<ChatView>(new WindowProperties(floatView));
             };
 
             MenuItem settings = new()
@@ -59,7 +62,7 @@ namespace Floai.Pages
                 }
                 else
                 {
-                    settingsView.Show();
+                    windowManager.SetWindow<SettingsView>(null);
                 }
             };
             context.Items.Add(settings);

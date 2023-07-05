@@ -1,4 +1,5 @@
-﻿using Floai.Utils.App;
+﻿using Floai.Models;
+using Floai.Utils.App;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Diagnostics;
@@ -12,12 +13,12 @@ public partial class SettingsView : Window,ISetWindowProperties
 {
     SettingsViewModel viewModel;
     private readonly WindowManager windowManager;
-    public SettingsView(WindowManager windowManager)
+    public SettingsView(WindowManager windowManager, AppSettings appSettings)
     {
         this.windowManager = windowManager;
         InitializeComponent();
         
-        viewModel = new SettingsViewModel();
+        viewModel = new SettingsViewModel(appSettings);
         this.DataContext = viewModel;
     }
 

@@ -1,5 +1,6 @@
-﻿using Floai.Utils.App;
-using System;
+﻿using Floai.Models;
+using Floai.Utils.App;
+using Floai.Utils.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,12 +14,15 @@ public partial class ChatView : Window, ISetWindowProperties
     private readonly WindowManager windowManager;
     private bool autoScrollEnabled = true;
     ScrollViewer? scrollViewer;
-    public ChatView(WindowManager windowManager)
+    public ChatView(WindowManager windowManager, AppSettings appSettings)
     {
         this.windowManager = windowManager;
         InitializeComponent();
-        viewModel = new ChatViewModel(this.ScrollToBottom);
+        var chatBubbleSelector = new ChatBubbleSelector(appSettings.IsMarkdownEnabled);
+        MessageList.ItemTemplateSelector = chatBubbleSelector;
+        viewModel = new ChatViewModel(this.ScrollToBottom, appSettings);
         this.DataContext = viewModel;
+        
     }
 
     public void SetWindowProperties(WindowProperties properties)

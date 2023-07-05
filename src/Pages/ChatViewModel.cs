@@ -1,4 +1,5 @@
 ﻿using Floai.Model;
+using Floai.Models;
 using Floai.Utils.Data;
 using OpenAI;
 using OpenAI.Chat;
@@ -18,11 +19,12 @@ namespace Floai.Pages
         public Action ScrollToBottom;//temp
 
         private OpenAIClient apiClient;
-        private string[] apiKeys;
+        private List<string> apiKeys;
         private int lastApiKeyIndex;
         private ChatMessageManager messageManager;
         private ChatTopicManager topicManager;
         public FileWatcher fileWatcher;
+        private readonly AppSettings appSettings;
 
         private string inputContent;
         public string InputContent
@@ -66,21 +68,22 @@ namespace Floai.Pages
         }
 
         private bool isNewTopic = false;
-        public ChatViewModel(Action ScrollToBottom)
+        public ChatViewModel(Action ScrollToBottom, AppSettings appSettings)
         {
+            this.appSettings = appSettings;
             this.ScrollToBottom += ScrollToBottom;
             Messages = new ObservableCollection<ChatMessage>();
             Topics = new ObservableCollection<ChatTopic>();
-            AppConfiger.SettingChanged += OnSettingChange;
+            //appSettings.SettingChanged += OnSettingChange;
             ReloadData();
         }
 
-        private void OnSettingChange(string key, string value)
+        private void OnSettingChange(string key)
         {
             if (key == "messageSaveDirectory")
             {
                 ReloadData();
-                fileWatcher = new(value, OnMsgLogFileChanged);
+                fileWatcher = new(appSettings.MessageSaveDirectory, OnMsgLogFileChanged);
             }
             if (key == "apiKeys/apiKey")
             {
@@ -118,7 +121,7 @@ namespace Floai.Pages
 
         private void ReloadTopics()
         {
-            string messageSaveDictionary = AppConfiger.GetValue("messageSaveDirectory");
+            string messageSaveDictionary = appSettings.MessageSaveDirectory;
             topicManager = new ChatTopicManager(messageSaveDictionary);
             Topics.Clear();
             selectedTopicItem = null;
@@ -127,7 +130,7 @@ namespace Floai.Pages
             {
                 isNewTopic = true;
             }
-            apiKeys = AppConfiger.GetValues("apiKeys/apiKey").ToArray();
+            apiKeys = appSettings.ApiKeys;
         }
 
         //To create a new topic, the first message needs to name the topic.
@@ -167,20 +170,20 @@ namespace Floai.Pages
         }
         public (double, double) ReadWindowSize()
         {
-            double windowWidth = AppConfiger.GetValue<double>("initialWindowWidth");
-            double windowHeight = AppConfiger.GetValue<double>("initialWindowHeight");
+            double windowWidth = appSettings.InitialWindowWidth;
+            double windowHeight = appSettings.InitialWindowWidth;
             return (windowWidth, windowHeight);
         }
 
         public void WriteWindowSize(double width, double height)
         {
-            AppConfiger.SetValue("initialWindowWidth", width.ToString());
-            AppConfiger.SetValue("initialWindowHeight", height.ToString());
+            appSettings.InitialWindowWidth = width;
+            appSettings.InitialWindowHeight = height;
         }
 
         public void InitializeApiClient()
         {
-            if (apiKeys.Length == 0)
+            if (apiKeys.Count == 0)
             {
                 throw new Exception("API key not configured.");
             }
@@ -188,14 +191,14 @@ namespace Floai.Pages
             apiClient = new(apiKey);
 
             lastApiKeyIndex++;
-            if (lastApiKeyIndex >= apiKeys.Length)
+            if (lastApiKeyIndex >= apiKeys.Count)
                 lastApiKeyIndex = 0;
         }
 
         public void ReloadApiKeys()
         {
             //If the list of ApiKeys changes in the configuration, then reloading is necessary.
-            apiKeys = AppConfiger.GetValues("apiKeys/apiKey").ToArray();
+            apiKeys = appSettings.ApiKeys;
             lastApiKeyIndex = 0;
         }
 

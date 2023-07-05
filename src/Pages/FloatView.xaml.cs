@@ -1,4 +1,6 @@
-﻿using Floai.Utils.App;
+﻿using Floai.Models;
+using Floai.Utils.App;
+using Floai.Utils.Data;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -12,11 +14,11 @@ namespace Floai.Pages
         SolidColorBrush? borderDefaultBrush;
         SolidColorBrush? borderHoverbrush;
         private readonly WindowManager windowManager;
-        public FloatView(WindowManager windowManager)
+        public FloatView(WindowManager windowManager, AppSettings appSettings)
         {
             this.windowManager = windowManager;
             InitializeComponent();
-            viewModel = new FloatViewModel();
+            viewModel = new FloatViewModel(appSettings);
             LoadResources();
             this.ShowInTaskbar = false;
         }

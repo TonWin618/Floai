@@ -1,5 +1,8 @@
-﻿using Floai.Pages;
+﻿using Floai.Models;
+using Floai.Pages;
 using Floai.Utils.App;
+using Floai.Utils.Data;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Windows;
@@ -14,14 +17,20 @@ namespace Floai
         public static IHost? AppHost { get; private set; }
         public App()
         {
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json",false,true)
+                .Build();
+            var appSettings = new AppSettings();
+            config.GetSection("setting").Bind(appSettings);
             AppHost = Host.CreateDefaultBuilder()
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddScoped<WindowManager>();
                     services.AddSingleton<FloatView>();
                     services.AddSingleton<ChatView>();
-                    services.AddScoped<SettingsView>();
+                    services.AddTransient<SettingsView>();
                     services.AddSingleton<WindowsTaskbarIcon>();
+                    services.AddSingleton<WindowManager>();
+                    services.AddSingleton(appSettings);
                 }).Build();
         }
         protected override async void OnStartup(StartupEventArgs e)
