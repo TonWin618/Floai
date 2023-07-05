@@ -1,5 +1,5 @@
 ﻿using Floai.Model;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.Collections.Generic;
 using System.IO;
 
@@ -22,7 +22,7 @@ public class ChatMessageManager
 
         using (StreamWriter writer = new StreamWriter(filePath, true))
         {
-            string line = JsonConvert.SerializeObject(message);
+            string line = JsonSerializer.Serialize(message);
             writer.WriteLine(line);
         }
     }
@@ -36,7 +36,7 @@ public class ChatMessageManager
         {
             foreach (ChatMessage message in messages)
             {
-                string line = JsonConvert.SerializeObject(message);
+                string line = JsonSerializer.Serialize(message);
                 writer.WriteLine(line);
             }
         }
@@ -55,7 +55,7 @@ public class ChatMessageManager
             {
                 string line = reader.ReadLine();
 
-                ChatMessage message = JsonConvert.DeserializeObject<ChatMessage>(line);
+                ChatMessage message = JsonSerializer.Deserialize<ChatMessage>(line);
 
                 messages.Add(message);
             }
