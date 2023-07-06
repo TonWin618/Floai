@@ -1,10 +1,10 @@
 ﻿using Floai.Models;
+using Floai.Utils.Client;
 using Floai.Utils.View;
-using Floai.Utils.Model;
-using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Floai.Pages;
 
@@ -12,38 +12,47 @@ public class SettingsViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged = delegate { };
     private readonly AppSettings appSettings;
+    private ApiClientFinder finder = new("Floai.ApiClients");
+    public string ErrorMessage { get; set; }
+    public ObservableCollection<string> ApiClientNames { get; set; }
 
-    public ObservableCollection<string> ApiKeys { get; set; }
+    private string selectedApiClientName;
+    public string SelectedApiClientName
+    {
+        get { return selectedApiClientName; }
+        set
+        {
+            if (selectedApiClientName != value)
+            {
+                selectedApiClientName = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(SelectedApiClientName)));
+            }
+        }
+    }
 
     public SettingsViewModel(AppSettings appSettings)
     {
         this.appSettings = appSettings;
-        ApiKeys = new ObservableCollection<string>(appSettings.ApiKeys);
+        ApiClientNames = new();
+        foreach (var item in finder.GetApiClientClasses().Select(c => c.Name))
+        {
+            ApiClientNames.Add(item);
+        }
+        SelectedApiClientName = ApiClientNames.First();
         StartWithWindows = appSettings.StartWithWindows;
         MessageSaveDirectory = appSettings.MessageSaveDirectory;
         isMarkdownEnabled = appSettings.IsMarkdownEnabled;
         appSettings.SettingChanged += ConfigAutoStart;
     }
 
-    public void AppendApiKey(string apiKey)
+    public void LoadApiClientOptions()
     {
-        string pattern = @"[^a-zA-Z0-9-]";
-        Regex.Replace(apiKey, pattern, "");
-        if (string.IsNullOrEmpty(apiKey))
-            return;
-        if (!ApiKeys.Contains(apiKey))
-        {
-            this.ApiKeys.Add(apiKey);
-            appSettings.ApiKeys.Add(apiKey);
-            //AppConfiger.SetValue("isApiKeysReloadNeeded", "True");
-        }
+
     }
 
-    public void RemoveApiKey(string apiKey)
+    public void SaveApiClientOptions()
     {
-        this.ApiKeys.Remove(apiKey);
-        appSettings.ApiKeys.Remove(apiKey);
-        //AppConfiger.SetValue("isApiKeysReloadNeeded", "True");
+        
     }
 
     private bool startWithWindows;

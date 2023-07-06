@@ -1,5 +1,6 @@
 ﻿using Floai.ApiClients.abs;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -14,26 +15,44 @@ public class ApiClientFinder
         _namespace = namespaceName;
     }
 
-    public Type GetApiClientClass(string className)
+    public List<Type> GetApiClientClasses()
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
-        Type apiClientType = assembly.GetTypes()
-            .SingleOrDefault(t => t.Namespace == _namespace 
-            && t.IsClass 
-            && t.Name == className + "ApiClient" 
+        List<Type> apiClientTypes = assembly.GetTypes()
+            .Where(t => t.Namespace == _namespace
+            && t.IsClass
+            && t.Name != nameof(BaseApiClient) 
+            && t.Name.EndsWith("ApiClient")
             && t.BaseType == typeof(BaseApiClient))
+            .ToList();
+        return apiClientTypes;
+    }
+
+    public List<Type> GetApiClientOptionsClasses()
+    {
+        Assembly assembly = Assembly.GetExecutingAssembly();
+        List<Type> optionsTypes = assembly.GetTypes()
+            .Where(t => t.Namespace == _namespace
+            && t.IsClass
+            && t.Name != nameof(BaseApiClientOptions)
+            && t.Name.EndsWith("ApiClientOptions")
+            && t.BaseType == typeof(BaseApiClientOptions))
+            .ToList();
+        return optionsTypes;
+    }
+
+    public Type GetTargetApiClientClass(string className)
+    {
+        Type apiClientType = GetApiClientClasses()
+            .SingleOrDefault(t => t.Name == className + "ApiClient")
             ?? throw new NullReferenceException();
         return apiClientType;
     }
 
-    public Type GetApiClientOptionsClass(string className)
+    public Type GetTargetApiClientOptionsClass(string className)
     {
-        Assembly assembly = Assembly.GetExecutingAssembly();
-        Type optionsType = assembly.GetTypes()
-            .SingleOrDefault(t => t.Namespace == _namespace 
-            && t.IsClass 
-            && t.Name == className + "ApiClientOptions" 
-            && t.BaseType == typeof(BaseApiClientOptions))
+        Type optionsType = GetApiClientOptionsClasses()
+            .SingleOrDefault(t => t.Name == className + "ApiClientOptions")
             ?? throw new NullReferenceException();
         return optionsType;
     }

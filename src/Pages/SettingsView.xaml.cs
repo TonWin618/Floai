@@ -37,21 +37,13 @@ public partial class SettingsView : Window,ISetWindowProperties
         }
     }
 
-    private void BtnAddApiKey_Click(object sender, RoutedEventArgs e)
-    {
-        viewModel.AppendApiKey(ApiKeyTextBox.Text);
-        ApiKeyTextBox.Text = "";
-    }
-
-    private void BtnRemoveApiKey_Click(object sender, RoutedEventArgs e)
-    {
-        var button = sender as Button;
-        var item = button.DataContext as string;
-        viewModel.RemoveApiKey(item);
-    }
-
     private void BtnOpen_Click(object sender, RoutedEventArgs e)
     {
         Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Path.GetFullPath(DirTextBox.Text));
+    }
+
+    private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        viewModel.LoadApiClientOptions();
     }
 }

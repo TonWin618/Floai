@@ -19,17 +19,6 @@ public class AppSettings
         }
     }
 
-    private List<string> apiKeys;
-    public List<string> ApiKeys
-    {
-        get { return apiKeys; }
-        set
-        {
-            apiKeys = value;
-            OnSettingChanged(nameof(ApiKeys));
-        }
-    }
-
     private bool startWithWindows;
     public bool StartWithWindows
     {

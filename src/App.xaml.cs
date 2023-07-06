@@ -33,13 +33,12 @@ namespace Floai
 
             ApiClientFinder finder = new("Floai.ApiClients");
 
-            Type apiClientOptionsClass = finder.GetApiClientOptionsClass(apiClientName);
+            Type apiClientOptionsClass = finder.GetTargetApiClientOptionsClass(apiClientName);
             var apiClientOptions = Activator.CreateInstance(apiClientOptionsClass) as BaseApiClientOptions;
             config.GetSection("apiClientOptions").GetSection(apiClientName).Bind(apiClientOptions);
 
-            Type apiClientClass = finder.GetApiClientClass(apiClientName);
+            Type apiClientClass = finder.GetTargetApiClientClass(apiClientName);
             var apiClient = Activator.CreateInstance(apiClientClass, apiClientOptions) as BaseApiClient;
-
             AppHost = Host.CreateDefaultBuilder()
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -49,6 +48,7 @@ namespace Floai
                     services.AddSingleton<WindowsTaskbarIcon>();
                     services.AddSingleton<WindowManager>();
                     services.AddSingleton(appSettings);
+                    services.AddSingleton(apiClientOptions);
                     services.AddSingleton(apiClient);
                 }).Build();
         }
