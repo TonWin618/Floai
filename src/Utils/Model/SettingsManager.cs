@@ -16,17 +16,25 @@ namespace Floai.Utils.Model
 
         public void SaveNode(object settings, string nodePath)
         {
-            string[] nodeNames = nodePath.Split('/');
             var json = File.ReadAllText(filePath);
             var rootNode = JsonNode.Parse(json);
-            var jsonNode = rootNode;
-            foreach (var name in nodeNames)
+
+            string[] nodeNames = nodePath.Split('/');
+            JsonNode currentNode = rootNode;
+
+            for (int i = 0; i < nodeNames.Length - 1; i++)
             {
-                jsonNode = jsonNode[name];
+                if (currentNode[nodeNames[i]] == null)
+                {
+                    currentNode[nodeNames[i]] = new JsonObject();
+                }
+                currentNode = currentNode[nodeNames[i]];
             }
-            jsonNode = JsonSerializer.SerializeToNode(settings);
+            currentNode[nodeNames[^1]] = JsonSerializer.SerializeToNode(settings);
+
             File.WriteAllText(filePath, rootNode.ToString());
         }
+
 
         public string ReadNode(object settings, string nodePath)
         {
