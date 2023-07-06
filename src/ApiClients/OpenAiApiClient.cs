@@ -22,11 +22,11 @@ namespace Floai.ApiClients
             this.options = options as OpenAiApiClientOptions ?? throw new ArgumentException();
         }
 
-        public override async Task CreateCompletionAsync(List<ChatMessage> messages, Action<string> onDataReceived)
+        public override async Task CreateCompletionAsync(List<ChatMessage> messages, Action<string, bool> onDataReceived)
         {
             if (options.ApiKeys.Count == 0)
             {
-                onDataReceived("API key not configured.");
+                onDataReceived("API key not configured.",false);
                 return;
             }
 
@@ -41,7 +41,7 @@ namespace Floai.ApiClients
             }
             catch (Exception ex)
             {
-                onDataReceived(ex.Message);
+                onDataReceived(ex.Message, false);
                 return;
             }
 
@@ -53,13 +53,13 @@ namespace Floai.ApiClients
                 {
                     foreach (var choice in result.Choices.Where(choice => choice.Delta?.Content != null))
                     {
-                        onDataReceived(choice.Delta.Content);
+                        onDataReceived(choice.Delta.Content, true);
                     }
                 }
             }
             catch (Exception ex)
             {
-                onDataReceived(ex.Message);
+                onDataReceived(ex.Message,false);
             }
 
             return;
