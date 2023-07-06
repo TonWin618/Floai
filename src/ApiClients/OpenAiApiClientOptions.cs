@@ -1,7 +1,10 @@
-﻿namespace Floai.ApiClients
+﻿using System.Collections.Generic;
+using Floai.ApiClients.abs;
+
+namespace Floai.ApiClients
 {
-    public class OpenAiApiClientOptions
+    public class OpenAiApiClientOptions: BaseApiClientOptions
     {
-        public string ApiKey { get; set; }
+        public List<string> ApiKeys { get; set; }
     }
 }

@@ -1,15 +1,13 @@
-﻿using Floai.Models;
+﻿using Floai.ApiClients.abs;
+using Floai.Models;
 using Floai.Pages;
+using Floai.Utils.Client;
 using Floai.Utils.View;
-using Floai.Utils.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Windows;
-using System.Text.Json;
-using System.IO;
-using Floai.Utils.Client;
 using System;
+using System.Windows;
 
 namespace Floai
 {
@@ -21,23 +19,26 @@ namespace Floai
         public static IHost? AppHost { get; private set; }
         public App()
         {
-            ApiClientFinder finder = new("Floai.ApiClients");
-            Type apiClientClass = finder.GetApiClientClass("OpenAi");
-            Type apiClientOptionsClass = finder.GetApiClientOptionsClass("OpenAi");
-
             string configFilePath = "appsettings.json";
             var config = new ConfigurationBuilder()
                 .AddJsonFile(configFilePath, false, false)
                 .Build();
 
-            object apiClient = Activator.CreateInstance(apiClientClass);
-            object apiClientOptions = Activator.CreateInstance(apiClientOptionsClass);
             var appSettings = new AppSettings(configFilePath);
-
-            config.GetSection("apiClientOptions").GetSection("OpenAi").Bind(apiClientOptions);
             config.GetSection("normal").Bind(appSettings);
-
             appSettings.isIinitialized = true;
+
+
+            string apiClientName = appSettings.ApiClientName;
+
+            ApiClientFinder finder = new("Floai.ApiClients");
+
+            Type apiClientOptionsClass = finder.GetApiClientOptionsClass(apiClientName);
+            var apiClientOptions = Activator.CreateInstance(apiClientOptionsClass) as BaseApiClientOptions;
+            config.GetSection("apiClientOptions").GetSection(apiClientName).Bind(apiClientOptions);
+
+            Type apiClientClass = finder.GetApiClientClass(apiClientName);
+            var apiClient = Activator.CreateInstance(apiClientClass, apiClientOptions) as BaseApiClient;
 
             AppHost = Host.CreateDefaultBuilder()
                 .ConfigureServices((hostContext, services) =>
@@ -48,8 +49,7 @@ namespace Floai
                     services.AddSingleton<WindowsTaskbarIcon>();
                     services.AddSingleton<WindowManager>();
                     services.AddSingleton(appSettings);
-                    services.AddSingleton(apiClientClass, apiClient);
-                    services.AddSingleton(apiClientOptionsClass, apiClientOptions);
+                    services.AddSingleton(apiClient);
                 }).Build();
         }
         protected override async void OnStartup(StartupEventArgs e)

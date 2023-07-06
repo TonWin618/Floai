@@ -1,12 +1,7 @@
-﻿using Floai.ApiClients;
-using Floai.ApiClients.abs;
+﻿using Floai.ApiClients.abs;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Floai.Utils.Client;
 
@@ -23,7 +18,11 @@ public class ApiClientFinder
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
         Type apiClientType = assembly.GetTypes()
-            .SingleOrDefault(t => t.Namespace == _namespace && t.IsClass && t.Name == className + "ApiClient" && t.BaseType == typeof(BaseApiClient));
+            .SingleOrDefault(t => t.Namespace == _namespace 
+            && t.IsClass 
+            && t.Name == className + "ApiClient" 
+            && t.BaseType == typeof(BaseApiClient))
+            ?? throw new NullReferenceException();
         return apiClientType;
     }
 
@@ -31,14 +30,11 @@ public class ApiClientFinder
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
         Type optionsType = assembly.GetTypes()
-            .SingleOrDefault(t => t.Namespace == _namespace && t.IsClass && t.Name == className + "ApiClientOptions");
-        //foreach(var type in assembly.GetTypes())
-        //{
-        //    if (type.FullName == "Floai.ApiClients.OpenAiApiClientOptions")
-        //    {
-        //        Debug.WriteLine("e");
-        //    }
-        //}
+            .SingleOrDefault(t => t.Namespace == _namespace 
+            && t.IsClass 
+            && t.Name == className + "ApiClientOptions" 
+            && t.BaseType == typeof(BaseApiClientOptions))
+            ?? throw new NullReferenceException();
         return optionsType;
     }
 }

@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Floai.ApiClients.abs;
 
 namespace Floai.Pages;
 
@@ -17,7 +18,7 @@ public partial class ChatView : Window, ISetWindowProperties
     private bool autoScrollEnabled = true;
     private ScrollViewer? scrollViewer;
     private ChatBubbleSelector chatBubbleSelector;
-    public ChatView(WindowManager windowManager, AppSettings appSettings)
+    public ChatView(WindowManager windowManager, AppSettings appSettings, BaseApiClient apiClient)
     {
         this.windowManager = windowManager;
         this.appSettings = appSettings;
@@ -27,7 +28,7 @@ public partial class ChatView : Window, ISetWindowProperties
         MessageList.ItemTemplateSelector = chatBubbleSelector;
         appSettings.SettingChanged += OnSettingChanged;
 
-        viewModel = new ChatViewModel(this.ScrollToBottom, appSettings);
+        viewModel = new ChatViewModel(this.ScrollToBottom, appSettings, apiClient);
         this.DataContext = viewModel;
         
     }

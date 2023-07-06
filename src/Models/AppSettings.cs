@@ -8,6 +8,17 @@ using System.Text.Json.Nodes;
 namespace Floai.Models;
 public class AppSettings
 {
+    private string apiClientName { get; set; }
+    public string ApiClientName
+    {
+        get { return apiClientName; }
+        set
+        {
+            apiClientName = value;
+            OnSettingChanged(nameof(ApiClientName));
+        }
+    }
+
     private List<string> apiKeys;
     public List<string> ApiKeys
     {

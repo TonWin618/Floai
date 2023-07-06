@@ -1,4 +1,5 @@
-﻿using Floai.Model;
+﻿using Floai.ApiClients.abs;
+using Floai.Model;
 using Floai.Models;
 using Floai.Utils.Model;
 using OpenAI;
@@ -18,7 +19,8 @@ namespace Floai.Pages
         public event PropertyChangedEventHandler? PropertyChanged = delegate { };
         public Action ScrollToBottom;//temp
 
-        private OpenAIClient apiClient;
+        private BaseApiClient apiClient;
+        private OpenAIClient apiClient_remove;
         private int lastApiKeyIndex;
 
         private ChatMessageManager messageManager;
@@ -69,8 +71,22 @@ namespace Floai.Pages
         }
 
         private bool isNewTopic = false;
-        public ChatViewModel(Action ScrollToBottom, AppSettings appSettings)
+
+
+
+
+
+        public ChatViewModel(Action ScrollToBottom, AppSettings appSettings, BaseApiClient apiClient)
         {
+            this.apiClient = apiClient;
+            //var result = "";
+            //var msg = new ChatMessage(DateTime.Now, Sender.User, "Hello? ");
+            //List<ChatMessage> msgs = new();
+            //msgs.Append(msg);
+            //((BaseApiClient)apiClient).CreateCompletionAsync(msgs, t =>
+            //{
+            //    result += t;
+            //});
             this.appSettings = appSettings;
             this.ScrollToBottom += ScrollToBottom;
             Messages = new ObservableCollection<ChatMessage>();
@@ -189,7 +205,7 @@ namespace Floai.Pages
                 throw new Exception("API key not configured.");
             }
             string apiKey = appSettings.ApiKeys[lastApiKeyIndex];
-            apiClient = new(apiKey);
+            apiClient_remove = new(apiKey);
 
             lastApiKeyIndex++;
             if (lastApiKeyIndex >= appSettings.ApiKeys.Count)
@@ -238,10 +254,25 @@ namespace Floai.Pages
             var newMsg = new ChatMessage(DateTime.Now, Sender.AI, "");
             Messages.Add(newMsg);
             ScrollToBottom();//temp
+
+            var msg = new ChatMessage(DateTime.Now, Sender.User, "Hello? ");
+            List<ChatMessage> msgs = new()
+            {
+                msg
+            };
+
+            await apiClient.CreateCompletionAsync(msgs, t =>
+            {
+                newMsg.AppendContent(t);
+                ScrollToBottom();
+            });
+
+            return;
+
             var chatRequest = new ChatRequest(chatContext, OpenAI.Models.Model.GPT3_5_Turbo);
             try
             {
-                await foreach (var result in apiClient.ChatEndpoint.StreamCompletionEnumerableAsync(chatRequest))
+                await foreach (var result in apiClient_remove.ChatEndpoint.StreamCompletionEnumerableAsync(chatRequest))
                 {
                     foreach (var choice in result.Choices.Where(choice => choice.Delta?.Content != null))
                     {
