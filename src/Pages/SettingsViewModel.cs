@@ -11,7 +11,7 @@ namespace Floai.Pages;
 public class SettingsViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged = delegate { };
-    private readonly AppSettings appSettings;
+    private readonly GeneralSettings generalSettings;
     private ApiClientFinder finder = new("Floai.ApiClients");
     public string ErrorMessage { get; set; }
     public ObservableCollection<string> ApiClientNames { get; set; }
@@ -30,19 +30,19 @@ public class SettingsViewModel : INotifyPropertyChanged
         }
     }
 
-    public SettingsViewModel(AppSettings appSettings)
+    public SettingsViewModel(GeneralSettings generalSettings)
     {
-        this.appSettings = appSettings;
+        this.generalSettings = generalSettings;
         ApiClientNames = new();
         foreach (var item in finder.GetApiClientClasses().Select(c => c.Name))
         {
             ApiClientNames.Add(item);
         }
         SelectedApiClientName = ApiClientNames.First();
-        StartWithWindows = appSettings.StartWithWindows;
-        MessageSaveDirectory = appSettings.MessageSaveDirectory;
-        isMarkdownEnabled = appSettings.IsMarkdownEnabled;
-        appSettings.SettingChanged += ConfigAutoStart;
+        StartWithWindows = generalSettings.StartWithWindows;
+        MessageSaveDirectory = generalSettings.MessageSaveDirectory;
+        isMarkdownEnabled = generalSettings.IsMarkdownEnabled;
+        generalSettings.PropertyChanged += ConfigAutoStart;
     }
 
     public void LoadApiClientOptions()
@@ -65,7 +65,7 @@ public class SettingsViewModel : INotifyPropertyChanged
             {
                 startWithWindows = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(StartWithWindows)));
-                appSettings.StartWithWindows = value;
+                generalSettings.StartWithWindows = value;
             }
         }
     }
@@ -80,7 +80,7 @@ public class SettingsViewModel : INotifyPropertyChanged
             {
                 messageSaveDirectory = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(MessageSaveDirectory)));
-                appSettings.MessageSaveDirectory = value;
+                generalSettings.MessageSaveDirectory = value;
             }
         }
     }
@@ -95,16 +95,16 @@ public class SettingsViewModel : INotifyPropertyChanged
             {
                 isMarkdownEnabled = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(IsMarkdownEnabled)));
-                appSettings.IsMarkdownEnabled = value;
+                generalSettings.IsMarkdownEnabled = value;
             }
         }
     }
 
-    private void ConfigAutoStart(string key)
+    private void ConfigAutoStart(object sender, PropertyChangedEventArgs e)
     {
-        if (key == nameof(appSettings.StartWithWindows))
+        if (e.PropertyName == nameof(generalSettings.StartWithWindows))
         {
-            if (appSettings.StartWithWindows)
+            if (generalSettings.StartWithWindows)
             {
                 AppAutoStarter.EnableAutoStart();
             }

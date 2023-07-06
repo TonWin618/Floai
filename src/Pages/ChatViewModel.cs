@@ -22,7 +22,7 @@ namespace Floai.Pages
         private ChatTopicManager topicManager;
         public FileWatcher fileWatcher;
 
-        private readonly AppSettings appSettings;
+        private readonly GeneralSettings generalSettings;
 
         private string inputContent;
         public string InputContent
@@ -71,25 +71,25 @@ namespace Floai.Pages
 
 
 
-        public ChatViewModel(Action ScrollToBottom, AppSettings appSettings, BaseApiClient apiClient)
+        public ChatViewModel(Action ScrollToBottom, GeneralSettings appSettings, BaseApiClient apiClient)
         {
             this.apiClient = apiClient;
-            this.appSettings = appSettings;
+            this.generalSettings = appSettings;
             this.ScrollToBottom += ScrollToBottom;
             Messages = new ObservableCollection<ChatMessage>();
             Topics = new ObservableCollection<ChatTopic>();
-            appSettings.SettingChanged += OnSettingChange;
+            appSettings.PropertyChanged += OnSettingChange;
             ReloadData();
         }
 
-        private void OnSettingChange(string key)
+        private void OnSettingChange(object sender, PropertyChangedEventArgs e)
         {
-            if (key == nameof(appSettings.MessageSaveDirectory))
+            if (e.PropertyName == nameof(generalSettings.MessageSaveDirectory))
             {
                 ReloadData();
-                fileWatcher = new(appSettings.MessageSaveDirectory, OnMsgLogFileChanged);
+                fileWatcher = new(generalSettings.MessageSaveDirectory, OnMsgLogFileChanged);
             }
-            if(key == nameof(appSettings.IsMarkdownEnabled))
+            if(e.PropertyName == nameof(generalSettings.IsMarkdownEnabled))
             {
                 SwitchTopic();
             }
@@ -126,7 +126,7 @@ namespace Floai.Pages
 
         private void ReloadTopics()
         {
-            string messageSaveDictionary = appSettings.MessageSaveDirectory;
+            string messageSaveDictionary = generalSettings.MessageSaveDirectory;
             topicManager = new ChatTopicManager(messageSaveDictionary);
             Topics.Clear();
             selectedTopicItem = null;
@@ -174,15 +174,15 @@ namespace Floai.Pages
         }
         public (double, double) ReadWindowSize()
         {
-            double windowWidth = appSettings.InitialWindowWidth;
-            double windowHeight = appSettings.InitialWindowWidth;
+            double windowWidth = generalSettings.InitialWindowWidth;
+            double windowHeight = generalSettings.InitialWindowWidth;
             return (windowWidth, windowHeight);
         }
 
         public void WriteWindowSize(double width, double height)
         {
-            appSettings.InitialWindowWidth = width;
-            appSettings.InitialWindowHeight = height;
+            generalSettings.InitialWindowWidth = width;
+            generalSettings.InitialWindowHeight = height;
         }
 
         public async Task RequestAndReceiveResponse()

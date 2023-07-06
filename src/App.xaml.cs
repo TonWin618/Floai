@@ -1,7 +1,9 @@
-﻿using Floai.ApiClients.abs;
+﻿using Floai.ApiClients;
+using Floai.ApiClients.abs;
 using Floai.Models;
 using Floai.Pages;
 using Floai.Utils.Client;
+using Floai.Utils.Model;
 using Floai.Utils.View;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,16 +22,22 @@ namespace Floai
         public App()
         {
             string configFilePath = "appsettings.json";
+            var settingsManager = new SettingsManager(configFilePath);
+
             var config = new ConfigurationBuilder()
                 .AddJsonFile(configFilePath, false, false)
                 .Build();
 
-            var appSettings = new AppSettings(configFilePath);
-            config.GetSection("normal").Bind(appSettings);
-            appSettings.isIinitialized = true;
+            var generalSettings = new GeneralSettings();
+            config.GetSection("general").Bind(generalSettings);
 
+            generalSettings.isIinitialized = true;
+            generalSettings.PropertyChanged += (sender, e) =>
+            {
+                settingsManager.SaveNode(sender, "general");
+            };
 
-            string apiClientName = appSettings.ApiClientName;
+            string apiClientName = generalSettings.ApiClientName;
 
             ApiClientFinder finder = new("Floai.ApiClients");
 
@@ -39,6 +47,7 @@ namespace Floai
 
             Type apiClientClass = finder.GetTargetApiClientClass(apiClientName);
             var apiClient = Activator.CreateInstance(apiClientClass, apiClientOptions) as BaseApiClient;
+
             AppHost = Host.CreateDefaultBuilder()
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -47,7 +56,7 @@ namespace Floai
                     services.AddTransient<SettingsView>();
                     services.AddSingleton<WindowsTaskbarIcon>();
                     services.AddSingleton<WindowManager>();
-                    services.AddSingleton(appSettings);
+                    services.AddSingleton(generalSettings);
                     services.AddSingleton(apiClientOptions);
                     services.AddSingleton(apiClient);
                 }).Build();

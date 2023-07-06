@@ -1,12 +1,9 @@
-﻿using System.Text.Json;
-using System.Collections.Generic;
-using System.IO;
-using System;
+﻿using System;
+using System.ComponentModel;
 using System.Text.Json.Serialization;
-using System.Text.Json.Nodes;
 
 namespace Floai.Models;
-public class AppSettings
+public class GeneralSettings : INotifyPropertyChanged
 {
     private string apiClientName { get; set; }
     public string ApiClientName
@@ -15,7 +12,7 @@ public class AppSettings
         set
         {
             apiClientName = value;
-            OnSettingChanged(nameof(ApiClientName));
+            SettingsPropertyChanged(nameof(ApiClientName));
         }
     }
 
@@ -26,7 +23,7 @@ public class AppSettings
         set
         {
             startWithWindows = value;
-            OnSettingChanged(nameof(StartWithWindows));
+            SettingsPropertyChanged(nameof(StartWithWindows));
         }
     }
 
@@ -37,7 +34,7 @@ public class AppSettings
         set
         {
             initialPositionX = value;
-            OnSettingChanged(nameof(InitialPositionX));
+            SettingsPropertyChanged(nameof(InitialPositionX));
         }
     }
 
@@ -48,7 +45,7 @@ public class AppSettings
         set
         {
             initialPositionY = value;
-            OnSettingChanged(nameof(InitialPositionY));
+            SettingsPropertyChanged(nameof(InitialPositionY));
         }
     }
 
@@ -59,7 +56,7 @@ public class AppSettings
         set
         {
             initialWindowHeight = value;
-            OnSettingChanged(nameof(InitialWindowHeight));
+            SettingsPropertyChanged(nameof(InitialWindowHeight));
         }
     }
 
@@ -70,7 +67,7 @@ public class AppSettings
         set
         {
             initialWindowWidth = value;
-            OnSettingChanged(nameof(InitialWindowWidth));
+            SettingsPropertyChanged(nameof(InitialWindowWidth));
         }
     }
 
@@ -81,7 +78,7 @@ public class AppSettings
         set
         {
             messageSaveDirectory = value;
-            OnSettingChanged(nameof(MessageSaveDirectory));
+            SettingsPropertyChanged(nameof(MessageSaveDirectory));
         }
     }
 
@@ -92,7 +89,7 @@ public class AppSettings
         set
         {
             themeMode = value;
-            OnSettingChanged(nameof(ThemeMode));
+            SettingsPropertyChanged(nameof(ThemeMode));
         }
     }
 
@@ -103,7 +100,7 @@ public class AppSettings
         set
         {
             theme = value;
-            OnSettingChanged(nameof(Theme));
+            SettingsPropertyChanged(nameof(Theme));
         }
     }
 
@@ -115,36 +112,18 @@ public class AppSettings
         set
         {
             isMarkdownEnabled = value;
-            OnSettingChanged(nameof(IsMarkdownEnabled));
+            SettingsPropertyChanged(nameof(IsMarkdownEnabled));
         }
     }
     [JsonIgnore]
     public bool isIinitialized = false;
-    [JsonIgnore]
-    private readonly string filePath;
-    [JsonIgnore]
-    public Action<string> SettingChanged = delegate{ };
 
-    public AppSettings(string filePath)
-    {
-        this.filePath = filePath;
-    }
+    public event PropertyChangedEventHandler? PropertyChanged = delegate { };
 
-    private void OnSettingChanged(string name)
+    private void SettingsPropertyChanged(string name)
     {
         if(!isIinitialized)
-        {
             return;
-        }
-        SettingChanged(name);
-
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = false
-        };
-        var json = File.ReadAllText(filePath);
-        var jsonNode = JsonNode.Parse(json);
-        jsonNode["normal"] = JsonSerializer.SerializeToNode(this, options);
-        File.WriteAllText(filePath, jsonNode.ToString());
+        PropertyChanged(this, new PropertyChangedEventArgs(name));
     }
 }

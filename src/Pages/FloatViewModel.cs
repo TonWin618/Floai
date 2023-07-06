@@ -5,10 +5,10 @@ namespace Floai.Pages;
 
 public class FloatViewModel
 {
-    private readonly AppSettings appSettings;
-    public FloatViewModel(AppSettings appSettings) 
+    private readonly GeneralSettings appSettings;
+    public FloatViewModel(GeneralSettings generalSettings) 
     {
-        this.appSettings = appSettings;
+        this.appSettings = generalSettings;
     }
     public (double, double) ReadWindowPostion()
     {
