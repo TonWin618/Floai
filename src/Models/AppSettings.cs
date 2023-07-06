@@ -118,7 +118,8 @@ public class AppSettings
             OnSettingChanged(nameof(IsMarkdownEnabled));
         }
     }
-
+    [JsonIgnore]
+    public bool isIinitialized = false;
     [JsonIgnore]
     private readonly string filePath;
     [JsonIgnore]
@@ -131,12 +132,19 @@ public class AppSettings
 
     private void OnSettingChanged(string name)
     {
+        if(!isIinitialized)
+        {
+            return;
+        }
         SettingChanged(name);
+
         var options = new JsonSerializerOptions
         {
-            WriteIndented = true
+            WriteIndented = false
         };
-        string json = JsonSerializer.Serialize(this, options);
-        File.WriteAllText(filePath, json);
+        var json = File.ReadAllText(filePath);
+        var jsonNode = JsonNode.Parse(json);
+        jsonNode["normal"] = JsonSerializer.SerializeToNode(this, options);
+        File.WriteAllText(filePath, jsonNode.ToString());
     }
 }
