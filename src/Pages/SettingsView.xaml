@@ -29,7 +29,7 @@
         </Grid>
 
         <Grid Grid.Row="1">
-            <TextBox TextWrapping="WrapWithOverflow" AcceptsReturn="True"/>
+            <TextBox Text="{Binding ApiClientOptionsContent}" TextWrapping="WrapWithOverflow" AcceptsReturn="True"/>
         </Grid>
 
         <Grid Grid.Row="2">

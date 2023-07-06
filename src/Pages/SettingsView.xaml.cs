@@ -44,6 +44,6 @@ public partial class SettingsView : Window,ISetWindowProperties
 
     private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        viewModel.LoadApiClientOptions();
+        viewModel.ReadApiClientOptions();
     }
 }

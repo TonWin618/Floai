@@ -9,7 +9,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
+using System.Windows.Documents;
 
 namespace Floai
 {
@@ -40,13 +43,19 @@ namespace Floai
             string apiClientName = generalSettings.ApiClientName;
 
             ApiClientFinder finder = new("Floai.ApiClients");
+            
+            List<Type> apiClientOptionsClasses = finder.GetApiClientOptionsClasses();
+            List<BaseApiClientOptions> apiClientOptionses = new();
+            foreach (Type type in apiClientOptionsClasses)
+            {
+                apiClientOptionses.Add(Activator.CreateInstance(type) as BaseApiClientOptions);
+                var clientName = type.Name.Replace("ApiClientOptions", "");
+                config.GetSection("apiClientOptions").GetSection(clientName).Bind(apiClientOptionses.Last());
+            }
+            
 
-            Type apiClientOptionsClass = finder.GetTargetApiClientOptionsClass(apiClientName);
-            var apiClientOptions = Activator.CreateInstance(apiClientOptionsClass) as BaseApiClientOptions;
-            config.GetSection("apiClientOptions").GetSection(apiClientName).Bind(apiClientOptions);
-
-            Type apiClientClass = finder.GetTargetApiClientClass(apiClientName);
-            var apiClient = Activator.CreateInstance(apiClientClass, apiClientOptions) as BaseApiClient;
+            List<Type> apiClientClasses = finder.GetApiClientClasses();
+            //var apiClient = Activator.CreateInstance(apiClientClass, apiClientOptions) as BaseApiClient;
 
             AppHost = Host.CreateDefaultBuilder()
                 .ConfigureServices((hostContext, services) =>
@@ -54,17 +63,19 @@ namespace Floai
                     services.AddSingleton<FloatView>();
                     services.AddSingleton<ChatView>();
                     services.AddTransient<SettingsView>();
-                    services.AddSingleton<WindowsTaskbarIcon>();
-                    services.AddSingleton<WindowManager>();
 
                     services.AddSingleton<FloatViewModel>();
                     services.AddSingleton<ChatViewModel>();
                     services.AddTransient<SettingsViewModel>();
 
+                    services.AddSingleton<WindowsTaskbarIcon>();
+                    services.AddSingleton<WindowManager>();
 
                     services.AddSingleton(generalSettings);
-                    services.AddSingleton(apiClientOptions);
-                    services.AddSingleton(apiClient);
+                    services.AddSingleton(settingsManager);
+
+                    apiClientOptionses.ForEach(options => services.AddSingleton<BaseApiClientOptions>(options));
+                    apiClientClasses.ForEach(type => services.AddSingleton(typeof(BaseApiClient), type));
                 }).Build();
         }
         protected override async void OnStartup(StartupEventArgs e)

@@ -2,7 +2,10 @@
 
 namespace Floai.ApiClients
 {
-    internal class HttpApiClientOptions:BaseApiClientOptions
+    public class HttpApiClientOptions:BaseApiClientOptions
     {
+        public string Url { get;set; }
+        public string Authcode { get;set; }
+        public int MaxTokens { get; set; }
     }
 }

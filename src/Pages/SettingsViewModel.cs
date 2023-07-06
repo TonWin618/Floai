@@ -1,5 +1,6 @@
-﻿using Floai.Models;
-using Floai.Utils.Client;
+﻿using Floai.ApiClients.abs;
+using Floai.Models;
+using Floai.Utils.Model;
 using Floai.Utils.View;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +13,7 @@ public class SettingsViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged = delegate { };
     private readonly GeneralSettings generalSettings;
-    private ApiClientFinder finder = new("Floai.ApiClients");
+    private SettingsManager settingsManager;
     public string ErrorMessage { get; set; }
     public ObservableCollection<string> ApiClientNames { get; set; }
 
@@ -29,25 +30,35 @@ public class SettingsViewModel : INotifyPropertyChanged
             }
         }
     }
-
-    public SettingsViewModel(GeneralSettings generalSettings)
-    {
-        this.generalSettings = generalSettings;
-        ApiClientNames = new();
-        foreach (var item in finder.GetApiClientClasses().Select(c => c.Name))
-        {
-            ApiClientNames.Add(item);
+    private string apiClientOptionsContent;
+    public string ApiClientOptionsContent { 
+        get { return apiClientOptionsContent; }
+        set 
+        { 
+            apiClientOptionsContent = value;
+            PropertyChanged(this, new PropertyChangedEventArgs(nameof(ApiClientOptionsContent)));
         }
-        SelectedApiClientName = ApiClientNames.First();
+    }
+    public List<BaseApiClientOptions> optionses { get; set; }
+
+    public SettingsViewModel(GeneralSettings generalSettings, SettingsManager settingsManager, IEnumerable<BaseApiClientOptions> optionses)
+    {
+        this.settingsManager = settingsManager;
+        this.generalSettings = generalSettings;
+        this.optionses = optionses.ToList();
+
+        ApiClientNames = new(optionses.Select(o => o.GetType().Name.Replace("ApiClientOptions","")));
+        SelectedApiClientName = generalSettings.ApiClientName;
+
         StartWithWindows = generalSettings.StartWithWindows;
         MessageSaveDirectory = generalSettings.MessageSaveDirectory;
         isMarkdownEnabled = generalSettings.IsMarkdownEnabled;
         generalSettings.PropertyChanged += ConfigAutoStart;
     }
 
-    public void LoadApiClientOptions()
+    public void ReadApiClientOptions()
     {
-
+        ApiClientOptionsContent = settingsManager.ReadApiClientOptionsNode(optionses.FirstOrDefault(o=>o.GetType().Name.Replace("ApiClientOptions", "") == SelectedApiClientName), SelectedApiClientName);
     }
 
     public void SaveApiClientOptions()

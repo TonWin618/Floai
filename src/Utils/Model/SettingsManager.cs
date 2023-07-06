@@ -27,5 +27,38 @@ namespace Floai.Utils.Model
             jsonNode = JsonSerializer.SerializeToNode(settings);
             File.WriteAllText(filePath, rootNode.ToString());
         }
+
+        public string ReadNode(object settings, string nodePath)
+        {
+            string[] nodeNames = nodePath.Split('/');
+            var json = File.ReadAllText(filePath);
+            var rootNode = JsonNode.Parse(json);
+            var jsonNode = rootNode;
+            foreach (var name in nodeNames)
+            {
+                jsonNode = jsonNode[name];
+            }
+            jsonNode = JsonSerializer.SerializeToNode(settings);
+            return jsonNode.ToJsonString(new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+        }
+
+        public string ReadApiClientOptionsNode(object options, string apiClientName)
+        {
+            var json = File.ReadAllText(filePath);
+            var rootNode = JsonNode.Parse(json);
+            var nodeName = apiClientName.Replace("ApiClientOptions", "");
+            var jsonNode = rootNode["apiClientOptions"][nodeName];
+            jsonNode = JsonSerializer.SerializeToNode(jsonNode, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+            return jsonNode.ToJsonString(new JsonSerializerOptions
+            {
+                WriteIndented = true
+            });
+        }
     }
 }
