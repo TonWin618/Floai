@@ -1,6 +1,5 @@
 ﻿using Floai.ApiClients.abs;
 using Floai.Model;
-using Floai.Models;
 using OpenAI;
 using OpenAI.Chat;
 using System;

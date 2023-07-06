@@ -14,7 +14,7 @@ namespace Floai.Pages
     public class ChatViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged = delegate { };
-        public Action ScrollToBottom;//temp
+        public Action ScrollToBottom = delegate { };//temp
 
         private BaseApiClient apiClient;
 
@@ -71,14 +71,13 @@ namespace Floai.Pages
 
 
 
-        public ChatViewModel(Action ScrollToBottom, GeneralSettings appSettings, BaseApiClient apiClient)
+        public ChatViewModel(GeneralSettings generalSettings, BaseApiClient apiClient)
         {
             this.apiClient = apiClient;
-            this.generalSettings = appSettings;
-            this.ScrollToBottom += ScrollToBottom;
+            this.generalSettings = generalSettings;
             Messages = new ObservableCollection<ChatMessage>();
             Topics = new ObservableCollection<ChatTopic>();
-            appSettings.PropertyChanged += OnSettingChange;
+            generalSettings.PropertyChanged += OnSettingChange;
             ReloadData();
         }
 

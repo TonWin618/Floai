@@ -13,13 +13,13 @@ public partial class SettingsView : Window,ISetWindowProperties
 {
     SettingsViewModel viewModel;
     private readonly WindowManager windowManager;
-    public SettingsView(WindowManager windowManager, GeneralSettings generalSettings)
+    public SettingsView(WindowManager windowManager, SettingsViewModel viewModel)
     {
         this.windowManager = windowManager;
         InitializeComponent();
         
-        viewModel = new SettingsViewModel(generalSettings);
-        this.DataContext = viewModel;
+        this.viewModel = viewModel;
+        this.DataContext = this.viewModel;
     }
 
     public void SetWindowProperties(WindowProperties? properties = null)

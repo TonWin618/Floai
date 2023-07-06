@@ -56,6 +56,12 @@ namespace Floai
                     services.AddTransient<SettingsView>();
                     services.AddSingleton<WindowsTaskbarIcon>();
                     services.AddSingleton<WindowManager>();
+
+                    services.AddSingleton<FloatViewModel>();
+                    services.AddSingleton<ChatViewModel>();
+                    services.AddTransient<SettingsViewModel>();
+
+
                     services.AddSingleton(generalSettings);
                     services.AddSingleton(apiClientOptions);
                     services.AddSingleton(apiClient);

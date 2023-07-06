@@ -14,12 +14,12 @@ namespace Floai.Pages
         SolidColorBrush? borderDefaultBrush;
         SolidColorBrush? borderHoverbrush;
         private readonly WindowManager windowManager;
-        public FloatView(WindowManager windowManager, GeneralSettings appSettings)
+        public FloatView(WindowManager windowManager, FloatViewModel viewModel)
         {
             this.windowManager = windowManager;
             InitializeComponent();
-            viewModel = new FloatViewModel(appSettings);
             LoadResources();
+            this.viewModel = viewModel;
             this.ShowInTaskbar = false;
         }
 

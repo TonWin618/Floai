@@ -18,13 +18,14 @@ namespace Floai.Utils.Model
         {
             string[] nodeNames = nodePath.Split('/');
             var json = File.ReadAllText(filePath);
-            var jsonNode = JsonNode.Parse(json);
+            var rootNode = JsonNode.Parse(json);
+            var jsonNode = rootNode;
             foreach (var name in nodeNames)
             {
                 jsonNode = jsonNode[name];
             }
             jsonNode = JsonSerializer.SerializeToNode(settings);
-            File.WriteAllText(filePath, jsonNode.ToString());
+            File.WriteAllText(filePath, rootNode.ToString());
         }
     }
 }
