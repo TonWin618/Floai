@@ -16,9 +16,9 @@ namespace Floai.ApiClients
         int lastApiKeyIndex;
         private OpenAIClient client;
 
-        public OpenAiApiClient(BaseApiClientOptions options) : base(options)
+        public OpenAiApiClient(OpenAiApiClientOptions options) : base(options)
         {
-            this.options = options as OpenAiApiClientOptions ?? throw new ArgumentException();
+            this.options = options;
         }
 
         public override async Task CreateCompletionAsync(List<ChatMessage> messages, Action<string, bool> onDataReceived)

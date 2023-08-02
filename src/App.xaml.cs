@@ -43,19 +43,30 @@ namespace Floai
             string apiClientName = generalSettings.ApiClientName;
 
             ApiClientFinder finder = new("Floai.ApiClients");
-            
+
+            var apiClientOptionsClass = finder.GetTargetApiClientOptionsClass(apiClientName);
+            var apiClientOptions = Activator.CreateInstance(apiClientOptionsClass);
+            config.GetSection("apiClientOptions").GetSection(apiClientName).Bind(apiClientOptions);
+
+            var apiClientClass = finder.GetTargetApiClientClass(apiClientName);
+
             List<Type> apiClientOptionsClasses = finder.GetApiClientOptionsClasses();
             List<BaseApiClientOptions> apiClientOptionses = new();
             foreach (Type type in apiClientOptionsClasses)
             {
                 apiClientOptionses.Add(Activator.CreateInstance(type) as BaseApiClientOptions);
                 var clientName = type.Name.Replace("ApiClientOptions", "");
-                config.GetSection("apiClientOptions").GetSection(clientName).Bind(apiClientOptionses.Last());
+                config.GetSection("apiClientOptions")
+                    .GetSection(clientName)
+                    .Bind(apiClientOptionses
+                    .Where(
+                        options => options.GetType().Name == clientName + "ApiClientOptions")
+                    );
             }
-            
 
-            List<Type> apiClientClasses = finder.GetApiClientClasses();
-            //var apiClient = Activator.CreateInstance(apiClientClass, apiClientOptions) as BaseApiClient;
+
+            //List<Type> apiClientClasses = finder.GetApiClientClasses();
+            ////var apiClient = Activator.CreateInstance(apiClientClass, apiClientOptions) as BaseApiClient;
 
             AppHost = Host.CreateDefaultBuilder()
                 .ConfigureServices((hostContext, services) =>
@@ -74,8 +85,11 @@ namespace Floai
                     services.AddSingleton(generalSettings);
                     services.AddSingleton(settingsManager);
 
+                    services.AddSingleton(apiClientOptionsClass ,apiClientOptions);
+                    services.AddSingleton(typeof(BaseApiClient), apiClientClass);
+
                     apiClientOptionses.ForEach(options => services.AddSingleton<BaseApiClientOptions>(options));
-                    apiClientClasses.ForEach(type => services.AddSingleton(typeof(BaseApiClient), type));
+                    //apiClientClasses.ForEach(type => services.AddSingleton(typeof(BaseApiClient), type));
                 }).Build();
         }
         protected override async void OnStartup(StartupEventArgs e)

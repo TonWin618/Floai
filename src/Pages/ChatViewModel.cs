@@ -3,6 +3,8 @@ using Floai.Model;
 using Floai.Models;
 using Floai.Utils.Model;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
