@@ -16,5 +16,7 @@ namespace Floai.ApiClients
         public string HistoryFormat { get; set; }
         public string AiRoleName { get; set; }
         public string UserRoleName { get; set; }
+
+        public string ContentPath { get; set; }
     }
 }
