@@ -46,4 +46,9 @@ public partial class SettingsView : Window,ISetWindowProperties
     {
         viewModel.ReadApiClientOptions();
     }
+
+    private void BtnSave_Click(object sender, RoutedEventArgs e)
+    {
+        viewModel.SaveApiClientOptions();
+    }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Text.Json;
 
 namespace Floai.Pages;
 
@@ -13,7 +14,7 @@ public class SettingsViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged = delegate { };
     private readonly GeneralSettings generalSettings;
-    private SettingsManager settingsManager;
+    private readonly SettingsManager settingsManager;
     public string ErrorMessage { get; set; }
     public ObservableCollection<string> ApiClientNames { get; set; }
 
@@ -39,13 +40,13 @@ public class SettingsViewModel : INotifyPropertyChanged
             PropertyChanged(this, new PropertyChangedEventArgs(nameof(ApiClientOptionsContent)));
         }
     }
-    public List<BaseApiClientOptions> optionses { get; set; }
+    public List<BaseApiClientOptions> ApiClientOptionses { get; set; }
 
     public SettingsViewModel(GeneralSettings generalSettings, SettingsManager settingsManager, IEnumerable<BaseApiClientOptions> optionses)
     {
         this.settingsManager = settingsManager;
         this.generalSettings = generalSettings;
-        this.optionses = optionses.ToList();
+        this.ApiClientOptionses = optionses.ToList();
 
         ApiClientNames = new(optionses.Select(o => o.GetType().Name.Replace("ApiClientOptions","")));
         SelectedApiClientName = generalSettings.ApiClientName;
@@ -58,12 +59,17 @@ public class SettingsViewModel : INotifyPropertyChanged
 
     public void ReadApiClientOptions()
     {
-        ApiClientOptionsContent = settingsManager.ReadApiClientOptionsNode(optionses.FirstOrDefault(o=>o.GetType().Name.Replace("ApiClientOptions", "") == SelectedApiClientName), SelectedApiClientName);
+        ApiClientOptionsContent = settingsManager.ReadApiClientOptionsNode(SelectedApiClientName);
     }
 
     public void SaveApiClientOptions()
     {
-        
+        var options = ApiClientOptionses.Single(o => o.GetType().Name == selectedApiClientName + "ApiClientOptions");
+        var node = JsonSerializer.Deserialize(apiClientOptionsContent, options.GetType(), new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+        settingsManager.SaveNode(node, $"apiClientOptions/{SelectedApiClientName}");
     }
 
     private bool startWithWindows;

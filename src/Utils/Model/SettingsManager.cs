@@ -53,16 +53,12 @@ namespace Floai.Utils.Model
             });
         }
 
-        public string ReadApiClientOptionsNode(object options, string apiClientName)
+        public string ReadApiClientOptionsNode(string apiClientName)
         {
             var json = File.ReadAllText(filePath);
             var rootNode = JsonNode.Parse(json);
             var nodeName = apiClientName.Replace("ApiClientOptions", "");
             var jsonNode = rootNode["apiClientOptions"][nodeName];
-            jsonNode = JsonSerializer.SerializeToNode(jsonNode, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
             return jsonNode.ToJsonString(new JsonSerializerOptions
             {
                 WriteIndented = true

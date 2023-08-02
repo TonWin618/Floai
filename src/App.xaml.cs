@@ -57,7 +57,7 @@ namespace Floai
                 config.GetSection("apiClientOptions")
                     .GetSection(clientName)
                     .Bind(apiClientOptionses
-                    .Where(
+                    .Single(
                         options => options.GetType().Name == clientName + "ApiClientOptions")
                     );
             }
