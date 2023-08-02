@@ -13,13 +13,13 @@ public partial class SettingsView : Window,ISetWindowProperties
 {
     SettingsViewModel viewModel;
     private readonly WindowManager windowManager;
-    public SettingsView(WindowManager windowManager, AppSettings appSettings)
+    public SettingsView(WindowManager windowManager, SettingsViewModel viewModel)
     {
         this.windowManager = windowManager;
         InitializeComponent();
         
-        viewModel = new SettingsViewModel(appSettings);
-        this.DataContext = viewModel;
+        this.viewModel = viewModel;
+        this.DataContext = this.viewModel;
     }
 
     public void SetWindowProperties(WindowProperties? properties = null)
@@ -37,21 +37,18 @@ public partial class SettingsView : Window,ISetWindowProperties
         }
     }
 
-    private void BtnAddApiKey_Click(object sender, RoutedEventArgs e)
-    {
-        viewModel.AppendApiKey(ApiKeyTextBox.Text);
-        ApiKeyTextBox.Text = "";
-    }
-
-    private void BtnRemoveApiKey_Click(object sender, RoutedEventArgs e)
-    {
-        var button = sender as Button;
-        var item = button.DataContext as string;
-        viewModel.RemoveApiKey(item);
-    }
-
     private void BtnOpen_Click(object sender, RoutedEventArgs e)
     {
         Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Path.GetFullPath(DirTextBox.Text));
+    }
+
+    private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        viewModel.ReadApiClientOptions();
+    }
+
+    private void BtnSave_Click(object sender, RoutedEventArgs e)
+    {
+        viewModel.SaveApiClientOptions();
     }
 }

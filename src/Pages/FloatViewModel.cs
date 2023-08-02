@@ -5,21 +5,21 @@ namespace Floai.Pages;
 
 public class FloatViewModel
 {
-    private readonly AppSettings appSettings;
-    public FloatViewModel(AppSettings appSettings) 
+    private readonly GeneralSettings generalSettings;
+    public FloatViewModel(GeneralSettings generalSettings) 
     {
-        this.appSettings = appSettings;
+        this.generalSettings = generalSettings;
     }
     public (double, double) ReadWindowPostion()
     {
-        double positionX = appSettings.InitialPositionX;
-        double positionY = appSettings.InitialPositionY;
+        double positionX = generalSettings.InitialPositionX;
+        double positionY = generalSettings.InitialPositionY;
         return (positionX, positionY);
     }
 
     public void WriteWindowPostion(double positionX, double positionY)
     {
-        appSettings.InitialPositionX = positionX;
-        appSettings.InitialPositionY = positionY;
+        generalSettings.InitialPositionX = positionX;
+        generalSettings.InitialPositionY = positionY;
     }
 }

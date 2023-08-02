@@ -1,49 +1,75 @@
-﻿using Floai.Models;
-using Floai.Utils.View;
+﻿using Floai.ApiClients.abs;
+using Floai.Models;
 using Floai.Utils.Model;
-using System;
+using Floai.Utils.View;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text.RegularExpressions;
+using System.Linq;
+using System.Text.Json;
 
 namespace Floai.Pages;
 
 public class SettingsViewModel : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged = delegate { };
-    private readonly AppSettings appSettings;
+    private readonly GeneralSettings generalSettings;
+    private readonly SettingsManager settingsManager;
+    public string ErrorMessage { get; set; }
+    public ObservableCollection<string> ApiClientNames { get; set; }
 
-    public ObservableCollection<string> ApiKeys { get; set; }
-
-    public SettingsViewModel(AppSettings appSettings)
+    private string selectedApiClientName;
+    public string SelectedApiClientName
     {
-        this.appSettings = appSettings;
-        ApiKeys = new ObservableCollection<string>(appSettings.ApiKeys);
-        StartWithWindows = appSettings.StartWithWindows;
-        MessageSaveDirectory = appSettings.MessageSaveDirectory;
-        isMarkdownEnabled = appSettings.IsMarkdownEnabled;
-        appSettings.SettingChanged += ConfigAutoStart;
-    }
-
-    public void AppendApiKey(string apiKey)
-    {
-        string pattern = @"[^a-zA-Z0-9-]";
-        Regex.Replace(apiKey, pattern, "");
-        if (string.IsNullOrEmpty(apiKey))
-            return;
-        if (!ApiKeys.Contains(apiKey))
+        get { return selectedApiClientName; }
+        set
         {
-            this.ApiKeys.Add(apiKey);
-            appSettings.ApiKeys.Add(apiKey);
-            //AppConfiger.SetValue("isApiKeysReloadNeeded", "True");
+            if (selectedApiClientName != value)
+            {
+                selectedApiClientName = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(SelectedApiClientName)));
+            }
         }
     }
+    private string apiClientOptionsContent;
+    public string ApiClientOptionsContent { 
+        get { return apiClientOptionsContent; }
+        set 
+        { 
+            apiClientOptionsContent = value;
+            PropertyChanged(this, new PropertyChangedEventArgs(nameof(ApiClientOptionsContent)));
+        }
+    }
+    public List<BaseApiClientOptions> ApiClientOptionses { get; set; }
 
-    public void RemoveApiKey(string apiKey)
+    public SettingsViewModel(GeneralSettings generalSettings, SettingsManager settingsManager, IEnumerable<BaseApiClientOptions> optionses)
     {
-        this.ApiKeys.Remove(apiKey);
-        appSettings.ApiKeys.Remove(apiKey);
-        //AppConfiger.SetValue("isApiKeysReloadNeeded", "True");
+        this.settingsManager = settingsManager;
+        this.generalSettings = generalSettings;
+        this.ApiClientOptionses = optionses.ToList();
+
+        ApiClientNames = new(optionses.Select(o => o.GetType().Name.Replace("ApiClientOptions","")));
+        SelectedApiClientName = generalSettings.ApiClientName;
+
+        StartWithWindows = generalSettings.StartWithWindows;
+        MessageSaveDirectory = generalSettings.MessageSaveDirectory;
+        isMarkdownEnabled = generalSettings.IsMarkdownEnabled;
+        generalSettings.PropertyChanged += ConfigAutoStart;
+    }
+
+    public void ReadApiClientOptions()
+    {
+        ApiClientOptionsContent = settingsManager.ReadApiClientOptionsNode(SelectedApiClientName);
+    }
+
+    public void SaveApiClientOptions()
+    {
+        var options = ApiClientOptionses.Single(o => o.GetType().Name == selectedApiClientName + "ApiClientOptions");
+        var node = JsonSerializer.Deserialize(apiClientOptionsContent, options.GetType(), new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+        settingsManager.SaveNode(node, $"apiClientOptions/{SelectedApiClientName}");
     }
 
     private bool startWithWindows;
@@ -56,7 +82,7 @@ public class SettingsViewModel : INotifyPropertyChanged
             {
                 startWithWindows = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(StartWithWindows)));
-                appSettings.StartWithWindows = value;
+                generalSettings.StartWithWindows = value;
             }
         }
     }
@@ -71,7 +97,7 @@ public class SettingsViewModel : INotifyPropertyChanged
             {
                 messageSaveDirectory = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(MessageSaveDirectory)));
-                appSettings.MessageSaveDirectory = value;
+                generalSettings.MessageSaveDirectory = value;
             }
         }
     }
@@ -86,16 +112,16 @@ public class SettingsViewModel : INotifyPropertyChanged
             {
                 isMarkdownEnabled = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(IsMarkdownEnabled)));
-                appSettings.IsMarkdownEnabled = value;
+                generalSettings.IsMarkdownEnabled = value;
             }
         }
     }
 
-    private void ConfigAutoStart(string key)
+    private void ConfigAutoStart(object sender, PropertyChangedEventArgs e)
     {
-        if (key == nameof(appSettings.StartWithWindows))
+        if (e.PropertyName == nameof(generalSettings.StartWithWindows))
         {
-            if (appSettings.StartWithWindows)
+            if (generalSettings.StartWithWindows)
             {
                 AppAutoStarter.EnableAutoStart();
             }

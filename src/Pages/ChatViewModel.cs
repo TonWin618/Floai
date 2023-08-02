@@ -1,9 +1,9 @@
-﻿using Floai.Model;
+﻿using Floai.ApiClients.abs;
+using Floai.Model;
 using Floai.Models;
 using Floai.Utils.Model;
-using OpenAI;
-using OpenAI.Chat;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -16,16 +16,15 @@ namespace Floai.Pages
     public class ChatViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged = delegate { };
-        public Action ScrollToBottom;//temp
+        public Action ScrollToBottom = delegate { };//temp
 
-        private OpenAIClient apiClient;
-        private int lastApiKeyIndex;
+        private BaseApiClient apiClient;
 
         private ChatMessageManager messageManager;
         private ChatTopicManager topicManager;
         public FileWatcher fileWatcher;
 
-        private readonly AppSettings appSettings;
+        private readonly GeneralSettings generalSettings;
 
         private string inputContent;
         public string InputContent
@@ -69,24 +68,29 @@ namespace Floai.Pages
         }
 
         private bool isNewTopic = false;
-        public ChatViewModel(Action ScrollToBottom, AppSettings appSettings)
+
+
+
+
+
+        public ChatViewModel(GeneralSettings generalSettings, BaseApiClient apiClient)
         {
-            this.appSettings = appSettings;
-            this.ScrollToBottom += ScrollToBottom;
+            this.apiClient = apiClient;
+            this.generalSettings = generalSettings;
             Messages = new ObservableCollection<ChatMessage>();
             Topics = new ObservableCollection<ChatTopic>();
-            appSettings.SettingChanged += OnSettingChange;
+            generalSettings.PropertyChanged += OnSettingChange;
             ReloadData();
         }
 
-        private void OnSettingChange(string key)
+        private void OnSettingChange(object sender, PropertyChangedEventArgs e)
         {
-            if (key == nameof(appSettings.MessageSaveDirectory))
+            if (e.PropertyName == nameof(generalSettings.MessageSaveDirectory))
             {
                 ReloadData();
-                fileWatcher = new(appSettings.MessageSaveDirectory, OnMsgLogFileChanged);
+                fileWatcher = new(generalSettings.MessageSaveDirectory, OnMsgLogFileChanged);
             }
-            if(key == nameof(appSettings.IsMarkdownEnabled))
+            if(e.PropertyName == nameof(generalSettings.IsMarkdownEnabled))
             {
                 SwitchTopic();
             }
@@ -123,7 +127,7 @@ namespace Floai.Pages
 
         private void ReloadTopics()
         {
-            string messageSaveDictionary = appSettings.MessageSaveDirectory;
+            string messageSaveDictionary = generalSettings.MessageSaveDirectory;
             topicManager = new ChatTopicManager(messageSaveDictionary);
             Topics.Clear();
             selectedTopicItem = null;
@@ -171,91 +175,49 @@ namespace Floai.Pages
         }
         public (double, double) ReadWindowSize()
         {
-            double windowWidth = appSettings.InitialWindowWidth;
-            double windowHeight = appSettings.InitialWindowWidth;
+            double windowWidth = generalSettings.InitialWindowWidth;
+            double windowHeight = generalSettings.InitialWindowWidth;
             return (windowWidth, windowHeight);
         }
 
         public void WriteWindowSize(double width, double height)
         {
-            appSettings.InitialWindowWidth = width;
-            appSettings.InitialWindowHeight = height;
-        }
-
-        public void InitializeApiClient()
-        {
-            if (appSettings.ApiKeys.Count == 0)
-            {
-                throw new Exception("API key not configured.");
-            }
-            string apiKey = appSettings.ApiKeys[lastApiKeyIndex];
-            apiClient = new(apiKey);
-
-            lastApiKeyIndex++;
-            if (lastApiKeyIndex >= appSettings.ApiKeys.Count)
-                lastApiKeyIndex = 0;
-        }
-
-        public List<Message> GenerateChatContext()
-        {
-            //Generate message sent by the user
-            var userMsg = new ChatMessage(DateTime.Now, Sender.User, InputContent);
-            InputContent = "";
-            if (isNewTopic)
-            {
-                CreateNewTopic(userMsg.Content);
-            }
-            Messages.Add(userMsg);
-            ScrollToBottom();//temp
-            messageManager.SaveMessage(userMsg);
-
-            //Context of conversations between user and AI.
-            var messageContext = Messages.Select(
-                msg => new Message(msg.Sender == Sender.User ? Role.User : Role.Assistant, msg.Content))
-                .ToList();
-
-            messageContext.Add(new Message(Role.User, userMsg.Content));
-
-            return messageContext;
+            generalSettings.InitialWindowWidth = width;
+            generalSettings.InitialWindowHeight = height;
         }
 
         public async Task RequestAndReceiveResponse()
         {
-            //Initialize OpenAI API client.
-            try
+            //Generate message sent by the user
+            var userMsg = new ChatMessage(DateTime.Now, Sender.User, InputContent);
+            InputContent = "";
+
+            if (isNewTopic)
             {
-                InitializeApiClient();
-            }
-            catch (Exception ex)
-            {
-                InputContent = ex.Message;
-                return;
+                CreateNewTopic(userMsg.Content);
             }
 
-            List<Message> chatContext = GenerateChatContext();
+            Messages.Add(userMsg);
+            ScrollToBottom();//temp
+            messageManager.SaveMessage(userMsg);
 
             //Generate messages sent by the AI
             var newMsg = new ChatMessage(DateTime.Now, Sender.AI, "");
             Messages.Add(newMsg);
             ScrollToBottom();//temp
-            var chatRequest = new ChatRequest(chatContext, OpenAI.Models.Model.GPT3_5_Turbo);
-            try
+
+            bool saveMsg = true;
+
+            await apiClient.CreateCompletionAsync(Messages.SkipLast(1).ToList(), (text, saved) =>
             {
-                await foreach (var result in apiClient.ChatEndpoint.StreamCompletionEnumerableAsync(chatRequest))
-                {
-                    foreach (var choice in result.Choices.Where(choice => choice.Delta?.Content != null))
-                    {
-                        newMsg.AppendContent(choice.Delta.Content);
-                        ScrollToBottom();//temp
-                    }
-                }
-                messageManager.SaveMessage(newMsg);
-            }
-            catch (Exception ex)
-            {
-                newMsg.AppendContent(ex.Message);
-                ScrollToBottom();//temp
-            }
+                newMsg.AppendContent(text);
+                if(saved == false) saveMsg = false;
+                ScrollToBottom();
+            });
+
+            if (saveMsg) messageManager.SaveMessage(newMsg);
+
+            return;
         }
     }
 }

@@ -5,6 +5,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Floai.ApiClients.abs;
+using System.ComponentModel;
 
 namespace Floai.Pages;
 
@@ -12,31 +14,30 @@ public partial class ChatView : Window, ISetWindowProperties
 {
     public ChatViewModel viewModel;
     private readonly WindowManager windowManager;
-    private readonly AppSettings appSettings;
+    private readonly GeneralSettings generalSettings;
 
     private bool autoScrollEnabled = true;
     private ScrollViewer? scrollViewer;
     private ChatBubbleSelector chatBubbleSelector;
-    public ChatView(WindowManager windowManager, AppSettings appSettings)
+    public ChatView(WindowManager windowManager, ChatViewModel viewModel, GeneralSettings generalSettings)
     {
         this.windowManager = windowManager;
-        this.appSettings = appSettings;
+        this.generalSettings = generalSettings;
         InitializeComponent();
 
-        chatBubbleSelector = new ChatBubbleSelector(appSettings.IsMarkdownEnabled);
+        chatBubbleSelector = new ChatBubbleSelector(generalSettings.IsMarkdownEnabled);
         MessageList.ItemTemplateSelector = chatBubbleSelector;
-        appSettings.SettingChanged += OnSettingChanged;
-
-        viewModel = new ChatViewModel(this.ScrollToBottom, appSettings);
-        this.DataContext = viewModel;
+        generalSettings.PropertyChanged += OnSettingChanged;
+        this.viewModel = viewModel;
+        this.DataContext = this.viewModel;
         
     }
 
-    public void OnSettingChanged(string key)
+    public void OnSettingChanged(object sender, PropertyChangedEventArgs e)
     {
-        if(key == nameof(appSettings.IsMarkdownEnabled))
+        if(e.PropertyName == nameof(generalSettings.IsMarkdownEnabled))
         {
-            chatBubbleSelector.isMarkdownEnabled = appSettings.IsMarkdownEnabled;
+            chatBubbleSelector.isMarkdownEnabled = generalSettings.IsMarkdownEnabled;
         }
     }
 
