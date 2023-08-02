@@ -16,7 +16,7 @@ namespace Floai.Pages
     public class ChatViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged = delegate { };
-        public Action ScrollToBottom = delegate { };//temp
+        public Action ScrollToBottom = delegate { };// TODO: Remove it
 
         private BaseApiClient apiClient;
 
@@ -79,24 +79,24 @@ namespace Floai.Pages
             this.generalSettings = generalSettings;
             Messages = new ObservableCollection<ChatMessage>();
             Topics = new ObservableCollection<ChatTopic>();
-            generalSettings.PropertyChanged += OnSettingChange;
-            ReloadData();
+            generalSettings.PropertyChanged += OnSettingsChanged;
+            ReloadViewModel();
         }
 
-        private void OnSettingChange(object sender, PropertyChangedEventArgs e)
+        private void OnSettingsChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(generalSettings.MessageSaveDirectory))
             {
-                ReloadData();
-                fileWatcher = new(generalSettings.MessageSaveDirectory, OnMsgLogFileChanged);
+                ReloadViewModel();
+                fileWatcher = new(generalSettings.MessageSaveDirectory, OnMessageSavePathChanged);
             }
             if(e.PropertyName == nameof(generalSettings.IsMarkdownEnabled))
             {
-                SwitchTopic();
+                OnTopicSwitched();
             }
         }
 
-        public void OnMsgLogFileChanged(object sender, FileSystemEventArgs e)
+        public void OnMessageSavePathChanged(object sender, FileSystemEventArgs e)
         {
             //Console.WriteLine("File {0} was created.", e.Name);
             if (e.ChangeType == WatcherChangeTypes.Created)
@@ -105,7 +105,7 @@ namespace Floai.Pages
                 {
                     System.Windows.Application.Current.Dispatcher.Invoke((Action)(() =>
                     {
-                        ReloadData();
+                        ReloadViewModel();
                     }));
                 }
             }
@@ -113,12 +113,12 @@ namespace Floai.Pages
             {
                 System.Windows.Application.Current.Dispatcher.Invoke((Action)(() =>
                 {
-                    ReloadData();
+                    ReloadViewModel();
                 }));
             }
         }
 
-        private void ReloadData()
+        private void ReloadViewModel()
         {
             ReloadTopics();
             SwitchToLatestTopic();
@@ -148,7 +148,8 @@ namespace Floai.Pages
             isNewTopic = false;
         }
 
-        public void BeforeCreateNewTopic()
+        // Before the new topic is confirmed to be created.
+        public void PreCreateNewTopic()
         {
             Messages.Clear();
             isNewTopic = true;
@@ -159,19 +160,21 @@ namespace Floai.Pages
             if (Topics.Count > 0)
             {
                 SelectedTopicItem = Topics.Last();
-                SwitchTopic();
+                OnTopicSwitched();
             }
         }
 
-        public void SwitchTopic()
+        public void OnTopicSwitched()
         {
             if (SelectedTopicItem == null)
                 return;
+            // Cancel the pre-creation of the new topic.
             if (isNewTopic) isNewTopic = false;
+
             messageManager = new ChatMessageManager(SelectedTopicItem.FilePath);
             Messages.Clear();
             messageManager.LoadMessages().ForEach(Messages.Add);
-            ScrollToBottom();//temp
+            ScrollToBottom();// TODO: Remove it
         }
         public (double, double) ReadWindowSize()
         {
@@ -188,7 +191,7 @@ namespace Floai.Pages
 
         public async Task RequestAndReceiveResponse()
         {
-            //Generate message sent by the user
+            // Generate message sent by the user
             var userMsg = new ChatMessage(DateTime.Now, Sender.User, InputContent);
             InputContent = "";
 
@@ -201,10 +204,10 @@ namespace Floai.Pages
             ScrollToBottom();//temp
             messageManager.SaveMessage(userMsg);
 
-            //Generate messages sent by the AI
+            // Generate messages sent by the AI
             var newMsg = new ChatMessage(DateTime.Now, Sender.AI, "");
             Messages.Add(newMsg);
-            ScrollToBottom();//temp
+            ScrollToBottom();// TODO: Remove it
 
             bool saveMsg = true;
 

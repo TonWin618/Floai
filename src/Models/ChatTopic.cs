@@ -18,6 +18,7 @@ public class ChatTopic : INotifyPropertyChanged
         set
         {
             this.name = value;
+            //Make sure the view can be refreshed
             PropertyChanged(this, new PropertyChangedEventArgs(nameof(Name)));
         }
     }
@@ -32,6 +33,7 @@ public class ChatTopic : INotifyPropertyChanged
         set
         {
             this.filePath = value;
+            //Make sure the view can be refreshed
             PropertyChanged(this, new PropertyChangedEventArgs(nameof(FilePath)));
         }
     }

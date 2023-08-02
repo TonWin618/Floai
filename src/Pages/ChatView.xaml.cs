@@ -68,13 +68,13 @@ public partial class ChatView : Window, ISetWindowProperties
 
     private void BtnNewChat_Click(object sender, RoutedEventArgs e)
     {
-        viewModel.BeforeCreateNewTopic();
+        viewModel.PreCreateNewTopic();
     }
 
     private void TopicCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         autoScrollEnabled = true;
-        viewModel.SwitchTopic();
+        viewModel.OnTopicSwitched();
         ScrollToBottom();
     }
 

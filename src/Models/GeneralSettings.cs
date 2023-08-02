@@ -122,8 +122,11 @@ public class GeneralSettings : INotifyPropertyChanged
 
     private void SettingsPropertyChanged(string name)
     {
-        if(!isIinitialized)
+        //The configuration file modification will not be triggered during initialization when it is not yet completed.
+        if (!isIinitialized)
             return;
+
+        //When the value of the attribute changes, it will trigger a modification to the configuration file.
         PropertyChanged(this, new PropertyChangedEventArgs(name));
     }
 }
