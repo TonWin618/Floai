@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 
 namespace Floai.ApiClients
@@ -16,5 +17,9 @@ namespace Floai.ApiClients
         public Dictionary<string, string>? Params { get; set; }
 
         public string Body { get; set; }
+
+        public string HistoryFormat { get; set; }
+        public string AiName { get; set; }
+        public string UserName { get; set; }
     }
 }

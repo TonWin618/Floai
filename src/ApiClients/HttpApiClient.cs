@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Json;
-using System.Runtime;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -16,10 +14,16 @@ namespace Floai.ApiClients
     {
         private readonly HttpApiClientOptions options;
 
-        static readonly HttpClient httpClient = new HttpClient();
+        private readonly HttpClient httpClient = new HttpClient();
         public HttpApiClient(HttpApiClientOptions options) : base(options)
         {
             this.options = options;
+
+            //Header
+            foreach (var header in options.Headers)
+            {
+                httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+            }
         }
 
         public async override Task CreateCompletionAsync(List<ChatMessage> messages, Action<string, bool> onDataReceived)
@@ -39,36 +43,51 @@ namespace Floai.ApiClients
                     query.Append(Uri.EscapeDataString(param.Value));
                 }
                 uriBuilder.Query = query.ToString();
-                
             }
             var fullUrl = uriBuilder.ToString();
 
-            //Header
-            foreach (var header in options.Headers)
-            {
-                httpClient.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
-            }
-
             //Body
-            string replacedBodyValue = options.Body.Replace("${content}", messages.LastOrDefault().Content);
-            StringContent content = new StringContent(replacedBodyValue, Encoding.UTF8, "application/json");
-
-
-            HttpResponseMessage response = await httpClient.PostAsync(fullUrl, content);
-
-            string responseContent;
-            using (JsonDocument document = JsonDocument.Parse(await response.Content.ReadAsStringAsync()))
+            StringBuilder history = new StringBuilder();
+            foreach(var message in messages.SkipLast(1))
             {
-                JsonElement root = document.RootElement;
-
-                JsonElement choiceElement = root.GetProperty("choices")[0];
-
-                JsonElement messageElement = choiceElement.GetProperty("message");
-
-                responseContent = messageElement.GetProperty("content").GetString();
+                history.Append(options.HistoryFormat
+                    .Replace("${sender}", message.Sender == Sender.AI ? options.AiName : options.UserName)
+                    .Replace("${content}", message.Content)
+                    );
             }
 
-            onDataReceived(responseContent, true);
+            string requestBody = options.Body
+                .Replace("${history}", history.ToString())
+                .Replace("${content}", messages.LastOrDefault().Content);
+            StringContent requestContent = new StringContent(requestBody, Encoding.UTF8, "application/json");
+
+            //Request
+            try
+            {
+                HttpResponseMessage response = await httpClient.PostAsync(fullUrl, requestContent);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+
+                    JsonDocument jsonDocument = JsonDocument.Parse(responseContent);
+                    JsonElement root = jsonDocument.RootElement;
+                    string messageContent = root
+                        .GetProperty("choices")[0]
+                        .GetProperty("message")
+                        .GetProperty("content")
+                        .GetString();
+                    onDataReceived(messageContent, true);
+                }
+                else
+                {
+                    onDataReceived($"StatusCode: {response.StatusCode}\n Reason: {response.ReasonPhrase} \n Content: {await response.Content.ReadAsStringAsync()}", false);
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                onDataReceived(ex.Message, false);
+            }
         }
     }
 }
