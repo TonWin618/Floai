@@ -1,5 +1,4 @@
-﻿using Floai.ApiClients;
-using Floai.ApiClients.abs;
+﻿using Floai.ApiClients.abs;
 using Floai.Models;
 using Floai.Pages;
 using Floai.Utils.Client;
@@ -12,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Documents;
 
 namespace Floai
 {

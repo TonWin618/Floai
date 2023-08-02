@@ -19,7 +19,7 @@ namespace Floai.ApiClients
         public string Body { get; set; }
 
         public string HistoryFormat { get; set; }
-        public string AiName { get; set; }
-        public string UserName { get; set; }
+        public string AiRoleName { get; set; }
+        public string UserRoleName { get; set; }
     }
 }

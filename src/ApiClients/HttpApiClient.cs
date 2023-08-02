@@ -51,7 +51,7 @@ namespace Floai.ApiClients
             foreach(var message in messages.SkipLast(1))
             {
                 history.Append(options.HistoryFormat
-                    .Replace("${sender}", message.Sender == Sender.AI ? options.AiName : options.UserName)
+                    .Replace("${sender}", message.Sender == Sender.AI ? options.AiRoleName : options.UserRoleName)
                     .Replace("${content}", message.Content)
                     );
             }
