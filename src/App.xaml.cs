@@ -22,6 +22,7 @@ namespace Floai
         public static IHost? AppHost { get; private set; }
         public App()
         {
+            // Load configuration file.
             string configFilePath = "appsettings.json";
             var settingsManager = new SettingsManager(configFilePath);
 
@@ -29,9 +30,11 @@ namespace Floai
                 .AddJsonFile(configFilePath, false, false)
                 .Build();
 
+            // Create an instance and bind the configuration options to it.
             var generalSettings = new GeneralSettings();
             config.GetSection("general").Bind(generalSettings);
 
+            // Enable dynamic updating of the configuration file when its settings change.
             generalSettings.isIinitialized = true;
             generalSettings.PropertyChanged += (sender, e) =>
             {
@@ -42,14 +45,19 @@ namespace Floai
 
             ApiClientFinder finder = new("Floai.ApiClients");
 
+            // Obtain the desired ApiClient class and ApiClientOptions class through reflection.
             var apiClientOptionsClass = finder.GetTargetApiClientOptionsClass(apiClientName);
+            var apiClientClass = finder.GetTargetApiClientClass(apiClientName);
+
+            // Create an instance and bind the configuration options to it.
             var apiClientOptions = Activator.CreateInstance(apiClientOptionsClass);
             config.GetSection("apiClientOptions").GetSection(apiClientName).Bind(apiClientOptions);
 
-            var apiClientClass = finder.GetTargetApiClientClass(apiClientName);
-
+            // Obtain all classes of ApiClientOptions through reflection.
             List<Type> apiClientOptionsClasses = finder.GetApiClientOptionsClasses();
             List<BaseApiClientOptions> apiClientOptionses = new();
+
+            // Create an instance and bind the configuration options to it.
             foreach (Type type in apiClientOptionsClasses)
             {
                 apiClientOptionses.Add(Activator.CreateInstance(type) as BaseApiClientOptions);
@@ -61,10 +69,6 @@ namespace Floai
                         options => options.GetType().Name == clientName + "ApiClientOptions")
                     );
             }
-
-
-            //List<Type> apiClientClasses = finder.GetApiClientClasses();
-            ////var apiClient = Activator.CreateInstance(apiClientClass, apiClientOptions) as BaseApiClient;
 
             AppHost = Host.CreateDefaultBuilder()
                 .ConfigureServices((hostContext, services) =>
@@ -87,16 +91,20 @@ namespace Floai
                     services.AddSingleton(typeof(BaseApiClient), apiClientClass);
 
                     apiClientOptionses.ForEach(options => services.AddSingleton<BaseApiClientOptions>(options));
-                    //apiClientClasses.ForEach(type => services.AddSingleton(typeof(BaseApiClient), type));
                 }).Build();
         }
         protected override async void OnStartup(StartupEventArgs e)
         {
             await AppHost!.StartAsync();
-            var manager = AppHost.Services.GetRequiredService<WindowManager>();
+
+            // Create a taskbar icon on application startup.
             var taskbarIcon = AppHost.Services.GetRequiredService<WindowsTaskbarIcon>();
             taskbarIcon.Open();
+
+            // Open the floating button on application startup.
+            var manager = AppHost.Services.GetRequiredService<WindowManager>();
             manager.SetWindow<FloatView>(null);
+
             base.OnStartup(e);
         }
         protected override async void OnExit(ExitEventArgs e)

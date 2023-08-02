@@ -8,13 +8,19 @@ namespace Floai.Utils.Model
 {
     public class SettingsManager
     {
+        // Configuration file path.
         private readonly string filePath;
         public SettingsManager(string filePath) 
         {
             this.filePath = filePath;
         }
 
-        public void SaveNode(object settings, string nodePath)
+        /// <summary>
+        /// Saves the provided settings object to the specified nodePath in the configuration file.
+        /// </summary>
+        /// <param name="obj">The object to be saved.</param>
+        /// <param name="nodePath">The path to the node where the settings should be saved, using forward slashes (/) to indicate nested nodes.</param>
+        public void SaveNode(object obj, string nodePath)
         {
             var json = File.ReadAllText(filePath);
             var rootNode = JsonNode.Parse(json);
@@ -22,6 +28,7 @@ namespace Floai.Utils.Model
             string[] nodeNames = nodePath.Split('/');
             JsonNode currentNode = rootNode;
 
+            // Traverse the path to create any missing nodes.
             for (int i = 0; i < nodeNames.Length - 1; i++)
             {
                 if (currentNode[nodeNames[i]] == null)
@@ -30,13 +37,19 @@ namespace Floai.Utils.Model
                 }
                 currentNode = currentNode[nodeNames[i]];
             }
-            currentNode[nodeNames[^1]] = JsonSerializer.SerializeToNode(settings);
 
+            // Serialize and save the settings object to the specified node.
+            currentNode[nodeNames[^1]] = JsonSerializer.SerializeToNode(obj);
             File.WriteAllText(filePath, rootNode.ToString());
         }
 
-
-        public string ReadNode(object settings, string nodePath)
+        /// <summary>
+        /// Reads the value of the specified nodePath from the configuration file and returns it as a JSON-formatted string.
+        /// </summary>
+        /// <param name="obj">The object representing the configuration settings.</param>
+        /// <param name="nodePath">The path to the node whose value needs to be retrieved, using forward slashes (/) to indicate nested nodes.</param>
+        /// <returns>A JSON-formatted string representing the value of the specified node.</returns>
+        public string ReadNode(object obj, string nodePath)
         {
             string[] nodeNames = nodePath.Split('/');
             var json = File.ReadAllText(filePath);
@@ -46,7 +59,7 @@ namespace Floai.Utils.Model
             {
                 jsonNode = jsonNode[name];
             }
-            jsonNode = JsonSerializer.SerializeToNode(settings);
+            jsonNode = JsonSerializer.SerializeToNode(obj);
             return jsonNode.ToJsonString(new JsonSerializerOptions
             {
                 WriteIndented = true
