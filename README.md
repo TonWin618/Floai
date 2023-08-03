@@ -82,7 +82,7 @@ Here is the latest version: [Floai-releases-latest](https://github.com/TonWin618
 
 1. Open the settings interface.  
 
-2. Switch to **Http **ApiClient. 
+2. Switch to **Http** ApiClient. 
 
 3. Fill in the configuration information.  
 
