@@ -20,73 +20,81 @@ public class HttpApiClient : BaseApiClient
         this.options = options;
 
         //Header
-        foreach (var header in options.Headers)
+        if (options.Headers != null)
         {
-            httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+            foreach (var header in options.Headers)
+            {
+                httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+            }
         }
     }
 
     public async override Task CreateCompletionAsync(List<ChatMessage> messages, Action<string, bool> onDataReceived)
     {
-        //URL
+        //Content
+        StringContent requestContent = new StringContent(GenerateRequestBody(messages), Encoding.UTF8, "application/json");
+
+        //Request
+        string content;
+        bool isSaved;
+
+        try
+        {
+            HttpResponseMessage response = await httpClient.PostAsync(BuildCompleteUrl(), requestContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string responseContent = await response.Content.ReadAsStringAsync();
+                try
+                {
+                    JsonDocument jsonDocument = JsonDocument.Parse(responseContent);
+                    JsonElement root = jsonDocument.RootElement;
+
+                    content = GetValueFromPath(root, options.ContentPath);
+                    isSaved = true;
+                }
+                catch(Exception ex)
+                {
+                    content = ex.Message;
+                    isSaved = false;
+                }
+            }
+            else
+            {
+                content = $"StatusCode: {response.StatusCode}\nReason: {response.ReasonPhrase} \nContent: {await response.Content.ReadAsStringAsync()}";
+                isSaved = false ;
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            content = ex.Message;
+            isSaved = false;
+        }
+
+        onDataReceived(content, isSaved);
+    }
+
+    public string BuildCompleteUrl()
+    {
         var uriBuilder = new UriBuilder(options.Url);
-        if(options.Params != null)
+        if (options.Params != null)
         {
             var query = new StringBuilder();
             foreach (var param in options.Params)
             {
                 if (query.Length > 0)
-                    query.Append("&");
+                    query.Append('&');
 
                 query.Append(Uri.EscapeDataString(param.Key));
-                query.Append("=");
+                query.Append('=');
                 query.Append(Uri.EscapeDataString(param.Value));
             }
             uriBuilder.Query = query.ToString();
         }
-        var fullUrl = uriBuilder.ToString();
-
-        //Body
-        StringBuilder history = new StringBuilder();
-        foreach(var message in messages.SkipLast(1))
-        {
-            history.Append(options.HistoryFormat
-                .Replace("${sender}", message.Sender == Sender.AI ? options.AiRoleName : options.UserRoleName)
-                .Replace("${content}", message.Content)
-                );
-        }
-
-        string requestBody = options.Body
-            .Replace("${history}", history.ToString())
-            .Replace("${content}", messages.LastOrDefault().Content);
-        StringContent requestContent = new StringContent(requestBody, Encoding.UTF8, "application/json");
-
-        //Request
-        try
-        {
-            HttpResponseMessage response = await httpClient.PostAsync(fullUrl, requestContent);
-
-            if (response.IsSuccessStatusCode)
-            {
-                string responseContent = await response.Content.ReadAsStringAsync();
-
-                JsonDocument jsonDocument = JsonDocument.Parse(responseContent);
-                JsonElement root = jsonDocument.RootElement;
-                string messageContent = GetValueFromPath(root, options.ContentPath);
-                onDataReceived(messageContent, true);
-            }
-            else
-            {
-                onDataReceived($"StatusCode: {response.StatusCode}\n Reason: {response.ReasonPhrase} \n Content: {await response.Content.ReadAsStringAsync()}", false);
-            }
-        }
-        catch (HttpRequestException ex)
-        {
-            onDataReceived(ex.Message, false);
-        }
+        return uriBuilder.ToString();
     }
 
-    public static string GetValueFromPath(JsonElement root, string path)
+    public string GetValueFromPath(JsonElement root, string path)
     {
         string[] parts = path.Split('/');
 
@@ -105,6 +113,41 @@ public class HttpApiClient : BaseApiClient
         }
 
         return currentElement.GetString();
+    }
+
+    public string GenerateRequestBody(List<ChatMessage> messages)
+    {
+        StringBuilder history = new StringBuilder();
+        if (options.HistoryFormat.Contains("${sender}"))
+        {
+            foreach (var message in messages.SkipLast(1))
+            {
+                history.Append(options.HistoryFormat
+                .Replace("${sender}", message.Sender == Sender.AI ? options.AiRoleName : options.UserRoleName)
+                .Replace("${content}", message.Content));
+                history.Append(",");
+            }
+        }
+        else
+        {
+            for (int i = 0; i < messages.Count - 2; i += 2)
+            {
+                history.Append(options.HistoryFormat
+                    .Replace("${user_sender}", options.UserRoleName)
+                    .Replace("${user_content}", messages[i].Content)
+                    .Replace("${ai_sender}", options.AiRoleName)
+                    .Replace("${ai_content}", messages[i + 1].Content));
+                history.Append(",");
+            }
+        }
+        if (history.Length > 0)
+            history.Remove(history.Length - 1, 1);
+
+        string requestBody = options.Body
+            .Replace("${history}", history.ToString())
+            .Replace("${prompt}", messages.LastOrDefault().Content);
+        
+        return requestBody;
     }
 }
 
