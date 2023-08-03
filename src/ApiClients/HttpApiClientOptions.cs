@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Floai.ApiClients
 {
-    public class HttpApiClientOptions:BaseApiClientOptions
+    public class HttpApiClientOptions : BaseApiClientOptions
     {
         public string Url { get; set; }
 
@@ -13,7 +13,7 @@ namespace Floai.ApiClients
 
         public string Body { get; set; }
 
-        public string HistoryFormat { get; set; }
+        public string HistoryTemplate { get; set; }
         public string AiRoleName { get; set; }
         public string UserRoleName { get; set; }
 

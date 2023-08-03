@@ -118,11 +118,11 @@ public class HttpApiClient : BaseApiClient
     public string GenerateRequestBody(List<ChatMessage> messages)
     {
         StringBuilder history = new StringBuilder();
-        if (options.HistoryFormat.Contains("${sender}"))
+        if (options.HistoryTemplate.Contains("${sender}"))
         {
             foreach (var message in messages.SkipLast(1))
             {
-                history.Append(options.HistoryFormat
+                history.Append(options.HistoryTemplate
                 .Replace("${sender}", message.Sender == Sender.AI ? options.AiRoleName : options.UserRoleName)
                 .Replace("${content}", message.Content));
                 history.Append(",");
@@ -132,7 +132,7 @@ public class HttpApiClient : BaseApiClient
         {
             for (int i = 0; i < messages.Count - 2; i += 2)
             {
-                history.Append(options.HistoryFormat
+                history.Append(options.HistoryTemplate
                     .Replace("${user_sender}", options.UserRoleName)
                     .Replace("${user_content}", messages[i].Content)
                     .Replace("${ai_sender}", options.AiRoleName)
